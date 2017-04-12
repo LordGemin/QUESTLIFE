@@ -1,6 +1,7 @@
 package main.java.com.questlife.questlife.items;
 
 import main.java.com.questlife.questlife.util.AttackType;
+import main.java.com.questlife.questlife.util.Generator;
 
 /**
  * Created by Gemin on 10.04.2017.
@@ -9,6 +10,10 @@ public class Weapon extends AbstractItems {
 
     private int physicalAttack, magicalAttack;
     private AttackType attackType;
+
+    public Weapon (int heroLevel) {
+        generateWeapon(heroLevel);
+    }
 
 
     public Weapon (String name, int price, String description) {
@@ -47,5 +52,31 @@ public class Weapon extends AbstractItems {
      */
     public AttackType getAttackType() {
         return attackType;
+    }
+
+    public void setPhysicalAttack(int physicalAttack) {
+        this.physicalAttack = physicalAttack;
+    }
+
+    public void setMagicalAttack(int magicalAttack) {
+        this.magicalAttack = magicalAttack;
+    }
+
+    private void generateWeapon(int heroLevel) {
+        Generator generator = new Generator();
+        this.physicalAttack = generator.generateNumber()%heroLevel*3;
+        this.magicalAttack = generator.generateNumber()%heroLevel*3;
+        this.name = generator.generateWeaponName();
+
+        while(physicalAttack == magicalAttack) {
+            physicalAttack += generator.generateNumber()%2;
+            magicalAttack += generator.generateNumber()%2;
+        }
+
+        if (physicalAttack > magicalAttack ) {
+            this.attackType = AttackType.PHYSICAL;
+        } else {
+            this.attackType = AttackType.MAGICAL;
+        }
     }
 }

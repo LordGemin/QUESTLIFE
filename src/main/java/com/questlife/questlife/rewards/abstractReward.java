@@ -1,21 +1,21 @@
 package main.java.com.questlife.questlife.rewards;
 
-import main.java.com.questlife.questlife.skills.Skills;
+import main.java.com.questlife.questlife.skills.Skill;
 import main.java.com.questlife.questlife.util.RewardType;
 
 /**
  * Created by Gemin on 10.04.2017.
  */
-public abstract class abstractRewards {
+public abstract class abstractReward {
 
     private String name;
     private RewardType rewardType;
-    private Skills associatedSkills;
+    private Skill[] associatedSkills;
     private int cost;
     private int canReceive;
     private int risingCost;
 
-    abstractRewards(String name, RewardType rewardType, Skills associatedSkills, int cost, int canReceive, int risingCost) {
+    abstractReward(String name, RewardType rewardType, Skill[] associatedSkills, int cost, int canReceive, int risingCost) {
         this.name = name;
         this.rewardType = rewardType;
         this.associatedSkills = associatedSkills;
@@ -32,7 +32,7 @@ public abstract class abstractRewards {
         return rewardType;
     }
 
-    public Skills getAssociatedSkills() {
+    public Skill[] getAssociatedSkills() {
         return associatedSkills;
     }
 

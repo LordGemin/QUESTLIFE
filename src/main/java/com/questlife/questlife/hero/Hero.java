@@ -1,13 +1,24 @@
 package main.java.com.questlife.questlife.hero;
 
+import main.java.com.questlife.questlife.items.Potion;
 import main.java.com.questlife.questlife.items.Weapon;
+import main.java.com.questlife.questlife.player.Inventory;
+import main.java.com.questlife.questlife.player.Player;
+import main.java.com.questlife.questlife.util.StatCalculator;
+
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * Created by Gemin on 10.04.2017.
  */
-public abstract class Hero {
+public class Hero {
 
     private String name;
+    private Player player;
+    private int maxHealth;
     private int health;
+    private int maxMana;
     private int mana;
     private int strength;
     private int dexterity;
@@ -16,10 +27,18 @@ public abstract class Hero {
     private int constitution;
     private int piety;
     private int observation;
+    private int level;
+    private int experience;
+    private int experienceToNextLevel;
     private Weapon weapon;
 
+    private StatCalculator statCalculator = new StatCalculator();
 
-    Hero (String name, Weapon weapon) {
+
+    Hero() {}
+
+    public Hero (Player player, String name, Weapon weapon) {
+        this.player = player;
         this.name = name;
         this.weapon = weapon;
     }
@@ -104,7 +123,153 @@ public abstract class Hero {
         this.observation = observation;
     }
 
-    public void setWeapon (Weapon weapon) {
+    private void setWeapon (Weapon weapon) {
         this.weapon = weapon;
     }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public int getExperience() {
+        return experience;
+    }
+
+    public void setExperience(int experience) {
+        this.experience = experience;
+    }
+
+    public int getExperienceToNextLevel() {
+        return experienceToNextLevel;
+    }
+
+    public void setExperienceToNextLevel(int experienceToNextLevel) {
+        this.experienceToNextLevel = experienceToNextLevel;
+    }
+
+    public int getMaxHealth() {
+        return maxHealth;
+    }
+
+    public void setMaxHealth(int maxHealth) {
+        this.maxHealth = maxHealth;
+    }
+
+    public int getMaxMana() {
+        return maxMana;
+    }
+
+    public void setMaxMana(int maxMana) {
+        this.maxMana = maxMana;
+    }
+
+    public int getDefense(){
+        int defense;
+
+        defense = statCalculator.calculateHeroesDefense(this);
+
+        return defense;
+    }
+
+    public int getResistance(){
+        int resistance;
+
+        resistance = statCalculator.calculateHeroesResistance(this);
+
+        return resistance;
+    }
+
+    public int getAttack() {
+        int attack;
+
+        attack = statCalculator.calculateHeroesAttack(this);
+
+        return attack;
+    }
+
+    public void changeWeapon(Weapon toEquip) {
+        player.getInventory().addWeapon(this.weapon);
+        this.setWeapon(toEquip);
+    }
+
+    private void levelUp() {
+        this.level++;
+        this.experienceToNextLevel = experienceToNextLevel + 1000+100*Math.round(level/10);
+        //TODO: Rethink this formula
+    }
+
+    public void gainExperience(int experienceGained) {
+        this.experience += experienceGained;
+        while (this.experience >= this.experienceToNextLevel) {
+            levelUp();
+            //TODO: Message to Player. Congrats or something
+        }
+    }
+
+    public void takePotion() {
+        int needHP = maxHealth-health;
+        int needMP = maxMana-mana;
+        int healthGotten = 0;
+        int manaGotten = 0;
+
+        Inventory inv = player.getInventory();
+        List<Potion> potions = inv.getPotionsInInventory();
+        Iterator<Potion> i = potions.iterator();
+
+        while(i.hasNext()) {
+            Potion potion = i.next();
+
+            String identifier = potion.getName();
+
+            //Take all potions until full health
+            if(healthGotten < needHP && identifier.endsWith("Potion")) {
+                healthGotten += potion.getStrengthHP();
+                System.out.println("Taking: "+identifier+" to heal.");
+                System.out.println("I have healed: "+ healthGotten+" HP so far.");
+                inv.getItemsInInventory().remove(potion);
+            } else if (identifier.endsWith("Potion")) {
+                healthGotten = needHP;
+                continue;
+            }
+
+            //Take all elixirs until full mana
+            if(manaGotten < needMP && identifier.endsWith("Elixir")) {
+                manaGotten += potion.getStrengthMP();
+                System.out.println("Taking: "+identifier+" to regenerate mana.");
+                System.out.println("I have regenerated: "+manaGotten+" MP so far.");
+                inv.getItemsInInventory().remove(potion);
+            } else if (identifier.endsWith("Elixir")) {
+                manaGotten = needMP;
+                continue;
+            }
+            System.out.println();
+        }
+        this.health += healthGotten;
+        this.mana += manaGotten;
+        System.out.println("After all these potions, there are "+inv.getPotionsInInventory().size()+" Potions left.");
+        player.getInventory().setItemsInInventory(inv.getItemsInInventory());
+    }
+
+    public void takePotion (Potion potionToTake) {
+        player.getInventory().getItemsInInventory().remove(potionToTake);
+        
+        int healthNeed = maxHealth - health;
+        int manaNeed = maxMana - mana;
+        
+        if(healthNeed < potionToTake.getStrengthHP()) { //if the potion provides to much we have to power it down
+            potionToTake.setStrengthHP(healthNeed);
+        }
+        if (manaNeed < potionToTake.getStrengthMP()) {
+            potionToTake.setStrengthMP(manaNeed);
+        }
+        
+        this.health += potionToTake.getStrengthHP();
+        this.mana += potionToTake.getStrengthMP();
+        
+    }
+
 }

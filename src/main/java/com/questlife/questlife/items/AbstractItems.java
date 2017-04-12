@@ -6,8 +6,8 @@ package main.java.com.questlife.questlife.items;
 public abstract class AbstractItems {
 
     String name;
-    private int price;
-    private String description;
+    int price;
+    String description;
 
     AbstractItems() {}
 

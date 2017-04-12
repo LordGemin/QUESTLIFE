@@ -6,7 +6,7 @@ import main.java.com.questlife.questlife.util.SkillType;
 /**
  * Created by Gemin on 10.04.2017.
  */
-public abstract class Skills {
+public class Skill {
 
     private String name;
     private Attributes associatedAttribute;
@@ -16,7 +16,7 @@ public abstract class Skills {
     private int experience;
     private int experienceToNextLevel;
 
-    public Skills(String name, Attributes associatedAttribute, String description, SkillType skilltype) {
+    public Skill(String name, Attributes associatedAttribute, String description, SkillType skilltype) {
         this.name = name;
         this.associatedAttribute = associatedAttribute;
         this.description = description;

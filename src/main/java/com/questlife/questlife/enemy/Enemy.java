@@ -5,16 +5,22 @@ import main.java.com.questlife.questlife.util.AttackType;
 /**
  * Created by Gemin on 10.04.2017.
  */
-public abstract class Enemy {
+public class Enemy {
 
     private String name;
+    private int health;
     private int attackPower;
     private int defense;
     private int resistance;
     private AttackType attackType;
 
-    public Enemy(String name, int attackPower, int defense, int resistance, AttackType attackType) {
+    Enemy() {
+
+    }
+
+    public Enemy(String name,int health, int attackPower, int defense, int resistance, AttackType attackType) {
         this.name = name;
+        this.health = health;
         this.attackPower = attackPower;
         this.defense = defense;
         this.resistance = resistance;
@@ -59,5 +65,12 @@ public abstract class Enemy {
 
     public void setAttackType(AttackType attackType) {
         this.attackType = attackType;
+    }
+
+    public int getHealth() {
+        return health;
+    }
+    public void setHealth(int health) {
+        this.health = health;
     }
 }

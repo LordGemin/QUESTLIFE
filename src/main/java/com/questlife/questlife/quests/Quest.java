@@ -3,7 +3,7 @@ package main.java.com.questlife.questlife.quests;
 /**
  * Created by Gemin on 10.04.2017.
  */
-public abstract class Quests {
+public abstract class Quest {
 
     private String name;
     private String description;
@@ -11,7 +11,7 @@ public abstract class Quests {
     private int rewardExp;
     private int rewardGold;
 
-    public Quests(String name, String description, int mobsToHunt, int rewardExp, int rewardGold) {
+    public Quest(String name, String description, int mobsToHunt, int rewardExp, int rewardGold) {
         this.name = name;
         this.description = description;
         this.mobsToHunt = mobsToHunt;

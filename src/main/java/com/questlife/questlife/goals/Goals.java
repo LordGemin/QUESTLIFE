@@ -1,6 +1,6 @@
 package main.java.com.questlife.questlife.goals;
 
-import main.java.com.questlife.questlife.skills.Skills;
+import main.java.com.questlife.questlife.skills.Skill;
 import java.util.Date;
 
 /**
@@ -13,11 +13,11 @@ public abstract class Goals {
     private String name;
     private int amountOfWork;
     private int complexity;
-    private Skills[] associatedSkills;
+    private Skill[] associatedSkills;
     private Goals overarchingGoal;
 
     public Goals(Date deadline, Date duration, String name, int amountOfWork,
-                 int complexity, Skills[] associatedSkills, Goals overarchingGoal) {
+                 int complexity, Skill[] associatedSkills, Goals overarchingGoal) {
         this.deadline = deadline;
         this.duration = duration;
         this.name = name;
@@ -67,11 +67,11 @@ public abstract class Goals {
         this.complexity = complexity;
     }
 
-    public Skills[] getAssociatedSkills() {
+    public Skill[] getAssociatedSkills() {
         return associatedSkills;
     }
 
-    public void setAssociatedSkills(Skills[] associatedSkills) {
+    public void setAssociatedSkills(Skill[] associatedSkills) {
         this.associatedSkills = associatedSkills;
     }
 
