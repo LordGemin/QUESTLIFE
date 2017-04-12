@@ -19,6 +19,11 @@ public class BattleTest {
 
 
     @Test
+    public void fullBattle() throws Exception {
+        //TODO: Implement
+    }
+
+    @Test
     public void runTurn() throws Exception {
         player.createHero();
         player.getPlayerHero().changeWeapon(new Weapon("Wooden Stick",10,10,AttackType.PHYSICAL));

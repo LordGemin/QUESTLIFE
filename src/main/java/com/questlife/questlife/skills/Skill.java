@@ -78,4 +78,18 @@ public class Skill {
     public void setExperienceToNextLevel(int experienceToNextLevel) {
         this.experienceToNextLevel = experienceToNextLevel;
     }
+
+    private void levelUp() {
+        this.level++;
+        this.experienceToNextLevel = experienceToNextLevel + 1000+100*Math.round(level/10);
+        //TODO: Rethink this formula
+    }
+
+    public void gainExperience(int experienceGained) {
+        this.experience += experienceGained;
+        while (this.experience >= this.experienceToNextLevel) {
+            levelUp();
+            //TODO: Message to Player. Congrats or something
+        }
+    }
 }
