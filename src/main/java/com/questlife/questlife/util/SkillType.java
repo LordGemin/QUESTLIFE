@@ -1,6 +1,7 @@
 package main.java.com.questlife.questlife.util;
 
 /**
+ *
  * Created by Gemin on 10.04.2017.
  */
 public enum SkillType {
@@ -10,6 +11,11 @@ public enum SkillType {
 
     SkillType(String value) {
         fieldDescription = value;
+    }
+    
+    @Override
+    public String toString() {
+        return fieldDescription;
     }
 
     public String getFieldDescription() {

@@ -7,10 +7,13 @@ import main.java.com.questlife.questlife.player.Player;
 import main.java.com.questlife.questlife.util.AttackType;
 import main.java.com.questlife.questlife.util.Generator;
 
+import java.io.Serializable;
+
 /**
+ *
  * Created by Gemin on 11.04.2017.
  */
-public class Game {
+public class Game implements Serializable{
     private Inventory inventory;
     private Player player;
     private Enemy[] enemies;
@@ -31,7 +34,7 @@ public class Game {
         return enemies;
     }
 
-    public void initializeGame(int diversity) {
+    private void initializeGame(int diversity) {
         createEnemies(diversity);
         createInventory();
         createPlayer();

@@ -4,6 +4,7 @@ import main.java.com.questlife.questlife.enemy.Enemy;
 import main.java.com.questlife.questlife.hero.Hero;
 
 /**
+ *
  * Created by Gemin on 11.04.2017.
  */
 public abstract class AbstractBattle {
@@ -57,24 +58,10 @@ public abstract class AbstractBattle {
 
 
     /**
-     * A turn is compromised from a Hero attack and an Enemy attack.
+     *
+     * A turn is compromised from a Hero dealDamage and an Enemy dealDamage.
+     * The hero will take potions if needed.
      */
     abstract void runTurn();
-
-    /**
-     * This method is used to calculate the damage dealt to an enemy by an attack from the hero.
-     * It uses the attack type of the hero, the damage they would deal and the defense stat from the enemy
-     * @param attacker receives an Hero object to use in calculations
-     * @param defender receives an Enemy object to use in calculations
-     */
-    abstract void dealDamage(Hero attacker, Enemy defender);
-
-    /**
-     * This method is used to calculate the damage dealt to the Hero by an attack from an Enemy.
-     * It uses the attack type of the Enemy, the damage it would deal and the appropriate defense stat from the Hero
-     * @param attacker receives an Hero object to use in calculations
-     * @param defender receives an Enemy object to use in calculations
-     */
-    abstract void receiveDamage(Enemy attacker, Hero defender);
 
 }

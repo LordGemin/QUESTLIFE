@@ -3,18 +3,21 @@ package main.java.com.questlife.questlife.skills;
 import main.java.com.questlife.questlife.util.Attributes;
 import main.java.com.questlife.questlife.util.SkillType;
 
+import java.io.Serializable;
+
 /**
+ *
  * Created by Gemin on 10.04.2017.
  */
-public class Skill {
+public class Skill implements Serializable{
 
     private String name;
     private Attributes associatedAttribute;
     private String description;
     private SkillType skilltype;
-    private int level;
-    private int experience;
-    private int experienceToNextLevel;
+    private Integer level;
+    private Integer experience;
+    private Integer experienceToNextLevel;
 
     public Skill(String name, Attributes associatedAttribute, String description, SkillType skilltype) {
         this.name = name;

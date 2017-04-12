@@ -1,11 +1,15 @@
 package main.java.com.questlife.questlife.enemy;
 
+import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.util.AttackType;
 
+import java.io.Serializable;
+
 /**
+ *
  * Created by Gemin on 10.04.2017.
  */
-public class Enemy {
+public class Enemy implements Serializable {
 
     private String name;
     private int health;
@@ -70,7 +74,17 @@ public class Enemy {
     public int getHealth() {
         return health;
     }
+
     public void setHealth(int health) {
         this.health = health;
+    }
+
+    public void dealDamage(Hero attackedHero) {
+        int damageDealt = this.getAttackPower()-attackedHero.getDefense();
+        attackedHero.takeDamage(damageDealt);
+    }
+
+    public void takeDamage(int damageDealt) {
+        this.setHealth(this.getHealth()-damageDealt);
     }
 }

@@ -3,10 +3,13 @@ package main.java.com.questlife.questlife.rewards;
 import main.java.com.questlife.questlife.skills.Skill;
 import main.java.com.questlife.questlife.util.RewardType;
 
+import java.io.Serializable;
+
 /**
+ *
  * Created by Gemin on 10.04.2017.
  */
-public abstract class abstractReward {
+public abstract class abstractReward implements Serializable{
 
     private String name;
     private RewardType rewardType;

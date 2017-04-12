@@ -1,9 +1,12 @@
 package main.java.com.questlife.questlife.items;
 
+import java.io.Serializable;
+
 /**
+ *
  * Created by Gemin on 10.04.2017.
  */
-public abstract class AbstractItems {
+public abstract class AbstractItems implements Serializable {
 
     String name;
     int price;

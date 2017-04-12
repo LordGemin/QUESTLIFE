@@ -5,6 +5,7 @@ import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.util.AttackType;
 
 /**
+ *
  * Created by Gemin on 11.04.2017.
  */
 public class Battle extends AbstractBattle {
@@ -42,37 +43,20 @@ public class Battle extends AbstractBattle {
             }
         }
 
-        // Always try to survive at least the first attack, approximate total damage
+        // Always try to survive at least the first dealDamage, approximate total damage
         int criticalHealth = getParticipatingEnemyAt(enemyPosition).getAttackPower()*getParticipatingEnemies().length;
 
-        //TODO: Find the amount of mana that should be used on attack.
+        //TODO: Find the amount of mana that should be used on dealDamage.
         int criticalMana = (hero.getWeapon().getAttackType() == AttackType.MAGICAL) ? hero.getAttack()/100 : 0;
 
         if(hero.getHealth() < criticalHealth || hero.getMana() < criticalMana ) {
             hero.takePotion();
         } else {
-            dealDamage(hero, getParticipatingEnemyAt(enemyPosition));
+            hero.dealDamage(getParticipatingEnemyAt(enemyPosition));
         }
         for(int i = 0; i < getParticipatingEnemies().length; i++) {
-            receiveDamage(getParticipatingEnemyAt(i), hero);
+            getParticipatingEnemyAt(i).dealDamage(hero);
         }
     }
 
-    @Override
-    public void dealDamage(Hero attacker, Enemy defender) {
-        int baseDamage = attacker.getAttack();
-        int defense = defender.getDefense();
-        int health = defender.getHealth();
-
-        defender.setHealth(health-(baseDamage-defense));
-    }
-
-    @Override
-    public void receiveDamage(Enemy attacker, Hero defender) {
-        int baseDamage = attacker.getAttackPower();
-        int defense = defender.getDefense();
-        int health = defender.getHealth();
-
-        defender.setHealth(health-(baseDamage-defense));
-    }
 }
