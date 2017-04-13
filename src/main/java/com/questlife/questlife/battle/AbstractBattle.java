@@ -3,6 +3,9 @@ package main.java.com.questlife.questlife.battle;
 import main.java.com.questlife.questlife.enemy.Enemy;
 import main.java.com.questlife.questlife.hero.Hero;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * Created by Gemin on 11.04.2017.
@@ -10,7 +13,7 @@ import main.java.com.questlife.questlife.hero.Hero;
 public abstract class AbstractBattle {
 
     private Hero participatingHero;
-    private Enemy[] participatingEnemies;
+    private List<Enemy> participatingEnemies = new ArrayList<>();
     int turnCounter;
     /* Do we need these variables? We can read all of them from the Hero and Enemy objects... theoretically
     private int damageHero, healthHero, defenseHero, resistanceHero, manaHero;
@@ -22,11 +25,11 @@ public abstract class AbstractBattle {
         this.participatingHero = participatingHero;
     }
 
-    public AbstractBattle(Enemy[] participatingEnemies) {
+    public AbstractBattle(List<Enemy> participatingEnemies) {
         this.participatingEnemies = participatingEnemies;
     }
 
-    public AbstractBattle(Hero participatingHero, Enemy[] participatingEnemies) {
+    public AbstractBattle(Hero participatingHero, List<Enemy> participatingEnemies) {
         this.participatingHero = participatingHero;
         this.participatingEnemies = participatingEnemies;
     }
@@ -39,22 +42,26 @@ public abstract class AbstractBattle {
         this.participatingHero = participatingHero;
     }
 
-    public Enemy[] getParticipatingEnemies() {
+    public List<Enemy> getParticipatingEnemies() {
         return participatingEnemies;
     }
 
     public Enemy getParticipatingEnemyAt (int position) {
-        return participatingEnemies[position];
+        return participatingEnemies.get(position);
     }
 
-    public void setParticipatingEnemies(Enemy[] participatingEnemies) {
+    public void setParticipatingEnemies(List<Enemy> participatingEnemies) {
         this.participatingEnemies = participatingEnemies;
+    }
+
+    public void addEnemy(Enemy enemy) {
+        participatingEnemies.add(enemy);
     }
 
     /**
      * Defines all parameters and fills the remaining variables.
      */
-    abstract void initialiseBattle ();
+    abstract void runBattle();
 
 
     /**

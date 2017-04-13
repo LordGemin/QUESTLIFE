@@ -1,6 +1,7 @@
 package main.java.com.questlife.questlife.player;
 
 import main.java.com.questlife.questlife.hero.Hero;
+import main.java.com.questlife.questlife.quests.Quest;
 import main.java.com.questlife.questlife.rewards.Reward;
 import main.java.com.questlife.questlife.skills.Skill;
 
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ *
  * Created by Gemin on 10.04.2017.
  */
 public class Player {
@@ -78,4 +80,12 @@ public class Player {
         Hero hero = new Hero(this,"", null);
         playerHero = hero;
     }
+
+    public void sendHeroOnQuest(Quest quest) {
+        if(playerHero.getQuestList().contains(quest)) {
+            playerHero.setActiveQuest(quest);
+            quest.setAsActive();
+        }
+    }
+
 }

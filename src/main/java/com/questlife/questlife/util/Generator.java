@@ -54,4 +54,15 @@ public class Generator {
 
         return generatedName;
     }
+
+    public String generateShopNames() {
+        String generatedName;
+
+        String[] prefixes = {"To the ", "The "};
+        String[] suffixes = {"Stripped Carp", "Nosey Horses", "Curious Path", "Mannered Bane"};
+
+        generatedName = prefixes[generateNumber() % prefixes.length];
+        generatedName += suffixes[generateNumber() % suffixes.length];
+        return generatedName;
+    }
 }

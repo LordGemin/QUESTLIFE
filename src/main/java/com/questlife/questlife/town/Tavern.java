@@ -8,8 +8,11 @@ import main.java.com.questlife.questlife.hero.Hero;
  */
 public class Tavern extends AbstractBuilding {
 
-    private String name;
-    private int cost;
+    private Integer cost;
+
+    public Tavern() {
+
+    }
 
     public Tavern(String name, int cost) {
         this.name = name;

@@ -4,6 +4,7 @@ import main.java.com.questlife.questlife.util.AttackType;
 import main.java.com.questlife.questlife.util.Generator;
 
 /**
+ *
  * Created by Gemin on 10.04.2017.
  */
 public class Weapon extends AbstractItems {

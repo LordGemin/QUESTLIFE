@@ -7,6 +7,8 @@ import main.java.com.questlife.questlife.player.Player;
 import main.java.com.questlife.questlife.util.AttackType;
 import org.junit.Test;
 
+import static org.junit.Assert.assertTrue;
+
 
 /**
  *
@@ -14,39 +16,44 @@ import org.junit.Test;
  */
 public class BattleTest {
 
-    private Game game = new Game(10);
+
+    private Game game = new Game(1);
     private Player player=game.getPlayer();
 
 
     @Test
-    public void fullBattle() throws Exception {
-        //TODO: Implement
+    public void runBattle() throws Exception {
+        player.createHero();
+        player.getPlayerHero().changeWeapon(new Weapon("Wooden Stick",10,10,AttackType.PHYSICAL));
+        Battle battle = new Battle(player.getPlayerHero());
+        battle.addEnemy(game.getEnemies()[0]);
+        player.getPlayerHero().setMaxHealth(100);
+        player.getPlayerHero().setHealth(100);
+        player.getPlayerHero().setMaxMana(100);
+        player.getPlayerHero().setMana(100);
+        battle.getParticipatingHero().setStrength(-5);
+        battle.runBattle();
+
+        assertTrue(battle.getParticipatingEnemies().size()==0);
+
     }
 
     @Test
     public void runTurn() throws Exception {
         player.createHero();
         player.getPlayerHero().changeWeapon(new Weapon("Wooden Stick",10,10,AttackType.PHYSICAL));
-        Battle battle = new Battle(player.getPlayerHero(), game.getEnemies());
-        log("Start comprehensive battle test");
+        Battle battle = new Battle(player.getPlayerHero());
+        battle.addEnemy(game.getEnemies()[0]);
+        player.getPlayerHero().setMaxHealth(100);
         player.getPlayerHero().setHealth(100);
+        player.getPlayerHero().setMaxMana(100);
+        player.getPlayerHero().setMana(100);
         battle.getParticipatingHero().setStrength(-5);
-        while(battle.getParticipatingEnemyAt(0).getHealth() >= 0 && battle.getParticipatingHero().getHealth() >= 0) {
+        while(battle.getParticipatingEnemies().size() > 0 && battle.getParticipatingHero().getHealth() > 0) {
             battle.runTurn();
-            log (battle.getParticipatingEnemyAt(0).getHealth());
-            log (battle.getParticipatingHero().getHealth());
         }
+        assertTrue(battle.getParticipatingEnemies().size()==0);
     }
 
-    private void log (String out) {
-        System.out.println(out);
-    }
 
-    private void log (int out) {
-        System.out.println(out);
-    }
-
-    private void log (String out, int outInt) {
-        log(out+outInt);
-    }
 }

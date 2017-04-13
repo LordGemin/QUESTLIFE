@@ -14,7 +14,8 @@ public class StatCalculator {
 
     public int calculateHeroesDefense(Hero hero) {
         int baseValue = hero.getStrength();
-        Weapon heroWeapon = hero.getWeapon();
+        //If hero has no weapon equipped, give him nonsense weapon;
+        Weapon heroWeapon = (hero.getWeapon() != null) ? hero.getWeapon() : new Weapon("Bare knuckle", 0,0,AttackType.PHYSICAL);
 
         baseValue += Math.round(heroWeapon.getPhysicalAttack()/10);
 
@@ -23,7 +24,8 @@ public class StatCalculator {
 
     public int calculateHeroesResistance(Hero hero) {
         int baseValue = hero.getMind();
-        Weapon heroWeapon = hero.getWeapon();
+        //If hero has no weapon equipped, give him nonsense weapon;
+        Weapon heroWeapon = (hero.getWeapon() != null) ? hero.getWeapon() : new Weapon("Bare knuckle", 0,0,AttackType.PHYSICAL);
 
         baseValue += Math.round(heroWeapon.getMagicalAttack()/15);
 
@@ -32,16 +34,10 @@ public class StatCalculator {
 
     public int calculateHeroesAttack(Hero hero) {
         int attackValue;
-        Weapon heroWeapon;
-        try {
-            heroWeapon = hero.getWeapon();
-        } catch (Exception e) {
-            heroWeapon = new Weapon("", 0,0,null);
-        }
+        //If hero has no weapon equipped, give him nonsense weapon;
+        Weapon heroWeapon = (hero.getWeapon() != null) ? hero.getWeapon() : new Weapon("Bare knuckle", 0,0,AttackType.PHYSICAL);
 
-        if(heroWeapon.getAttackType() == null) {
-            attackValue = 10;
-        } else if (heroWeapon.getAttackType() == AttackType.PHYSICAL) {
+        if (heroWeapon.getAttackType() == AttackType.PHYSICAL) {
             attackValue = hero.getStrength();
             attackValue += heroWeapon.getPhysicalAttack();
         } else if (heroWeapon.getAttackType() == AttackType.MAGICAL) {

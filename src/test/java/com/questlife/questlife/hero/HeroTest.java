@@ -14,23 +14,43 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 /**
+ *
  * Created by Gemin on 11.04.2017.
  */
 public class HeroTest {
 
-    Game game = new Game(10);
+    private Game game = new Game(10);
     private Player player=game.getPlayer();
 
     @Test
     public void getDefense() throws Exception {
+        player.createHero();
+        Hero hero = player.getPlayerHero();
+        hero.setStrength(20);
+        assertEquals(40,hero.getDefense());
     }
 
     @Test
     public void getResistance() throws Exception {
+        player.createHero();
+        Hero hero = player.getPlayerHero();
+        hero.changeWeapon(new Weapon("Wooden Stick",10,30, AttackType.PHYSICAL));
+        hero.setMind(20);
+        assertEquals(66,hero.getResistance());
     }
 
     @Test
     public void getAttack() throws Exception {
+        player.createHero();
+        Hero hero = player.getPlayerHero();
+        hero.setStrength(20);
+        assertEquals(20,hero.getAttack());
+
+        player.createHero();
+        hero = player.getPlayerHero();
+        hero.changeWeapon(new Weapon("Wooden Stick",10,30, AttackType.MAGICAL));
+        hero.setMind(20);
+        assertEquals(50,hero.getAttack());
     }
 
     @Test
@@ -72,54 +92,35 @@ public class HeroTest {
         player.getPlayerHero().setExperienceToNextLevel(3000);
         player.getPlayerHero().changeWeapon(new Weapon("Wooden Stick",10,10, AttackType.PHYSICAL));
 
-        log("Hero Level: ", player.getPlayerHero().getLevel());
-        log("Hero Experience: ", player.getPlayerHero().getExperience());
-        log("Hero Experience to next level: ", player.getPlayerHero().getExperienceToNextLevel());
+        // Giving him more than enough to reach 48
         player.getPlayerHero().gainExperience(54300);
-        log("Hero Experience to next level: ", player.getPlayerHero().getExperienceToNextLevel());
-        log("Hero Level: ", player.getPlayerHero().getLevel());
 
         assertEquals(player.getPlayerHero().getLevel(), 48);
     }
 
     @Test
     public void takePotion() throws Exception {
+        int potionsToGenerate = 3000;
         player.createHero();
         Hero hero = player.getPlayerHero();
-        hero.setMaxHealth(20000);
-        hero.setMaxMana(10000);
+        hero.setMaxHealth(potionsToGenerate*5);
+        hero.setMaxMana(potionsToGenerate*3);
         hero.setHealth(10);
         hero.setMana(10);
 
-        Generator generator = new Generator();
-
-        for(int i = 0; i < 3000; i++) {
+        for(int i = 0; i < potionsToGenerate; i++) {
             Potion potion = new Potion();
             player.getInventory().addPotion(potion);
-            //log("Generated: "+potion.getName());
         }
 
-        log("");
-        log("Hero HP: ", hero.getHealth());
-        log("Hero MP: ", hero.getMana());
-        log("Taking potions....");
-        hero.takePotion();
-        log("Hero HP: ", hero.getHealth());
-        log("Hero MP: ", hero.getMana());
-
-        List<Potion> potions = player.getInventory().getPotionsInInventory();
+        if(hero.takePotion()<=potionsToGenerate && hero.getHealth()==hero.getMaxHealth() && hero.getMana()==hero.getMaxMana()) {
+            assertTrue(true);
+        }
 
     }
 
-    void log (String out) {
+    private void log (String out) {
         System.out.println(out);
-    }
-    void log (int out) {
-        System.out.println(out);
-    }
-
-    void log (String out, int outInt) {
-        log(out+outInt);
     }
 
 }

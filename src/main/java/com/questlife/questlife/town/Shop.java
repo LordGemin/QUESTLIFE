@@ -4,7 +4,6 @@ import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.items.AbstractItems;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -13,7 +12,6 @@ import java.util.List;
  */
 public class Shop extends AbstractBuilding {
 
-    private String name;
     private List<AbstractItems> itemsList = new ArrayList<>();
 
     public Shop() {
@@ -43,6 +41,10 @@ public class Shop extends AbstractBuilding {
 
     public void setItemsList(List<AbstractItems> itemsList) {
         this.itemsList = itemsList;
+    }
+
+    public void addItem(AbstractItems item) {
+        itemsList.add(item);
     }
 
     public int getPriceOfItemAt(int position) {

@@ -11,8 +11,8 @@ import main.java.com.questlife.questlife.util.Generator;
  */
 public class Potion extends AbstractItems {
 
-    private int strengthHP;
-    private int strengthMP;
+    private Integer strengthHP;
+    private Integer strengthMP;
 
     public Potion() {
         generatePotion();

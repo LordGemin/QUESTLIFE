@@ -1,19 +1,32 @@
 package main.java.com.questlife.questlife.quests;
 
+import main.java.com.questlife.questlife.enemy.Enemy;
+import main.java.com.questlife.questlife.hero.Hero;
+
+import java.io.Serializable;
+
 /**
+ *
  * Created by Gemin on 10.04.2017.
  */
-public abstract class Quest {
+public class Quest implements Serializable{
 
     private String name;
     private String description;
-    private int mobsToHunt;
-    private int rewardExp;
-    private int rewardGold;
+    private Enemy enemyType;
+    private Integer mobsToHunt;
+    private Integer rewardExp;
+    private Integer rewardGold;
+    private Boolean isActive = false;
 
-    public Quest(String name, String description, int mobsToHunt, int rewardExp, int rewardGold) {
+    public Quest() {
+
+    }
+
+    public Quest(String name, String description, Enemy enemyType, int mobsToHunt, int rewardExp, int rewardGold) {
         this.name = name;
         this.description = description;
+        this.enemyType = enemyType;
         this.mobsToHunt = mobsToHunt;
         this.rewardExp = rewardExp;
         this.rewardGold = rewardGold;
@@ -37,5 +50,23 @@ public abstract class Quest {
 
     public int getRewardGold() {
         return rewardGold;
+    }
+
+    public int countEnemyKilled(Enemy enemy) {
+        if(!isActive) {
+            return mobsToHunt;
+        }
+        if(enemy.getName().equals(enemyType.getName())) {
+            mobsToHunt -= 1;
+        }
+        return mobsToHunt;
+    }
+
+    public void setAsActive() {
+        isActive = true;
+    }
+
+    public void setInactive() {
+        isActive = false;
     }
 }

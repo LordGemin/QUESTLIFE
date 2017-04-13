@@ -5,9 +5,11 @@ import main.java.com.questlife.questlife.items.Potion;
 import main.java.com.questlife.questlife.items.Weapon;
 import main.java.com.questlife.questlife.player.Inventory;
 import main.java.com.questlife.questlife.player.Player;
+import main.java.com.questlife.questlife.quests.Quest;
 import main.java.com.questlife.questlife.util.StatCalculator;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,27 +21,31 @@ public class Hero implements Serializable {
 
     private String name;
     private Player player;
-    private int maxHealth;
-    private int health;
-    private int maxMana;
-    private int mana;
-    private int strength;
-    private int dexterity;
-    private int mind;
-    private int charisma;
-    private int constitution;
-    private int piety;
-    private int observation;
-    private int level;
-    private int experience;
-    private int experienceToNextLevel;
-    private int gold;
+    private Integer maxHealth;
+    private Integer health;
+    private Integer maxMana;
+    private Integer mana;
+    private Integer strength;
+    private Integer dexterity;
+    private Integer mind;
+    private Integer charisma;
+    private Integer constitution;
+    private Integer piety;
+    private Integer observation;
+    private Integer level;
+    private Integer experience;
+    private Integer experienceToNextLevel;
+    private Integer gold;
     private Weapon weapon;
+    private Quest activeQuest;
 
     private StatCalculator statCalculator = new StatCalculator();
+    private List<Quest> questList = new ArrayList<>();
 
 
-    Hero() {}
+    public Hero() {
+
+    }
 
     public Hero (Player player, String name, Weapon weapon) {
         this.player = player;
@@ -179,6 +185,35 @@ public class Hero implements Serializable {
         this.gold = gold;
     }
 
+    public Quest getActiveQuest() {
+        return activeQuest;
+    }
+
+    public void setActiveQuest(Quest activeQuest) {
+        this.activeQuest = activeQuest;
+    }
+
+    public List<Quest> getQuestList() {
+        return questList;
+    }
+
+    public void setQuestList(List<Quest> questList) {
+        this.questList = questList;
+    }
+
+    public void addQuest(Quest quest) {
+        questList.add(quest);
+    }
+
+    public void completeQuest() {
+        //TODO: Notify player.
+        gainGold(activeQuest.getRewardGold());
+        gainExperience(activeQuest.getRewardExp());
+        getQuestList().remove(activeQuest);
+        activeQuest.setInactive();
+        activeQuest = null;
+    }
+
     public int getDefense(){
         int defense;
 
@@ -215,7 +250,11 @@ public class Hero implements Serializable {
     }
 
     public void gainExperience(int experienceGained) {
-        this.experience += experienceGained;
+        try {
+            this.experience = experienceGained + experience;
+        } catch (NullPointerException e) {
+            this.experience = experienceGained;
+        }
         while (this.experience >= this.experienceToNextLevel) {
             levelUp();
             //TODO: Message to Player. Congrats or something
@@ -223,14 +262,19 @@ public class Hero implements Serializable {
     }
 
     public void gainGold(int goldGained) {
-        this.gold += goldGained;
+        try {
+            this.gold = gold + goldGained;
+        } catch (NullPointerException e) {
+            this.gold = goldGained;
+        }
     }
 
-    public void takePotion() {
+    public int takePotion() {
         int needHP = maxHealth-health;
         int needMP = maxMana-mana;
         int healthGotten = 0;
         int manaGotten = 0;
+        int potionCounter = 0;
 
         Inventory inv = player.getInventory();
         List<Potion> potions = inv.getPotionsInInventory();
@@ -241,9 +285,8 @@ public class Hero implements Serializable {
             //Take all potions until full health
             if (healthGotten < needHP && identifier.endsWith("Potion")) {
                 healthGotten += potion.getStrengthHP();
-                System.out.println("Taking: " + identifier + " to heal.");
-                System.out.println("I have healed: " + healthGotten + " HP so far.");
-                inv.getItemsInInventory().remove(potion);
+                takePotion(potion);
+                potionCounter++;
             } else if (identifier.endsWith("Potion")) {
                 healthGotten = needHP;
                 continue;
@@ -252,20 +295,14 @@ public class Hero implements Serializable {
             //Take all elixirs until full mana
             if (manaGotten < needMP && identifier.endsWith("Elixir")) {
                 manaGotten += potion.getStrengthMP();
-                System.out.println("Taking: " + identifier + " to regenerate mana.");
-                System.out.println("I have regenerated: " + manaGotten + " MP so far.");
-                inv.getItemsInInventory().remove(potion);
+                takePotion(potion);
+                potionCounter++;
             } else if (identifier.endsWith("Elixir")) {
                 manaGotten = needMP;
-                continue;
             }
-            System.out.println();
         }
 
-        this.health += healthGotten;
-        this.mana += manaGotten;
-        System.out.println("After all these potions, there are "+inv.getPotionsInInventory().size()+" Potions left.");
-        player.getInventory().setItemsInInventory(inv.getItemsInInventory());
+        return potionCounter;
     }
 
     public void takePotion (Potion potionToTake) {
@@ -283,7 +320,6 @@ public class Hero implements Serializable {
         
         this.health += potionToTake.getStrengthHP();
         this.mana += potionToTake.getStrengthMP();
-        
     }
 
     public void takeDamage(int damageDealt) {
@@ -293,6 +329,18 @@ public class Hero implements Serializable {
     public void dealDamage(Enemy enemy) {
         int damageDealt = this.getAttack()-enemy.getDefense();
         enemy.takeDamage(damageDealt);
+        if (enemy.getHealth() <= 0) {
+            try {
+                if (activeQuest.countEnemyKilled(enemy) <= 0) {
+                    completeQuest();
+                }
+            } catch (NullPointerException e) {
+                /*
+                TODO: There is no assigned quest anymore, or ever was.
+                Should we then ignore the obvious error? What is justice even.
+                */
+            }
+        }
     }
 
     public boolean spendGold(int cost) {
@@ -302,4 +350,5 @@ public class Hero implements Serializable {
         }
         return false;
     }
+
 }
