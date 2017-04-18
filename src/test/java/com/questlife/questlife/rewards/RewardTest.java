@@ -2,8 +2,7 @@ package test.java.com.questlife.questlife.rewards;
 
 import main.java.com.questlife.questlife.rewards.Reward;
 import main.java.com.questlife.questlife.skills.Skill;
-import main.java.com.questlife.questlife.util.AttackType;
-import main.java.com.questlife.questlife.util.Attributes;
+import main.java.com.questlife.questlife.hero.Attributes;
 import main.java.com.questlife.questlife.util.RewardType;
 import main.java.com.questlife.questlife.util.SkillType;
 import org.junit.Test;

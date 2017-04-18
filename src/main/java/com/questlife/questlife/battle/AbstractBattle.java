@@ -14,6 +14,7 @@ public abstract class AbstractBattle {
 
     private Hero participatingHero;
     private List<Enemy> participatingEnemies = new ArrayList<>();
+    int goldGained;
     int turnCounter;
     /* Do we need these variables? We can read all of them from the Hero and Enemy objects... theoretically
     private int damageHero, healthHero, defenseHero, resistanceHero, manaHero;

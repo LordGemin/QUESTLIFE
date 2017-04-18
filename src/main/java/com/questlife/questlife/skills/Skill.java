@@ -1,6 +1,6 @@
 package main.java.com.questlife.questlife.skills;
 
-import main.java.com.questlife.questlife.util.Attributes;
+import main.java.com.questlife.questlife.hero.Attributes;
 import main.java.com.questlife.questlife.util.SkillType;
 
 import java.io.Serializable;
@@ -86,6 +86,7 @@ public class Skill implements Serializable{
         this.level++;
         this.experienceToNextLevel = experienceToNextLevel + 1000+100*Math.round(level/10);
         //TODO: Rethink this formula
+        associatedAttribute.levelUp();
     }
 
     public void gainExperience(int experienceGained) {

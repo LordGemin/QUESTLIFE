@@ -6,11 +6,12 @@ import main.java.com.questlife.questlife.items.Weapon;
 import main.java.com.questlife.questlife.player.Inventory;
 import main.java.com.questlife.questlife.player.Player;
 import main.java.com.questlife.questlife.quests.Quest;
+import main.java.com.questlife.questlife.util.AttackType;
+import main.java.com.questlife.questlife.util.Generator;
 import main.java.com.questlife.questlife.util.StatCalculator;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -21,17 +22,8 @@ public class Hero implements Serializable {
 
     private String name;
     private Player player;
-    private Integer maxHealth;
     private Integer health;
-    private Integer maxMana;
     private Integer mana;
-    private Integer strength;
-    private Integer dexterity;
-    private Integer mind;
-    private Integer charisma;
-    private Integer constitution;
-    private Integer piety;
-    private Integer observation;
     private Integer level;
     private Integer experience;
     private Integer experienceToNextLevel;
@@ -66,31 +58,31 @@ public class Hero implements Serializable {
     }
 
     public int getStrength() {
-        return strength;
+        return Attributes.STRENGTH.getLevel();
     }
 
     public int getDexterity() {
-        return dexterity;
+        return Attributes.DEXTERITY.getLevel();
     }
 
     public int getMind() {
-        return mind;
+        return Attributes.MIND.getLevel();
     }
 
     public int getCharisma() {
-        return charisma;
+        return Attributes.CHARISMA.getLevel();
     }
 
     public int getConstitution() {
-        return constitution;
+        return Attributes.CONSTITUTION.getLevel();
     }
 
     public int getPiety() {
-        return piety;
+        return Attributes.PIETY.getLevel();
     }
 
     public int getObservation() {
-        return observation;
+        return Attributes.OBSERVATION.getLevel();
     }
 
     public Weapon getWeapon() {
@@ -106,31 +98,31 @@ public class Hero implements Serializable {
     }
 
     public void setStrength(int strength) {
-        this.strength = strength;
+        Attributes.STRENGTH.setLevel(strength);
     }
 
     public void setDexterity(int dexterity) {
-        this.dexterity = dexterity;
+        Attributes.DEXTERITY.setLevel(dexterity);
     }
 
     public void setMind(int mind) {
-        this.mind = mind;
+        Attributes.MIND.setLevel(mind);
     }
 
     public void setCharisma(int charisma) {
-        this.charisma = charisma;
+        Attributes.CHARISMA.setLevel(charisma);
     }
 
     public void setConstitution(int constitution) {
-        this.constitution = constitution;
+        Attributes.CONSTITUTION.setLevel(constitution);
     }
 
     public void setPiety(int piety) {
-        this.piety = piety;
+        Attributes.PIETY.setLevel(piety);
     }
 
     public void setObservation(int observation) {
-        this.observation = observation;
+        Attributes.OBSERVATION.setLevel(observation);
     }
 
     private void setWeapon (Weapon weapon) {
@@ -162,20 +154,13 @@ public class Hero implements Serializable {
     }
 
     public int getMaxHealth() {
-        return maxHealth;
-    }
-
-    public void setMaxHealth(int maxHealth) {
-        this.maxHealth = maxHealth;
+        return statCalculator.getMaxHealth(this);
     }
 
     public int getMaxMana() {
-        return maxMana;
+        return statCalculator.getMaxMana(this);
     }
 
-    public void setMaxMana(int maxMana) {
-        this.maxMana = maxMana;
-    }
 
     public int getGold() {
         return gold;
@@ -270,8 +255,8 @@ public class Hero implements Serializable {
     }
 
     public int takePotion() {
-        int needHP = maxHealth-health;
-        int needMP = maxMana-mana;
+        int needHP = getMaxHealth()-health;
+        int needMP = getMaxMana()-mana;
         int healthGotten = 0;
         int manaGotten = 0;
         int potionCounter = 0;
@@ -308,8 +293,8 @@ public class Hero implements Serializable {
     public void takePotion (Potion potionToTake) {
         player.getInventory().getItemsInInventory().remove(potionToTake);
         
-        int healthNeed = maxHealth - health;
-        int manaNeed = maxMana - mana;
+        int healthNeed = getMaxHealth() - health;
+        int manaNeed = getMaxMana() - mana;
         
         if(healthNeed < potionToTake.getStrengthHP()) { //if the potion provides to much we have to power it down
             potionToTake.setStrengthHP(healthNeed);
@@ -327,8 +312,22 @@ public class Hero implements Serializable {
     }
 
     public void dealDamage(Enemy enemy) {
-        int damageDealt = this.getAttack()-enemy.getDefense();
+        int damageDealt = 0;
+
+        if (weapon.getAttackType() == AttackType.PHYSICAL)
+            damageDealt = this.getAttack()-enemy.getDefense();
+
+        if (weapon.getAttackType() == AttackType.MAGICAL)
+            damageDealt = this.getAttack()-enemy.getResistance();
+
+        int criticalCheck =  new Generator().generateNumber();
+
+        if(getObservation() >= criticalCheck*5)
+            damageDealt *= 2;
+            //TODO: Message to player
+
         enemy.takeDamage(damageDealt);
+
         if (enemy.getHealth() <= 0) {
             try {
                 if (activeQuest.countEnemyKilled(enemy) <= 0) {

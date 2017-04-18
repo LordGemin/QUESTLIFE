@@ -31,6 +31,9 @@ public class Battle extends AbstractBattle {
         while(getParticipatingHero().getHealth() > 0 && getParticipatingEnemies().size() > 0) {
             runTurn();
         }
+        if (getParticipatingHero().getHealth() > 0 ) {
+                getParticipatingHero().gainGold(goldGained);
+        }
     }
 
     @Override
@@ -63,7 +66,8 @@ public class Battle extends AbstractBattle {
         }
         if (getParticipatingEnemyAt(enemyPosition).getHealth() <= 0) {
             getParticipatingEnemies().remove(getParticipatingEnemyAt(enemyPosition));
+            getParticipatingHero().gainExperience(getParticipatingEnemyAt(enemyPosition).getExperieceReward());
+            goldGained += getParticipatingEnemyAt(enemyPosition).getGoldReward() + getParticipatingHero().getObservation()*10 ;
         }
     }
-
 }

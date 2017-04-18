@@ -1,45 +1,61 @@
 package main.java.com.questlife.questlife.goals;
 
 import main.java.com.questlife.questlife.skills.Skill;
-import java.util.Date;
+import main.java.com.questlife.questlife.hero.Attributes;
+import main.java.com.questlife.questlife.util.StatCalculator;
+
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAmount;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
+ *
  * Created by Gemin on 10.04.2017.
  */
-public abstract class Goals {
+public class Goals {
 
-    private Date deadline;
-    private Date duration;
+    private LocalDateTime creation = LocalDateTime.now();
+    private LocalDateTime deadline;
+    private TemporalAmount duration;
     private String name;
-    private int amountOfWork;
-    private int complexity;
-    private Skill[] associatedSkills;
+    private Integer amountOfWork;
+    private Integer complexity;
     private Goals overarchingGoal;
+    private List<Skill> associatedSkills = new ArrayList<>();
+    private List<Goals> subGoals = new ArrayList<>();
+    private Boolean isRecurring = false; //default value
+    private Boolean isComplete = false; //default value
 
-    public Goals(Date deadline, Date duration, String name, int amountOfWork,
-                 int complexity, Skill[] associatedSkills, Goals overarchingGoal) {
+    public Goals() {
+
+    }
+
+    public Goals(LocalDateTime deadline, TemporalAmount duration, String name, int amountOfWork,
+                 int complexity, List<Skill> associatedSkills, List<Goals> subGoals, boolean isRecurring) {
         this.deadline = deadline;
         this.duration = duration;
         this.name = name;
         this.amountOfWork = amountOfWork;
         this.complexity = complexity;
         this.associatedSkills = associatedSkills;
-        this.overarchingGoal = overarchingGoal;
+        this.subGoals = subGoals;
+        this.isRecurring = isRecurring;
     }
 
-    public Date getDeadline() {
+    public LocalDateTime getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(Date deadline) {
+    public void setDeadline(LocalDateTime deadline) {
         this.deadline = deadline;
     }
 
-    public Date getDuration() {
+    public TemporalAmount getDuration() {
         return duration;
     }
 
-    public void setDuration(Date duration) {
+    public void setDuration(TemporalAmount duration) {
         this.duration = duration;
     }
 
@@ -52,7 +68,7 @@ public abstract class Goals {
     }
 
     public int getAmountOfWork() {
-        return amountOfWork;
+        return (amountOfWork== null) ? 0:amountOfWork;
     }
 
     public void setAmountOfWork(int amountOfWork) {
@@ -60,19 +76,11 @@ public abstract class Goals {
     }
 
     public int getComplexity() {
-        return complexity;
+        return (complexity==null) ? 0: complexity;
     }
 
     public void setComplexity(int complexity) {
         this.complexity = complexity;
-    }
-
-    public Skill[] getAssociatedSkills() {
-        return associatedSkills;
-    }
-
-    public void setAssociatedSkills(Skill[] associatedSkills) {
-        this.associatedSkills = associatedSkills;
     }
 
     public Goals getOverarchingGoal() {
@@ -80,6 +88,101 @@ public abstract class Goals {
     }
 
     public void setOverarchingGoal(Goals overarchingGoal) {
+        if(this.overarchingGoal.getSubGoals().contains(this)) {
+            this.overarchingGoal.removeSubGoal(this);
+        }
         this.overarchingGoal = overarchingGoal;
+        overarchingGoal.addSubGoal(this);
     }
+
+    public List<Skill> getAssociatedSkills() {
+        return associatedSkills;
+    }
+
+    public void setAssociatedSkills(List<Skill> associatedSkills) {
+        this.associatedSkills = associatedSkills;
+    }
+
+    public List<Goals> getSubGoals() {
+        return subGoals;
+    }
+
+    public void setSubGoals(List<Goals> subGoals) {
+        this.subGoals = subGoals;
+    }
+
+    public Boolean getRecurring() {
+        return isRecurring;
+    }
+
+    public void setRecurring(Boolean recurring) {
+        isRecurring = recurring;
+    }
+
+    public int getExperienceReward() {
+        StatCalculator statCalculator = new StatCalculator();
+        return statCalculator.getExperienceFromGoal(this);
+    }
+
+    public void addSubGoal(Goals subGoal) {
+        if(subGoal.getOverarchingGoal() == null) {
+            subGoal.setOverarchingGoal(this);
+        } else {
+            subGoals.add(subGoal);
+        }
+    }
+
+    public void removeSubGoal(Goals subGoal) {
+        subGoals.remove(subGoal);
+    }
+
+    public boolean completeGoal(LocalDateTime newDeadline) {
+        LocalDateTime checkDuration = creation.plus(duration);
+        if(getProgress() == 100 && creation.isBefore(LocalDateTime.now())) {
+            if (isRecurring || newDeadline == null) {
+                this.deadline = newDeadline;
+                for (Goals subGoal : subGoals) {
+                    subGoal.completeGoal(newDeadline);
+                }
+                isComplete = true;
+            } else {
+                for (Goals subGoal : subGoals) {
+                    subGoal.completeGoal(newDeadline);
+                }
+                isComplete = true;
+            }
+        }
+
+        for(Skill skill:associatedSkills) {
+            skill.gainExperience(getExperienceReward());
+            int expGained = LocalDateTime.now().compareTo(deadline);
+            expGained *= -1;
+            if (expGained < 0) {
+                expGained=0;
+            } else {
+                expGained = Math.round(expGained/10000);
+            }
+            Attributes.PIETY.gainExperience(Math.round(expGained+getExperienceReward()/4));
+        }
+        return isComplete;
+    }
+
+    public int getProgress() {
+        int progress;
+        int ctr = 0;
+
+        if(subGoals.size()==0) {
+            return 100;
+        }
+
+        for (Goals subGoal: subGoals) {
+            if(!subGoal.isComplete) ++ctr;
+        }
+
+        progress = Math.round(ctr/subGoals.size())*100;
+
+        return progress;
+    }
+
+
 }

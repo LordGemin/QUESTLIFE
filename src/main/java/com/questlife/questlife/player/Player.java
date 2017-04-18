@@ -1,10 +1,12 @@
 package main.java.com.questlife.questlife.player;
 
+import main.java.com.questlife.questlife.goals.Goals;
 import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.quests.Quest;
 import main.java.com.questlife.questlife.rewards.Reward;
 import main.java.com.questlife.questlife.skills.Skill;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,13 +14,14 @@ import java.util.List;
  *
  * Created by Gemin on 10.04.2017.
  */
-public class Player {
+public class Player implements Serializable {
 
     private String name;
     private Inventory inventory;
     private Hero playerHero;
     private List<Skill> associatedSkills = new ArrayList<>();
     private List<Reward> rewards = new ArrayList<>();
+    private List<Goals> goalList = new ArrayList<>();
 
     public Player() {
 
@@ -45,9 +48,8 @@ public class Player {
      * Creates a skill (and adds it to the associated skills of the player. Name, Attributes associated, description are needed.
      * Furthermore the player can decide on the skilltype (goalbased/timebased)
      */
-    public void addSkill () {
+    public void addSkill (Skill newSkill) {
         //TODO: Let the player actually add skills
-        Skill newSkill = new Skill(null, null,null,null);
         associatedSkills.add(newSkill);
     }
 
@@ -60,9 +62,8 @@ public class Player {
     /**
      * Creates a reward. To create a reward the player has to define a name, a rewardType, associated skills, the cost, the times the reward can be received, as well rising costs
      */
-    public void addReward () {
+    public void addReward (Reward newReward) {
         //TODO: Let the player actually add rewards
-        Reward newReward = new Reward(null,null,null,0,0,0);
         rewards.add(newReward);
     }
 
@@ -70,6 +71,10 @@ public class Player {
         if(rewards.contains(rewardToDelete)) {
             rewards.remove(rewardToDelete);
         }
+    }
+
+    public void addGoal(Goals newGoal) {
+        goalList.add(newGoal);
     }
 
     /**
@@ -87,5 +92,7 @@ public class Player {
             quest.setAsActive();
         }
     }
+
+
 
 }

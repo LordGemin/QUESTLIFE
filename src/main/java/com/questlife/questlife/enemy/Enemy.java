@@ -2,6 +2,7 @@ package main.java.com.questlife.questlife.enemy;
 
 import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.util.AttackType;
+import main.java.com.questlife.questlife.util.StatCalculator;
 
 import java.io.Serializable;
 
@@ -80,11 +81,25 @@ public class Enemy implements Serializable {
     }
 
     public void dealDamage(Hero attackedHero) {
-        int damageDealt = this.getAttackPower()-attackedHero.getDefense();
+        int damageDealt= 0;
+        if (attackType == AttackType.PHYSICAL)
+            damageDealt = this.getAttackPower()-attackedHero.getDefense();
+        if (attackType == AttackType.MAGICAL)
+            damageDealt = this.getAttackPower()-attackedHero.getResistance();
         attackedHero.takeDamage(damageDealt);
     }
 
     public void takeDamage(int damageDealt) {
         this.setHealth(this.getHealth()-damageDealt);
+    }
+
+    public int getExperieceReward() {
+        StatCalculator statCalculator = new StatCalculator();
+        return statCalculator.getExperienceFromEnemy(this);
+    }
+
+    public int getGoldReward() {
+        StatCalculator statCalculator = new StatCalculator();
+        return  statCalculator.getGoldFromEnemy(this);
     }
 }

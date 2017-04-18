@@ -1,6 +1,7 @@
-package main.java.com.questlife.questlife.player;
+package test.java.com.questlife.questlife.player;
 
 import main.java.com.questlife.questlife.game.Game;
+import main.java.com.questlife.questlife.player.Player;
 import main.java.com.questlife.questlife.quests.Quest;
 import org.junit.Test;
 
