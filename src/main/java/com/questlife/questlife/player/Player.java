@@ -7,6 +7,7 @@ import main.java.com.questlife.questlife.rewards.Reward;
 import main.java.com.questlife.questlife.skills.Skill;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class Player implements Serializable {
     private List<Skill> associatedSkills = new ArrayList<>();
     private List<Reward> rewards = new ArrayList<>();
     private List<Goals> goalList = new ArrayList<>();
+    private List<Goals> competedGoals  = new ArrayList<>();
 
     public Player() {
 
@@ -77,6 +79,14 @@ public class Player implements Serializable {
         goalList.add(newGoal);
     }
 
+    public void completeGoal(Goals goal, LocalDateTime newDeadline) {
+        if(newDeadline != null)
+            goal.completeGoal(newDeadline);
+        else
+            goalList.remove(goal);
+            competedGoals.add(goal);
+    }
+
     /**
      * Creates a hero. To create a hero you need a name and a weapon to start
      */
@@ -90,7 +100,11 @@ public class Player implements Serializable {
         if(playerHero.getQuestList().contains(quest)) {
             playerHero.setActiveQuest(quest);
             quest.setAsActive();
+        } else {
+            //TODO: Warn player that some error occured, and the quest does not exist
         }
+
+        playerHero.sendToField();
     }
 
 

@@ -17,7 +17,7 @@ public class PlayerTest {
         Game game = new Game(10);
         Player player = game.getPlayer();
 
-        Quest quest = new Quest("Test Name", "Test Description", game.getEnemies()[5], 20, 2000,2000);
+        Quest quest = new Quest("Test Name", "Test Description", game.getEnemies().get(5), 20, 2000,2000);
         player.createHero();
         player.getPlayerHero().addQuest(quest);
         player.sendHeroOnQuest(quest);

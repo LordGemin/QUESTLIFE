@@ -1,5 +1,7 @@
 package main.java.com.questlife.questlife.hero;
 
+import main.java.com.questlife.questlife.util.StatCalculator;
+
 import java.io.Serializable;
 
 /**
@@ -33,9 +35,9 @@ public enum Attributes implements Serializable{
     public void setLevel(int level) {this.level = level;}
 
     public void levelUp() {
+        StatCalculator stats = new StatCalculator();
         level++;
-        this.experienceToNextLevel = experienceToNextLevel + 1000+100*Math.round(level/10);
-        //TODO: Rethink this formula
+        this.experienceToNextLevel = stats.getExpToNextLevel(experienceToNextLevel,level);
     }
 
     public void gainExperience(int experienceGained) {

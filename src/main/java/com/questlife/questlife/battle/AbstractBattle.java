@@ -62,7 +62,7 @@ public abstract class AbstractBattle {
     /**
      * Defines all parameters and fills the remaining variables.
      */
-    abstract void runBattle();
+    abstract boolean runBattle();
 
 
     /**

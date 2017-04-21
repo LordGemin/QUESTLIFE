@@ -38,17 +38,17 @@ public class TavernTest {
         Hero hero = player.getPlayerHero();
 
         hero.gainGold(2000);
-        hero.setMaxHealth(Integer.MAX_VALUE);
+        hero.setConstitution(Math.round(Integer.MAX_VALUE/5));
         hero.setHealth(20);
-        hero.setMaxMana(80);
+        hero.setPiety(16);
         hero.setMana(0);
 
         tavern.lodgeHero(hero);
         assertEquals(hero.getMaxHealth(),hero.getHealth());
 
-        hero.setMaxHealth(100);
+        hero.setConstitution(20);
         hero.setHealth(20);
-        hero.setMaxMana(Integer.MAX_VALUE);
+        hero.setPiety(Math.round(Integer.MAX_VALUE/5));
         hero.setMana(0);
 
         tavern.setCost(1500);
@@ -57,9 +57,9 @@ public class TavernTest {
         assertEquals(hero.getMaxMana(),hero.getMana());
         assertEquals(400, hero.getGold());
 
-        hero.setMaxHealth(100);
+        hero.setConstitution(20);
         hero.setHealth(20);
-        hero.setMaxMana(100);
+        hero.setPiety(20);
         hero.setMana(0);
 
         tavern.lodgeHero(hero);

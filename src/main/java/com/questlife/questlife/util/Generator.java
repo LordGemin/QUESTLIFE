@@ -14,7 +14,7 @@ public class Generator {
     }
 
     public int generateNumber() {
-        return randomGenerator.nextInt(512);
+        return randomGenerator.nextInt(6999);
     }
 
     public String generateWeaponName() {

@@ -26,12 +26,12 @@ public class BattleTest {
         player.createHero();
         player.getPlayerHero().changeWeapon(new Weapon("Wooden Stick",10,10,AttackType.PHYSICAL));
         Battle battle = new Battle(player.getPlayerHero());
-        battle.addEnemy(game.getEnemies()[0]);
-        player.getPlayerHero().setMaxHealth(100);
+        battle.addEnemy(game.getEnemies().get(0));
+        player.getPlayerHero().setConstitution(10);
         player.getPlayerHero().setHealth(100);
-        player.getPlayerHero().setMaxMana(100);
+        player.getPlayerHero().setPiety(10);
         player.getPlayerHero().setMana(100);
-        battle.getParticipatingHero().setStrength(-5);
+        battle.getParticipatingHero().setStrength(5);
         battle.runBattle();
 
         assertTrue(battle.getParticipatingEnemies().size()==0);
@@ -43,12 +43,12 @@ public class BattleTest {
         player.createHero();
         player.getPlayerHero().changeWeapon(new Weapon("Wooden Stick",10,10,AttackType.PHYSICAL));
         Battle battle = new Battle(player.getPlayerHero());
-        battle.addEnemy(game.getEnemies()[0]);
-        player.getPlayerHero().setMaxHealth(100);
+        battle.addEnemy(game.getEnemies().get(0));
+        player.getPlayerHero().setConstitution(10);
         player.getPlayerHero().setHealth(100);
-        player.getPlayerHero().setMaxMana(100);
+        player.getPlayerHero().setPiety(10);
         player.getPlayerHero().setMana(100);
-        battle.getParticipatingHero().setStrength(-5);
+        battle.getParticipatingHero().setStrength(5);
         while(battle.getParticipatingEnemies().size() > 0 && battle.getParticipatingHero().getHealth() > 0) {
             battle.runTurn();
         }

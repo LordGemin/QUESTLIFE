@@ -69,4 +69,6 @@ public class Quest implements Serializable{
     public void setInactive() {
         isActive = false;
     }
+
+    public boolean getIsActive() { return isActive;}
 }

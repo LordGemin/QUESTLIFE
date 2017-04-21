@@ -6,10 +6,10 @@ import main.java.com.questlife.questlife.items.Potion;
 import main.java.com.questlife.questlife.items.Weapon;
 import main.java.com.questlife.questlife.player.Player;
 import main.java.com.questlife.questlife.util.AttackType;
-import main.java.com.questlife.questlife.util.Generator;
 import org.junit.Test;
 
-import java.util.List;
+
+import java.time.LocalDateTime;
 
 import static org.junit.Assert.*;
 
@@ -103,8 +103,8 @@ public class HeroTest {
         int potionsToGenerate = 3000;
         player.createHero();
         Hero hero = player.getPlayerHero();
-        hero.setMaxHealth(potionsToGenerate*5);
-        hero.setMaxMana(potionsToGenerate*3);
+        hero.setConstitution(potionsToGenerate);
+        hero.setPiety(potionsToGenerate);
         hero.setHealth(10);
         hero.setMana(10);
 
@@ -117,6 +117,22 @@ public class HeroTest {
             assertTrue(true);
         }
 
+    }
+
+    @Test
+    public void getLastDeath() {
+        player.createHero();
+        Hero hero = player.getPlayerHero();
+        hero.setHealth(0);
+        hero.setLastDeath(System.currentTimeMillis());
+        log("Hero health: " + hero.getHealth());
+        try {
+            Thread.sleep(2000000);
+        } catch (Exception e) {
+            log("Waiting was interrupted by mean exception");
+        }
+        log("Hero died: " + hero.getTimeSinceLastDeath());
+        log("Hero health after waiting: " + hero.getHealth());
     }
 
     private void log (String out) {

@@ -6,11 +6,14 @@ import main.java.com.questlife.questlife.items.Weapon;
 import main.java.com.questlife.questlife.player.Inventory;
 import main.java.com.questlife.questlife.player.Player;
 import main.java.com.questlife.questlife.quests.Quest;
+import main.java.com.questlife.questlife.town.Field;
 import main.java.com.questlife.questlife.util.AttackType;
 import main.java.com.questlife.questlife.util.Generator;
 import main.java.com.questlife.questlife.util.StatCalculator;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,14 +25,15 @@ public class Hero implements Serializable {
 
     private String name;
     private Player player;
-    private Integer health;
-    private Integer mana;
-    private Integer level;
-    private Integer experience;
+    private Integer health = 0;
+    private Integer mana = 0;
+    private Integer level = 1;
+    private Integer experience = 0;
     private Integer experienceToNextLevel;
-    private Integer gold;
+    private Integer gold = 0;
     private Weapon weapon;
     private Quest activeQuest;
+    private Long lastDeath;
 
     private StatCalculator statCalculator = new StatCalculator();
     private List<Quest> questList = new ArrayList<>();
@@ -50,7 +54,22 @@ public class Hero implements Serializable {
     }
 
     public int getHealth() {
-        return health;
+        if(health == getMaxHealth()) {
+            lastDeath = null;
+            return health;
+        }
+        if(lastDeath == null)
+            return health;
+        else {
+            long timeSinceDeath = System.currentTimeMillis() - lastDeath;
+            //refill complete health within 6 hours of last death
+            //If user wants to go out adventuring before then: pay gold for tavern. It should be cheap enough
+            health = (int) Math.ceil((getMaxHealth()/24)*(Math.floor(timeSinceDeath/600000)));
+            if (health > getMaxHealth()) {
+                health = getMaxHealth();
+            }
+            return health;
+        }
     }
 
     public int getMana() {
@@ -146,6 +165,9 @@ public class Hero implements Serializable {
     }
 
     public int getExperienceToNextLevel() {
+        if(experienceToNextLevel==null) {
+            experienceToNextLevel = statCalculator.getExpToNextLevel(0,1);
+        }
         return experienceToNextLevel;
     }
 
@@ -170,6 +192,18 @@ public class Hero implements Serializable {
         this.gold = gold;
     }
 
+    public long getLastDeath() {
+        return lastDeath;
+    }
+
+    public void setLastDeath(long lastDeath) {
+        this.lastDeath = lastDeath;
+    }
+
+    public long getTimeSinceLastDeath() {
+        return System.currentTimeMillis()-lastDeath;
+    }
+
     public Quest getActiveQuest() {
         return activeQuest;
     }
@@ -190,7 +224,7 @@ public class Hero implements Serializable {
         questList.add(quest);
     }
 
-    public void completeQuest() {
+    private void completeQuest() {
         //TODO: Notify player.
         gainGold(activeQuest.getRewardGold());
         gainExperience(activeQuest.getRewardExp());
@@ -200,37 +234,27 @@ public class Hero implements Serializable {
     }
 
     public int getDefense(){
-        int defense;
-
-        defense = statCalculator.calculateHeroesDefense(this);
-
-        return defense;
+        return statCalculator.calculateHeroesDefense(this);
     }
 
-    public int getResistance(){
-        int resistance;
-
-        resistance = statCalculator.calculateHeroesResistance(this);
-
-        return resistance;
+    public int getResistance() {
+        return statCalculator.calculateHeroesResistance(this);
     }
 
     public int getAttack() {
-        int attack;
-
-        attack = statCalculator.calculateHeroesAttack(this);
-
-        return attack;
+        return statCalculator.calculateHeroesAttack(this);
     }
 
     public void changeWeapon(Weapon toEquip) {
+        if (player.getInventory().getItemsInInventory().contains(toEquip))
+            player.getInventory().getItemsInInventory().remove(toEquip);
         player.getInventory().addWeapon(this.weapon);
         this.setWeapon(toEquip);
     }
 
     private void levelUp() {
         this.level++;
-        this.experienceToNextLevel = experienceToNextLevel + 1000+100*Math.round(level/10);
+        this.experienceToNextLevel = statCalculator.getExpToNextLevel(experienceToNextLevel,level);
         //TODO: Rethink this formula
     }
 
@@ -314,14 +338,24 @@ public class Hero implements Serializable {
     public void dealDamage(Enemy enemy) {
         int damageDealt = 0;
 
+        // Physical Damage is easier to deal, but should in general deal slightly less damage
         if (weapon.getAttackType() == AttackType.PHYSICAL)
             damageDealt = this.getAttack()-enemy.getDefense();
 
-        if (weapon.getAttackType() == AttackType.MAGICAL)
-            damageDealt = this.getAttack()-enemy.getResistance();
+        // Magical Damage can be more destructive, but uses mana. If Hero has not enough mana, it will deal less damage
+        if (weapon.getAttackType() == AttackType.MAGICAL) {
+            this.mana -= 10;
+            if(mana <= 0) { //If Hero has not enough Mana to perform full attack, we refresh some mana for next round and deal substantially less damage this round
+                mana = 10;
+                damageDealt = Math.round((this.getAttack() - enemy.getResistance())/2);
+            } else {
+                damageDealt = this.getAttack() - enemy.getResistance();
+            }
+        }
 
         int criticalCheck =  new Generator().generateNumber();
 
+        // Critical Attacks based on observation stat. Deals double damage
         if(getObservation() >= criticalCheck*5)
             damageDealt *= 2;
             //TODO: Message to player
@@ -343,6 +377,7 @@ public class Hero implements Serializable {
     }
 
     public boolean spendGold(int cost) {
+        cost -= statCalculator.getRebate(this, cost);
         if(gold >= cost) {
             gold -= cost;
             return true;
@@ -350,4 +385,25 @@ public class Hero implements Serializable {
         return false;
     }
 
+    public void sendToField() {
+        if(getHealth() > 0) {
+            Field field = new Field(this);
+            field.runBattles(getActiveQuest());
+        } else {
+            System.out.println(name+" can barely stand. he is not suitable for questing. Heal him first");
+            //TODO: Message to player that hero is barely able to walk.
+        }
+
+    }
+
+    public void sendToField(int loops) {
+        if(getHealth() > 0) {
+            Field field = new Field(this,loops);
+            field.runBattles(getActiveQuest());
+        } else {
+            System.out.println(name+" can barely stand. he is not suitable for questing. Heal him first");
+            //TODO: Message to player that hero is barely able to walk.
+        }
+
+    }
 }

@@ -1,13 +1,15 @@
 package main.java.com.questlife.questlife.game;
 
 import main.java.com.questlife.questlife.enemy.Enemy;
-import main.java.com.questlife.questlife.items.Weapon;
 import main.java.com.questlife.questlife.player.Inventory;
 import main.java.com.questlife.questlife.player.Player;
 import main.java.com.questlife.questlife.util.AttackType;
 import main.java.com.questlife.questlife.util.Generator;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -16,7 +18,7 @@ import java.io.Serializable;
 public class Game implements Serializable{
     private Inventory inventory;
     private Player player;
-    private Enemy[] enemies;
+    private List<Enemy> enemies = new ArrayList<>();
 
     public Game(int diversity) {
         initializeGame(diversity);
@@ -30,7 +32,7 @@ public class Game implements Serializable{
         return player;
     }
 
-    public Enemy[] getEnemies() {
+    public List<Enemy> getEnemies() {
         return enemies;
     }
 
@@ -61,6 +63,8 @@ public class Game implements Serializable{
             }
             enemy[i] = new Enemy(enemyName,20,2,2,2,attackType);
         }
-        enemies = enemy;
+
+        Collections.addAll(enemies, enemy);
+
     }
 }

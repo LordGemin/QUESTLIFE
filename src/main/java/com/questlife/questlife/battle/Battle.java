@@ -4,6 +4,7 @@ import main.java.com.questlife.questlife.enemy.Enemy;
 import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.util.AttackType;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -27,13 +28,19 @@ public class Battle extends AbstractBattle {
 
 
     @Override
-    public void runBattle() {
+    public boolean runBattle() {
         while(getParticipatingHero().getHealth() > 0 && getParticipatingEnemies().size() > 0) {
             runTurn();
         }
         if (getParticipatingHero().getHealth() > 0 ) {
-                getParticipatingHero().gainGold(goldGained);
+                getParticipatingHero().gainGold(Math.round(goldGained * (1+(getParticipatingHero().getObservation()/100))));
+                return true;
         }
+        //Hero died during battle. Set current time as time of death
+        getParticipatingHero().setLastDeath(System.currentTimeMillis());
+        return false;
+
+        // return value is answer to the question: is the hero still alive?
     }
 
     @Override
@@ -50,7 +57,7 @@ public class Battle extends AbstractBattle {
             }
         }
 
-        // Always try to survive at least the first dealDamage, approximate total damage
+        // Always try to survive at least the first dealDamage, approximate total damage to decide if potions should be taken
         int criticalHealth = getParticipatingEnemyAt(enemyPosition).getAttackPower()*getParticipatingEnemies().size();
 
         //TODO: Find the amount of mana that should be used on dealDamage.
@@ -67,7 +74,7 @@ public class Battle extends AbstractBattle {
         if (getParticipatingEnemyAt(enemyPosition).getHealth() <= 0) {
             getParticipatingEnemies().remove(getParticipatingEnemyAt(enemyPosition));
             getParticipatingHero().gainExperience(getParticipatingEnemyAt(enemyPosition).getExperieceReward());
-            goldGained += getParticipatingEnemyAt(enemyPosition).getGoldReward() + getParticipatingHero().getObservation()*10 ;
+            goldGained += getParticipatingEnemyAt(enemyPosition).getGoldReward();
         }
     }
 }
