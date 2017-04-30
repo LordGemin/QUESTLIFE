@@ -1,6 +1,12 @@
 package main.java.com.questlife.questlife.items;
 
 import main.java.com.questlife.questlife.util.Generator;
+import org.reflections.Reflections;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 /**
  * This class provides for potions and elixirs.
@@ -38,7 +44,37 @@ public class Potion extends AbstractItems {
         super(name, price, description);
     }
 
-    private void generatePotion() {
+    private AbstractPotions generatePotion(int heroLevel) {
+
+        Reflections reflections = new Reflections("main.java");
+        Set<Class<? extends AbstractPotions>> classes = reflections.getSubTypesOf(AbstractPotions.class);
+        List<String> potions = new ArrayList<>();
+
+        for (Object a : classes) {
+            try {
+                potions.add(a.toString().replace("class ", ""));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        AbstractPotions potion = null;
+        try {
+            Class b = Class.forName(potions.get(new Random().nextInt(potions.size()) - 1));
+            potion = (AbstractPotions) b.newInstance();
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (potion != null) {
+            potion.setHeroLevel(heroLevel);
+        }
+        return potion;
+    }
+
+
+        private void generatePotion() {
+
         Generator generator = new Generator();
         String potionName = generator.generatePotionName();
         boolean isPotion = true;

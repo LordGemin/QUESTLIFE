@@ -9,7 +9,7 @@ import java.io.Serializable;
 public abstract class AbstractItems implements Serializable {
 
     String name;
-    int price;
+    Integer price;
     String description;
 
     AbstractItems() {}

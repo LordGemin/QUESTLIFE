@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" styleClass="background" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.java.com.questlife.questlife.View.mainLayoutController">
+   <children>
+      <Separator layoutX="-14.0" layoutY="203.0" prefHeight="12.0" prefWidth="415.0" />
+      <Label fx:id="heroName" layoutX="8.0" layoutY="77.0" prefHeight="39.0" prefWidth="106.0" styleClass="label-bright" stylesheets="@DarkTheme.css" text="HeroName">
+         <font>
+            <Font size="21.0" />
+         </font>
+      </Label>
+      <MenuBar layoutX="-7.0" prefHeight="39.0" prefWidth="408.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="Views">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Statistics" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Add...">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Delete" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <GridPane layoutX="125.0" layoutY="67.0" prefHeight="144.0" prefWidth="261.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="86.0" minWidth="10.0" prefWidth="80.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="77.0" minWidth="10.0" prefWidth="58.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="91.0" minWidth="10.0" prefWidth="91.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="66.0" minWidth="10.0" prefWidth="49.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label fx:id="strength" styleClass="label-bright" stylesheets="@DarkTheme.css" text="Label" GridPane.columnIndex="1" />
+            <Label fx:id="dexterity" styleClass="label-bright" stylesheets="@DarkTheme.css" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label fx:id="mind" styleClass="label-bright" stylesheets="@DarkTheme.css" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label fx:id="charisma" styleClass="label-bright" stylesheets="@DarkTheme.css" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Label fx:id="observation" styleClass="label-bright" stylesheets="@DarkTheme.css" text="Label" GridPane.columnIndex="3" />
+            <Label text="STRENGTH" />
+            <Label text="DEXTERITY" GridPane.rowIndex="1" />
+            <Label text="MIND" GridPane.rowIndex="2" />
+            <Label text="CHARISMA" GridPane.rowIndex="3" />
+            <Label text="OBSERVATION" GridPane.columnIndex="2" />
+            <Label text="CONSTITUTION" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <Label text="PIETY" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <Label text="LEVEL" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <Label fx:id="constitution" styleClass="label-bright" stylesheets="@DarkTheme.css" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+            <Label fx:id="piety" styleClass="label-bright" stylesheets="@DarkTheme.css" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+            <Label fx:id="level" styleClass="label-bright" stylesheets="@DarkTheme.css" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+         </children>
+      </GridPane>
+      <Label layoutX="125.0" layoutY="39.0" prefHeight="36.0" prefWidth="84.0" text="EXP">
+         <font>
+            <Font size="25.0" />
+         </font>
+      </Label>
+      <ProgressBar fx:id="experienceToNextLevel" layoutX="192.0" layoutY="48.0" prefWidth="200.0" progress="0.73" />
+      <TabPane layoutY="209.0" prefHeight="392.0" prefWidth="400.0" styleClass="column-header" stylesheets="@DarkTheme.css" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Goals">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="goalsTable" prefHeight="300.0" prefWidth="400.0" AnchorPane.bottomAnchor="63.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <columns>
+                            <TableColumn fx:id="goalsName" prefWidth="83.0" text="Name" />
+                            <TableColumn fx:id="goalsAssociatedSkills" prefWidth="120.0" text="Associated Skills" />
+                              <TableColumn fx:id="goalsDeadline" prefWidth="121.0" text="Deadline" />
+                              <TableColumn fx:id="goalsExperience" prefWidth="82.0" text="Experience" />
+                          </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                        <Button layoutX="161.0" layoutY="304.0" mnemonicParsing="false" onAction="#handleNewGoal" text="New" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="161.0" AnchorPane.rightAnchor="161.0" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab text="Quests">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="questsTable" prefHeight="300.0" prefWidth="400.0">
+                           <columns>
+                              <TableColumn fx:id="questEnemy" prefWidth="106.0" text="Enemy" />
+                              <TableColumn fx:id="questEnemyCount" prefWidth="116.0" text="Count" />
+                              <TableColumn fx:id="questExpReward" prefWidth="47.0" text="Experience" />
+                              <TableColumn fx:id="questGoldReward" prefWidth="49.0" text="Gold" />
+                           </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                        <Button layoutX="161.0" layoutY="304.0" mnemonicParsing="false" text="New" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="161.0" AnchorPane.rightAnchor="161.0" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+          <Tab text="Rewards">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="rewardTable" layoutX="8.0" prefHeight="300.0" prefWidth="400.0" AnchorPane.bottomAnchor="63.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <columns>
+                            <TableColumn fx:id="rewardName" prefWidth="60.0" text="Name" />
+                              <TableColumn fx:id="rewardDescription" prefWidth="102.0" text="Description" />
+                              <TableColumn fx:id="rewardAquirationBase" prefWidth="107.0" text="Aquiration base" />
+                            <TableColumn fx:id="rewardCost" prefWidth="56.0" text="Cost" />
+                              <TableColumn fx:id="rewardAmount" prefWidth="51.0" text="Amount left" />
+                          </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                        <Button layoutX="174.0" layoutY="320.0" mnemonicParsing="false" onAction="#handleNewReward" text="New" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="161.0" AnchorPane.rightAnchor="161.0" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab text="Skills">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="skillsTable" layoutX="90.0" layoutY="14.0" prefHeight="300.0" prefWidth="400.0" AnchorPane.bottomAnchor="63.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <columns>
+                            <TableColumn fx:id="skillName" prefWidth="64.0" text="Name" />
+                            <TableColumn fx:id="skillLevel" prefWidth="61.0" text="Level" />
+                              <TableColumn fx:id="skillAssociatedAttribute" prefWidth="143.0" text="Associated Attribute" />
+                              <TableColumn fx:id="skilLExperience" prefWidth="138.0" text="Experience Needed" />
+                          </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                        <Button layoutX="174.0" layoutY="310.0" mnemonicParsing="false" onAction="#handleNewSkill" text="New" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="161.0" AnchorPane.rightAnchor="161.0" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab text="Inventory">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="inventoryTable" layoutX="62.0" prefHeight="363.0" prefWidth="408.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <columns>
+                            <TableColumn fx:id="inventoryName" prefWidth="113.0" text="Item Name" />
+                            <TableColumn fx:id="inventoryDescription" prefWidth="293.0" text="Description" />
+                          </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+      <ImageView fitHeight="100.0" fitWidth="99.0" layoutX="6.0" layoutY="106.0" pickOnBounds="true" preserveRatio="true" />
+   </children>
+</AnchorPane>

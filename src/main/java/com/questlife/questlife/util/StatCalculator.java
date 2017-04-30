@@ -11,6 +11,8 @@ import main.java.com.questlife.questlife.items.Weapon;
  */
 public class StatCalculator {
 
+    private Generator generator = new Generator();
+
     public StatCalculator() {
 
     }
@@ -41,18 +43,39 @@ public class StatCalculator {
         //If hero has no weapon equipped, give him nonsense weapon;
         Weapon heroWeapon = (hero.getWeapon() != null) ? hero.getWeapon() : new Weapon("Bare knuckle", 4,4,AttackType.PHYSICAL);
 
-        if (heroWeapon.getAttackType() == AttackType.PHYSICAL) {
-            attackValue = hero.getStrength();
-            attackValue += heroWeapon.getPhysicalAttack();
-        } else if (heroWeapon.getAttackType() == AttackType.MAGICAL) {
-            // It is suspected that usually, the Mind attribute will be higher, resulting in higher magical damage
-            attackValue = hero.getMind();
-            attackValue += heroWeapon.getMagicalAttack();
-        } else {
-            attackValue = 10;
+        switch (heroWeapon.getAttackType()) {
+            case PHYSICAL:
+                attackValue = hero.getStrength();
+                attackValue += heroWeapon.getPhysicalAttack();
+                break;
+            case MAGICAL:
+                // It is suspected that usually, the Mind attribute will be higher, resulting in higher magical damage
+                attackValue = hero.getMind();
+                attackValue += heroWeapon.getMagicalAttack();
+                break;
+            case BOTH:
+                if(hero.getMana()<=0) {
+                    attackValue = hero.getStrength();
+                    attackValue += heroWeapon.getPhysicalAttack();
+                } else {
+                    attackValue = hero.getMind();
+                    attackValue += heroWeapon.getMagicalAttack();
+                }
+                break;
+            default:
+                attackValue = 10;
+                break;
         }
 
         return attackValue;
+    }
+
+    public int calculateWeaponPrice(int baseprice, int levelOfHero) {
+        return generator.generateNumber()%(baseprice+levelOfHero*5);
+    }
+
+    public int calculateWeaponDamage(int basedamage, int maxdamage, int levelOfHero) {
+        return (generator.generateNumber()%((maxdamage+levelOfHero*3)-(basedamage+levelOfHero*2)));
     }
 
     public int getMaxHealth(Hero hero) {
@@ -65,7 +88,14 @@ public class StatCalculator {
 
     public int getExperienceFromGoal(Goals goal) {
         // We want the gained experience to be split between all associated skills.
-        return (int)(Math.round(goal.getComplexity()*0.75*goal.getAmountOfWork())/goal.getAssociatedSkills().size());
+
+        int div = goal.getAssociatedSkills().size();
+
+        if(div == 0) {
+            div=1;
+        }
+
+        return (int)(Math.round(goal.getComplexity()*0.75*goal.getAmountOfWork())/div);
     }
 
     public int getExperienceFromEnemy(Enemy enemy) {

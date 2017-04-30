@@ -52,6 +52,10 @@ public class Quest implements Serializable{
         return rewardGold;
     }
 
+    public Enemy getEnemyType() {
+        return enemyType;
+    }
+
     public int countEnemyKilled(Enemy enemy) {
         if(!isActive) {
             return mobsToHunt;
@@ -71,4 +75,32 @@ public class Quest implements Serializable{
     }
 
     public boolean getIsActive() { return isActive;}
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setEnemyType(Enemy enemyType) {
+        this.enemyType = enemyType;
+    }
+
+    public void setMobsToHunt(Integer mobsToHunt) {
+        this.mobsToHunt = mobsToHunt;
+    }
+
+    public void setRewardExp(Integer rewardExp) {
+        this.rewardExp = rewardExp;
+    }
+
+    public void setRewardGold(Integer rewardGold) {
+        this.rewardGold = rewardGold;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
 }

@@ -342,6 +342,15 @@ public class Hero implements Serializable {
         if (weapon.getAttackType() == AttackType.PHYSICAL)
             damageDealt = this.getAttack()-enemy.getDefense();
 
+        if (weapon.getAttackType() == AttackType.BOTH) {
+            if(mana <= 0) { //If Hero has not enough Mana to perform full attack, he attack with the weapon physically
+                damageDealt = Math.round((this.getAttack() - enemy.getDefense()/2));
+                mana = 10;
+            } else {
+                damageDealt = this.getAttack() - enemy.getResistance();
+            }
+        }
+
         // Magical Damage can be more destructive, but uses mana. If Hero has not enough mana, it will deal less damage
         if (weapon.getAttackType() == AttackType.MAGICAL) {
             this.mana -= 10;

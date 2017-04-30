@@ -2,6 +2,7 @@ package main.java.com.questlife.questlife.skills;
 
 import main.java.com.questlife.questlife.hero.Attributes;
 import main.java.com.questlife.questlife.util.SkillType;
+import main.java.com.questlife.questlife.util.StatCalculator;
 
 import java.io.Serializable;
 
@@ -15,15 +16,23 @@ public class Skill implements Serializable{
     private Attributes associatedAttribute;
     private String description;
     private SkillType skilltype;
-    private Integer level;
+    private Integer level =1;
     private Integer experience;
     private Integer experienceToNextLevel;
+
+
+    StatCalculator statCalculator = new StatCalculator();
 
     public Skill(String name, Attributes associatedAttribute, String description, SkillType skilltype) {
         this.name = name;
         this.associatedAttribute = associatedAttribute;
         this.description = description;
         this.skilltype = skilltype;
+    }
+
+    public Skill() {
+        associatedAttribute = null;
+        skilltype = null;
     }
 
     public String getName() {
@@ -51,6 +60,9 @@ public class Skill implements Serializable{
     }
 
     public int getExperienceToNextLevel() {
+        if(experienceToNextLevel==null) {
+            experienceToNextLevel = statCalculator.getExpToNextLevel(0,1);
+        }
         return experienceToNextLevel;
     }
 
@@ -84,8 +96,7 @@ public class Skill implements Serializable{
 
     private void levelUp() {
         this.level++;
-        this.experienceToNextLevel = experienceToNextLevel + 1000+100*Math.round(level/10);
-        //TODO: Rethink this formula
+        this.experienceToNextLevel = statCalculator.getExpToNextLevel(experienceToNextLevel,level);
         associatedAttribute.levelUp();
     }
 

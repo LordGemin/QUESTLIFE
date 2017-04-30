@@ -12,6 +12,16 @@ public enum SkillType {
     SkillType(String value) {
         fieldDescription = value;
     }
+
+
+    public static SkillType getField(String description) {
+        for(SkillType a: SkillType.values()) {
+            if(a.getFieldDescription().equals(description)) {
+                return a;
+            }
+        }
+        return null;
+    }
     
     @Override
     public String toString() {

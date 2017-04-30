@@ -1,7 +1,9 @@
 package main.java.com.questlife.questlife.items;
 
 import main.java.com.questlife.questlife.util.AttackType;
-import main.java.com.questlife.questlife.util.Generator;
+import org.reflections.Reflections;
+
+import java.util.*;
 
 /**
  *
@@ -14,11 +16,6 @@ public class Weapon extends AbstractItems {
 
     public Weapon (int heroLevel) {
         generateWeapon(heroLevel);
-    }
-
-
-    public Weapon (String name, int price, String description) {
-        super(name,price,description);
     }
 
     /**
@@ -55,15 +52,33 @@ public class Weapon extends AbstractItems {
         return attackType;
     }
 
-    public void setPhysicalAttack(int physicalAttack) {
-        this.physicalAttack = physicalAttack;
-    }
+    private AbstractWeapons generateWeapon(int heroLevel) {
+        Reflections reflections = new Reflections("main.java");
+        Set<Class<? extends AbstractWeapons>> classes = reflections.getSubTypesOf(AbstractWeapons.class);
+        List<String> weapons = new ArrayList<>();
 
-    public void setMagicalAttack(int magicalAttack) {
-        this.magicalAttack = magicalAttack;
-    }
+        for (Object a : classes) {
+            try {
+                weapons.add(a.toString().replace("class ", ""));
 
-    private void generateWeapon(int heroLevel) {
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        AbstractWeapons weapon = null;
+        try {
+            Class b = Class.forName(weapons.get(new Random().nextInt(weapons.size())));
+            weapon = (AbstractWeapons) b.newInstance();
+            weapon.setHeroLevel(heroLevel);
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (weapon != null) {
+            weapon.setHeroLevel(heroLevel);
+        }
+        return  weapon;
+        /*
         Generator generator = new Generator();
         this.physicalAttack = generator.generateNumber()%heroLevel*3;
         this.magicalAttack = generator.generateNumber()%heroLevel*3;
@@ -79,5 +94,6 @@ public class Weapon extends AbstractItems {
         } else {
             this.attackType = AttackType.MAGICAL;
         }
+        */
     }
 }

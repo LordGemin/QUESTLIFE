@@ -4,6 +4,7 @@ import main.java.com.questlife.questlife.items.Weapon;
 import main.java.com.questlife.questlife.util.AttackType;
 
 /**
+ *
  * Created by Gemin on 10.04.2017.
  */
 public class WeaponTest {

@@ -37,5 +37,8 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="reflections-0.9.9-RC1-uberjar" level="project" />
+    <orderEntry type="library" name="guava-21.0" level="project" />
+    <orderEntry type="library" name="javassist" level="project" />
   </component>
 </module>

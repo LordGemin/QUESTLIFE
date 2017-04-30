@@ -1,5 +1,6 @@
 package main.java.com.questlife.questlife.enemy;
 
+import javafx.beans.property.StringProperty;
 import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.util.AttackType;
 import main.java.com.questlife.questlife.util.Generator;
@@ -13,20 +14,24 @@ import java.io.Serializable;
  */
 public class Enemy implements Serializable {
 
-    private String name;
+    private StringProperty name;
     private Integer health;
     private Integer attackPower;
     private Integer defense;
     private Integer resistance;
     private AttackType attackType;
 
+    public Enemy() {
+        this("",1,AttackType.PHYSICAL);
+    }
+
     public Enemy(String name, int levelOfHero, AttackType attackType) {
-        this.name = name;
+        this.name.set(name);
         createEnemy(levelOfHero, attackType);
     }
 
     public Enemy(String name,int health, int attackPower, int defense, int resistance, AttackType attackType) {
-        this.name = name;
+        this.name.set(name);
         this.health = health;
         this.attackPower = attackPower;
         this.defense = defense;
@@ -52,11 +57,15 @@ public class Enemy implements Serializable {
     }
 
     public String getName() {
+        return name.get();
+    }
+
+    public StringProperty nameProperty() {
         return name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name.set(name);
     }
 
     public int getAttackPower() {

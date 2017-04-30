@@ -1,7 +1,11 @@
 package main.java.com.questlife.questlife.goals;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 import main.java.com.questlife.questlife.skills.Skill;
 import main.java.com.questlife.questlife.hero.Attributes;
+import main.java.com.questlife.questlife.util.DateUtil;
 import main.java.com.questlife.questlife.util.StatCalculator;
 
 import java.time.LocalDateTime;
@@ -18,7 +22,7 @@ public class Goals {
     private LocalDateTime creation = LocalDateTime.now();
     private LocalDateTime deadline;
     private TemporalAmount duration;
-    private String name;
+    private StringProperty name;
     private Integer amountOfWork;
     private Integer complexity;
     private Goals overarchingGoal;
@@ -28,14 +32,18 @@ public class Goals {
     private Boolean isComplete = false; //default value
 
     public Goals() {
-
+        this.name = new SimpleStringProperty("");
+        amountOfWork = 10;
+        complexity = 5;
+        overarchingGoal = null;
+        deadline = LocalDateTime.now();
     }
 
     public Goals(LocalDateTime deadline, TemporalAmount duration, String name, int amountOfWork,
                  int complexity, List<Skill> associatedSkills, List<Goals> subGoals, boolean isRecurring) {
         this.deadline = deadline;
         this.duration = duration;
-        this.name = name;
+        this.name = new SimpleStringProperty(name);
         this.amountOfWork = amountOfWork;
         this.complexity = complexity;
         this.associatedSkills = associatedSkills;
@@ -45,6 +53,10 @@ public class Goals {
 
     public LocalDateTime getDeadline() {
         return deadline;
+    }
+
+    public String getDeadLineAsString() {
+        return DateUtil.getDateAsString(deadline);
     }
 
     public void setDeadline(LocalDateTime deadline) {
@@ -60,11 +72,15 @@ public class Goals {
     }
 
     public String getName() {
+        return name.get();
+    }
+
+    public StringProperty nameProperty() {
         return name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name.set(name);
     }
 
     public int getAmountOfWork() {
@@ -88,6 +104,10 @@ public class Goals {
     }
 
     public void setOverarchingGoal(Goals overarchingGoal) {
+        if(overarchingGoal == null) {
+            return;
+        }
+
         if(this.overarchingGoal.getSubGoals().contains(this)) {
             this.overarchingGoal.removeSubGoal(this);
         }
@@ -183,6 +203,4 @@ public class Goals {
 
         return progress;
     }
-
-
 }
