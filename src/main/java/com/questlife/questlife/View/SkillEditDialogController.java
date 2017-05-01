@@ -69,7 +69,7 @@ public class SkillEditDialogController {
 
 
     /**
-     * Sets the goal to be edited in the dialog.
+     * Sets the skill to be edited in the dialog.
      *
      * @param skill
      */

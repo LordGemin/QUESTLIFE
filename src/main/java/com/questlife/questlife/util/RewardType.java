@@ -12,6 +12,15 @@ public enum RewardType {
         fieldDescription = value;
     }
 
+    public static RewardType getField(String description) {
+        for(RewardType r:RewardType.values()) {
+            if(r.getFieldDescription().equals(description)) {
+                return r;
+            }
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         return fieldDescription;

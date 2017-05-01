@@ -14,7 +14,7 @@ public class Reward implements Serializable{
     private String name;
     private String description;
     private RewardType rewardType;
-    private Skill[] associatedSkills;
+    private Skill associatedSkill;
     private int cost;
     private int canReceive;
     private int risingCost;
@@ -23,10 +23,10 @@ public class Reward implements Serializable{
 
     }
 
-    public Reward(String name, RewardType rewardType, Skill[] associatedSkills, int cost, int canReceive, int risingCost) {
+    public Reward(String name, RewardType rewardType, Skill associatedSkill, int cost, int canReceive, int risingCost) {
         this.name = name;
         this.rewardType = rewardType;
-        this.associatedSkills = associatedSkills;
+        this.associatedSkill = associatedSkill;
         this.cost = cost;
         this.canReceive = canReceive;
         this.risingCost = risingCost;
@@ -40,8 +40,8 @@ public class Reward implements Serializable{
         return rewardType;
     }
 
-    public Skill[] getAssociatedSkills() {
-        return associatedSkills;
+    public Skill getAssociatedSkill() {
+        return associatedSkill;
     }
 
     public int getCost() {
@@ -72,8 +72,8 @@ public class Reward implements Serializable{
         this.rewardType = rewardType;
     }
 
-    public void setAssociatedSkills(Skill[] associatedSkills) {
-        this.associatedSkills = associatedSkills;
+    public void setAssociatedSkill(Skill associatedSkill) {
+        this.associatedSkill = associatedSkill;
     }
 
     public void setCost(int cost) {

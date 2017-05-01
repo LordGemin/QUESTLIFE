@@ -9,9 +9,8 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import main.java.com.questlife.questlife.View.GoalEditDialogController;
-import main.java.com.questlife.questlife.View.SkillEditDialogController;
-import main.java.com.questlife.questlife.View.mainLayoutController;
+import main.java.com.questlife.questlife.View.*;
+import main.java.com.questlife.questlife.enemy.Enemy;
 import main.java.com.questlife.questlife.goals.Goals;
 import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.items.AbstractItems;
@@ -79,6 +78,15 @@ public class MainApp extends Application {
 
     public ObservableList<AbstractItems> getItemsData() {
         return itemsData;
+    }
+
+
+    /**
+     * The data as an observable list of enemies.
+     */
+    private ObservableList<Enemy> enemyData = FXCollections.observableArrayList();
+    public ObservableList<Enemy> getEnemyData() {
+        return enemyData;
     }
 
     /**
@@ -209,7 +217,7 @@ public class MainApp extends Application {
             // Set the goal into the controller.
             GoalEditDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage);
-            controller.setGoal(tempGoal);
+            controller.setGoal(tempGoal, this);
 
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();
@@ -255,10 +263,130 @@ public class MainApp extends Application {
     }
 
     public boolean showRewardEditDialog(Reward tempReward) {
-        return false;
+        try {
+            // Load the fxml file and create a new stage for the popup dialog.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/rewardEditDialog.fxml"));
+            AnchorPane page = (AnchorPane) loader.load();
+
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Edit Reward");
+            dialogStage.getIcons().add(new Image("file:resources/images/Address_Book.png"));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+            dialogStage.setResizable(false);
+
+            // Set the goal into the controller.
+            RewardEditDialogController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setReward(tempReward, this);
+
+            // Show the dialog and wait until the user closes it
+            dialogStage.showAndWait();
+
+            return controller.isOkClicked();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public boolean showQuestEditDialog(Quest tempQuest) {
-        return false;
+        try {
+            // Load the fxml file and create a new stage for the popup dialog.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/questEditDialog.fxml"));
+            AnchorPane page = (AnchorPane) loader.load();
+
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Edit Quest");
+            dialogStage.getIcons().add(new Image("file:resources/images/Address_Book.png"));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+            dialogStage.setResizable(false);
+
+            // Set the goal into the controller.
+            QuestEditDialogController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setQuest(tempQuest,this);
+
+            // Show the dialog and wait until the user closes it
+            dialogStage.showAndWait();
+
+            return controller.isOkClicked();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean showPotionDetailDialog(AbstractItems item) {
+        try {
+            // Load the fxml file and create a new stage for the popup dialog.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/potionDetailDialog.fxml"));
+            AnchorPane page = (AnchorPane) loader.load();
+
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle(item.getName()+" Details");
+            dialogStage.getIcons().add(new Image("file:resources/images/Address_Book.png"));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+            dialogStage.setResizable(false);
+
+            // Set the goal into the controller.
+            PotionDetailDialogController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setItem(item);
+
+            // Show the dialog and wait until the user closes it
+            dialogStage.showAndWait();
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean showWeaponDetailDialog(AbstractItems item) {
+        try {
+            // Load the fxml file and create a new stage for the popup dialog.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/weaponDetailDialog.fxml"));
+            AnchorPane page = (AnchorPane) loader.load();
+
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle(item.getName()+" Details");
+            dialogStage.getIcons().add(new Image("file:resources/images/Address_Book.png"));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+            dialogStage.setResizable(false);
+
+            // Set the goal into the controller.
+            WeaponDetailDialogController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setItem(item);
+
+            // Show the dialog and wait until the user closes it
+            dialogStage.showAndWait();
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

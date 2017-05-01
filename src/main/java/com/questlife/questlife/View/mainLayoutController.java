@@ -3,10 +3,7 @@ package main.java.com.questlife.questlife.View;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import main.java.com.questlife.questlife.MainApp;
 import main.java.com.questlife.questlife.goals.Goals;
 import main.java.com.questlife.questlife.hero.Attributes;
@@ -50,6 +47,7 @@ public class mainLayoutController {
     private Label piety;
     @FXML
     private Label level;
+
 
     /**
      * Progressbar to show progress towards next heroLevel
@@ -113,7 +111,7 @@ public class mainLayoutController {
     @FXML
     private TableColumn<Skill, Attributes> skillAssociatedAttribute;
     @FXML
-    private TableColumn<Skill, Integer> skilLExperience;
+    private TableColumn<Skill, Integer> skillExperience;
 
     /**
      * Table that contains all Items the hero has (his inventory)
@@ -158,7 +156,7 @@ public class mainLayoutController {
         skillName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
         skillAssociatedAttribute.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getAssociatedAttribute()));
         skillLevel.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getLevel()));
-        skilLExperience.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getExperienceToNextLevel()));
+        skillExperience.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getExperienceToNextLevel()));
 
         // Initialize the inventory with two columns
         inventoryName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
@@ -232,6 +230,28 @@ public class mainLayoutController {
         if (okClicked) {
             mainApp.getQuestData().add(tempQuest);
         }
+    }
+
+
+    /**
+     * Called when the user clicks Exit.
+     */
+    @FXML
+    private void handleExit() {
+        System.exit(0);
+    }
+
+    /**
+     * Opens an about dialog.
+     */
+    @FXML
+    private void handleAbout() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Questlife");
+        alert.setHeaderText("About");
+        alert.setContentText("Author: Robert Buschmann\n");
+
+        alert.showAndWait();
     }
 
 }

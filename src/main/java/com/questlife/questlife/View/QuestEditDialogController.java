@@ -1,8 +1,10 @@
 package main.java.com.questlife.questlife.View;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import main.java.com.questlife.questlife.MainApp;
 import main.java.com.questlife.questlife.enemy.Enemy;
 import main.java.com.questlife.questlife.quests.Quest;
 
@@ -40,6 +42,7 @@ public class QuestEditDialogController {
      */
     @FXML
     private void initialize() {
+        enemyName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
     }
 
 
@@ -58,9 +61,10 @@ public class QuestEditDialogController {
      *
      * @param quest
      */
-    public void setQuest(Quest quest) {
+    public void setQuest(Quest quest, MainApp mainApp) {
         this.quest = quest;
 
+        enemyTable.setItems(mainApp.getEnemyData());
         questName.setText(quest.getName());
         questDescription.setText(quest.getDescription());
         questEnemyCount.setText(""+quest.getMobsToHunt());
@@ -114,13 +118,13 @@ public class QuestEditDialogController {
         }
 
         if (questEnemyCount.getText() == null || questEnemyCount.getText().length() == 0) {
-            errorMessage += "No valid postal code!\n";
+            errorMessage += "Non valid cost!\n";
         } else {
-            // try to parse the postal code into an int.
+            // try to parse the cost into an int.
             try {
                 Integer.parseInt(questEnemyCount.getText());
             } catch (NumberFormatException e) {
-                errorMessage += "No valid postal code (must be a whole number)!\n";
+                errorMessage += "No valid cost (must be a whole number)!\n";
             }
         }
 

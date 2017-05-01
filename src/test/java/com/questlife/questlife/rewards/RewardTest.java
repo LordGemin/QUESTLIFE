@@ -19,15 +19,14 @@ public class RewardTest {
     @Test
     public void testCreation () {
 
-        Skill[] skill = new Skill[1];
-        skill[0] = new Skill("Situps", Attributes.STRENGTH,"Do Situps", SkillType.TIMEBASED);
+        Skill skill = new Skill("Situps", Attributes.STRENGTH,"Do Situps", SkillType.TIMEBASED);
         Reward reward;
         reward = new Reward("Blessing of Kobosuba", RewardType.GOLD_BASED, skill, 2000, 2, 100);
-        Skill[] test = reward.getAssociatedSkills();
+        Skill test = reward.getAssociatedSkill();
 
         assertEquals("Blessing of Kobosuba", reward.getName());
         assertEquals(RewardType.GOLD_BASED, reward.getRewardType());
-        assertEquals(Attributes.STRENGTH, test[0].getAssociatedAttribute());
+        assertEquals(Attributes.STRENGTH, test.getAssociatedAttribute());
     }
 
 

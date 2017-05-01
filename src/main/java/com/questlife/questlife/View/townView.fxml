@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Line?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" styleClass="background" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.java.com.questlife.questlife.View.TownViewController">
+   <children>
+      <Button layoutX="462.0" layoutY="353.0" mnemonicParsing="false" onAction="#handleLeaveTown" text="Leave Town">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
+      <ImageView fitHeight="289.0" fitWidth="470.0" layoutX="69.0" layoutY="56.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@buildings.png" />
+         </image>
+      </ImageView>
+      <Button layoutX="199.0" layoutY="214.0" mnemonicParsing="false" onAction="#handleTemple" opacity="0.0" text="Temple">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
+      <Button layoutX="141.0" layoutY="279.0" mnemonicParsing="false" onAction="#handleMarket" opacity="0.0" text="MarketPlace">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
+      <Button layoutX="260.0" layoutY="147.0" mnemonicParsing="false" onAction="#handleShop" opacity="0.0" text="Shop">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
+      <Label layoutX="225.0" layoutY="76.0" text="Shop" />
+      <Label layoutX="37.0" layoutY="247.0" text="Temple" />
+      <Label layoutX="199.0" layoutY="335.0" text="Market Place" />
+      <Line endX="160.0" endY="-50.0" layoutX="78.0" layoutY="283.0" startX="15.0" startY="-25.0" />
+      <Line endX="50.0" endY="50.0" layoutX="235.0" layoutY="97.0" startX="8.0" />
+      <Line endX="25.0" endY="20.0" layoutX="205.0" layoutY="312.0" />
+      <Button layoutX="127.0" layoutY="198.0" mnemonicParsing="false" onAction="#handleTavern" opacity="0.0" prefHeight="33.0" prefWidth="26.0" text="Tavern">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
+      <Label layoutX="62.0" layoutY="130.0" text="Tavern" />
+      <Line endX="-30.0" endY="60.0" layoutX="185.0" layoutY="151.0" startX="-100.0" />
+   </children>
+</AnchorPane>

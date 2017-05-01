@@ -1,8 +1,10 @@
 package main.java.com.questlife.questlife.View;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import main.java.com.questlife.questlife.MainApp;
 import main.java.com.questlife.questlife.goals.Goals;
 import main.java.com.questlife.questlife.skills.Skill;
 
@@ -25,7 +27,11 @@ public class GoalEditDialogController {
     @FXML
     private TableView<Skill> associatedSkill;
     @FXML
+    private TableColumn<Skill, String> skillName;
+    @FXML
     private TableView<Goals> overarchingGoalTable;
+    @FXML
+    private TableColumn<Goals, String> overarchingGoalName;
 
     private Stage dialogStage;
     private Goals goal;
@@ -38,6 +44,8 @@ public class GoalEditDialogController {
      */
     @FXML
     private void initialize() {
+        overarchingGoalName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getOverarchingGoal().getName()));
+        skillName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
     }
 
     /**
@@ -55,9 +63,11 @@ public class GoalEditDialogController {
      *
      * @param goal
      */
-    public void setGoal(Goals goal) {
+    public void setGoal(Goals goal, MainApp mainApp) {
         this.goal = goal;
 
+        overarchingGoalTable.setItems(mainApp.getGoalData());
+        associatedSkill.setItems(mainApp.getSkillData());
         goalName.setText(goal.getName());
         amountOfWordSlider.setValue(goal.getAmountOfWork());
         complexitySlider.setValue(goal.getComplexity());
