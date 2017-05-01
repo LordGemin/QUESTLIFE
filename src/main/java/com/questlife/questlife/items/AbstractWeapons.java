@@ -1,5 +1,6 @@
 package main.java.com.questlife.questlife.items;
 
+import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.util.AttackType;
 import main.java.com.questlife.questlife.util.Generator;
 import main.java.com.questlife.questlife.util.StatCalculator;
@@ -53,5 +54,4 @@ public abstract class AbstractWeapons extends AbstractItems{
         return attackType;
     }
 
-    public abstract void setHeroLevel(int levelOfHero);
 }

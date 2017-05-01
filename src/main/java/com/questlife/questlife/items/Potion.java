@@ -44,6 +44,11 @@ public class Potion extends AbstractItems {
         super(name, price, description);
     }
 
+    @Override
+    public void setHeroLevel(int levelOfHero) {
+
+    }
+
     private AbstractPotions generatePotion(int heroLevel) {
 
         Reflections reflections = new Reflections("main.java");

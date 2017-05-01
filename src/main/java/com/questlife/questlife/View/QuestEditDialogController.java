@@ -57,7 +57,7 @@ public class QuestEditDialogController {
 
 
     /**
-     * Sets the goal to be edited in the dialog.
+     * Sets the quest to be edited in the dialog.
      *
      * @param quest
      */

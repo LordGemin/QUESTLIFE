@@ -13,15 +13,20 @@ import main.java.com.questlife.questlife.View.*;
 import main.java.com.questlife.questlife.enemy.Enemy;
 import main.java.com.questlife.questlife.goals.Goals;
 import main.java.com.questlife.questlife.hero.Hero;
-import main.java.com.questlife.questlife.items.AbstractItems;
-import main.java.com.questlife.questlife.items.Weapon;
+import main.java.com.questlife.questlife.items.*;
 import main.java.com.questlife.questlife.player.Player;
 import main.java.com.questlife.questlife.quests.Quest;
 import main.java.com.questlife.questlife.rewards.Reward;
 import main.java.com.questlife.questlife.skills.Skill;
+import main.java.com.questlife.questlife.town.Shop;
+import main.java.com.questlife.questlife.util.AttackType;
+import main.java.com.questlife.questlife.util.Generator;
+import org.reflections.Reflections;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.prefs.Preferences;
 
 /**
@@ -74,10 +79,53 @@ public class MainApp extends Application {
     /**
      * The data as an observable list of items.
      */
+    private ObservableList<AbstractItems> inventory = FXCollections.observableArrayList();
+
+    public ObservableList<AbstractItems> getInventory() {
+        return inventory;
+    }
+
+    /**
+     * The data as an observable list of items.
+     */
     private ObservableList<AbstractItems> itemsData = FXCollections.observableArrayList();
 
     public ObservableList<AbstractItems> getItemsData() {
         return itemsData;
+    }
+
+    /**
+     * Initializes all items using reflections.
+     * This is will continue to add all future items.
+     *
+     * @return true if initializing via reflection worked.
+     */
+    private boolean initializeItems() {
+        boolean flag = false;
+        Reflections reflections = new Reflections("main.java");
+        Set<Class<? extends AbstractItems>> classes = reflections.getSubTypesOf(AbstractItems.class);
+        for (Object a : classes) {
+            AbstractItems potion;
+            try {
+                Class b = Class.forName(a.toString().replace("class ", ""));
+                potion = (AbstractItems) b.newInstance();
+            } catch (Exception e) {
+                potion = null;
+            }
+            if (potion instanceof AbstractPotions) {
+                itemsData.add((AbstractPotions) potion);
+                flag = true;
+                continue;
+            }
+            if (potion instanceof AbstractWeapons) {
+                itemsData.add((AbstractWeapons) potion);
+                flag = true;
+                continue;
+            }
+            System.out.println("Object was: " + a.toString());
+        }
+        return flag;
+
     }
 
 
@@ -90,6 +138,24 @@ public class MainApp extends Application {
     }
 
     /**
+     * Creates Enemies for the game to use.
+     *
+     * TODO: Have abstract enemy main class and specific enemies!
+     */
+    private void initializeEnemies() {
+        Generator generator = new Generator();
+
+        for(int i=0; i < 10; i++) {
+            AttackType attackType = AttackType.PHYSICAL;
+            String enemyName = generator.generateEnemyName();
+            if(enemyName.contains("Blue")) {
+                attackType = AttackType.MAGICAL;
+            }
+            enemyData.add(new Enemy(enemyName, 1, attackType));
+        }
+    }
+
+    /**
      * The data as an observable list of hero(s). Saving just one hero, but List to be observable
      */
     private ObservableList<Hero> heroData = FXCollections.observableArrayList();
@@ -98,10 +164,29 @@ public class MainApp extends Application {
         return heroData;
     }
 
+
+    /**
+     * A shop to have the game work. Doesn't need to be observable as of now.
+     */
+    private Shop shop = new Shop(new Generator().generateShopNames());
+
+
+    public Shop getShop() {
+        return shop;
+    }
+
     /**
      * Constructor
      */
     public MainApp() {
+        initializeItems();
+        initializeEnemies();
+
+        heroData.add(new Hero(new Player(), "Bolgerig", new Weapon(1)));
+        heroData.get(0).setCharisma(20);
+        heroData.get(0).setConstitution(50);
+        heroData.get(0).setGold(5000);
+
         //TODO: SampleData?
         goalData.add(new Goals());
         goalData.add(new Goals());
@@ -121,8 +206,6 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("Questlife");
-
-        heroData.add(new Hero(new Player(), "Bolgerig", new Weapon(1)));
         
         initMainLayout();
 
@@ -379,6 +462,70 @@ public class MainApp extends Application {
             WeaponDetailDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.setItem(item);
+
+            // Show the dialog and wait until the user closes it
+            dialogStage.showAndWait();
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean showTownView() {
+        try {
+            // Load the fxml file and create a new stage for the popup dialog.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/townView.fxml"));
+            AnchorPane page = (AnchorPane) loader.load();
+
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Town View");
+            dialogStage.getIcons().add(new Image("file:resources/images/Address_Book.png"));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+            dialogStage.setResizable(false);
+
+            // Set the goal into the controller.
+            TownViewController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setMainApp(this);
+
+            // Show the dialog and wait until the user closes it
+            dialogStage.showAndWait();
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean showShopDialog() {
+        try {
+            // Load the fxml file and create a new stage for the popup dialog.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/shopDialog.fxml"));
+            AnchorPane page = (AnchorPane) loader.load();
+
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Shop");
+            dialogStage.getIcons().add(new Image("file:resources/images/Address_Book.png"));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+            dialogStage.setResizable(false);
+
+            // Set the goal into the controller.
+            ShopDialogController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setMainApp(this);
 
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();

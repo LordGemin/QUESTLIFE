@@ -1,5 +1,6 @@
 package main.java.com.questlife.questlife.enemy;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.util.AttackType;
@@ -14,7 +15,7 @@ import java.io.Serializable;
  */
 public class Enemy implements Serializable {
 
-    private StringProperty name;
+    private StringProperty name = new SimpleStringProperty();
     private Integer health;
     private Integer attackPower;
     private Integer defense;
@@ -129,5 +130,9 @@ public class Enemy implements Serializable {
     public int getGoldReward() {
         StatCalculator statCalculator = new StatCalculator();
         return  statCalculator.getGoldFromEnemy(this);
+    }
+
+    public void setHerolevel(int herolevel) {
+        createEnemy(herolevel, getAttackType());
     }
 }

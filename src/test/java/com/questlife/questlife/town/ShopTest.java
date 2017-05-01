@@ -44,7 +44,7 @@ public class ShopTest {
 
         assertEquals(2000-price, hero.getGold());
 
-        assertFalse(shop.getItems().contains(item));
+        assertFalse(shop.getItemList().contains(item));
 
     }
 

@@ -39,7 +39,7 @@
           <Menu mnemonicParsing="false" text="Views">
             <items>
                   <MenuItem mnemonicParsing="false" text="Main Overview" />
-                  <MenuItem mnemonicParsing="false" text="Town" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleShowTown" text="Town" />
               <MenuItem mnemonicParsing="false" text="Statistics" />
             </items>
           </Menu>

@@ -1,5 +1,7 @@
 package main.java.com.questlife.questlife.town;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.items.AbstractItems;
 
@@ -13,6 +15,7 @@ import java.util.List;
 public class Shop extends AbstractBuilding {
 
     private List<AbstractItems> itemsList = new ArrayList<>();
+    private ObservableList<AbstractItems> itemList = FXCollections.observableArrayList();
 
     public Shop() {
 
@@ -24,7 +27,7 @@ public class Shop extends AbstractBuilding {
 
     public Shop(String name, List<AbstractItems> itemsList) {
         this.name = name;
-        this.itemsList = itemsList;
+        this.itemList.addAll(itemsList);
     }
 
     public String getName() {
@@ -35,24 +38,24 @@ public class Shop extends AbstractBuilding {
         this.name = name;
     }
 
-    public List<AbstractItems> getItems(){
-        return itemsList;
+    public ObservableList<AbstractItems> getItemList() {
+        return  itemList;
     }
 
-    public void setItemsList(List<AbstractItems> itemsList) {
-        this.itemsList = itemsList;
+    public void setItemList(List<AbstractItems> itemsList) {
+        this.itemList.addAll(itemsList);
     }
 
     public void addItem(AbstractItems item) {
-        itemsList.add(item);
+        itemList.add(item);
     }
 
     public int getPriceOfItemAt(int position) {
-        return itemsList.get(position).getPrice();
+        return itemList.get(position).getPrice();
     }
 
     public int getPriceOfItemByName(String name) {
-        for (AbstractItems item : itemsList) {
+        for (AbstractItems item : itemList) {
             if (item.getName().equals(name)) {
                 return item.getPrice();
             }
@@ -61,27 +64,28 @@ public class Shop extends AbstractBuilding {
     }
 
     public int getPriceOfItem(AbstractItems item) {
-        int positionInList = (itemsList.contains(item)) ? itemsList.indexOf(item) : -1;
+        int positionInList = (itemList.contains(item)) ? itemList.indexOf(item) : -1;
         if(positionInList!= -1) {
-            return itemsList.get(positionInList).getPrice();
+            return itemList.get(positionInList).getPrice();
         }
         return 0;
     }
 
     public AbstractItems sellItem(int position, Hero hero) {
         if(hero.spendGold(getPriceOfItemAt(position))) {
-            return itemsList.remove(position);
+            return itemList.remove(position);
         }
         return null;
     }
 
-    public AbstractItems sellItem(String name, Hero hero) {
-        for (AbstractItems item : itemsList) {
+    public boolean sellItem(String name, Hero hero) {
+        for (AbstractItems item : itemList) {
             if (item.getName().equals(name)) {
-                return sellItem(itemsList.indexOf(item), hero);
+                sellItem(itemList.indexOf(item), hero);
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
 }

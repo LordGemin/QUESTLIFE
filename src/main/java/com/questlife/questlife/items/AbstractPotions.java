@@ -1,10 +1,15 @@
 package main.java.com.questlife.questlife.items;
 
+import main.java.com.questlife.questlife.hero.Hero;
+import main.java.com.questlife.questlife.util.StatCalculator;
+
 /**
+ *
  * Created by Busch on 22.04.2017.
  */
 public abstract class AbstractPotions extends AbstractItems {
 
+    StatCalculator statCalculator = new StatCalculator();
     Integer strengthHP;
     Integer strengthMP;
 
@@ -37,6 +42,4 @@ public abstract class AbstractPotions extends AbstractItems {
         return strengthMP;
     }
 
-
-    public abstract void setHeroLevel(int levelOfHero);
 }

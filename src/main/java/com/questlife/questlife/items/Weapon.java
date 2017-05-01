@@ -96,4 +96,9 @@ public class Weapon extends AbstractItems {
         }
         */
     }
+
+    @Override
+    public void setHeroLevel(int levelOfHero) {
+
+    }
 }

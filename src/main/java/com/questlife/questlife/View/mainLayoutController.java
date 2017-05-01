@@ -182,7 +182,7 @@ public class mainLayoutController {
         questsTable.setItems(mainApp.getQuestData());
         rewardTable.setItems(mainApp.getRewardData());
         skillsTable.setItems(mainApp.getSkillData());
-        inventoryTable.setItems(mainApp.getItemsData());
+        inventoryTable.setItems(mainApp.getInventory());
 
         heroName.setText(hero.getName());
         experienceToNextLevel.setProgress(hero.getExperience()/hero.getExperienceToNextLevel());
@@ -232,6 +232,13 @@ public class mainLayoutController {
         }
     }
 
+    /**
+     * Called when the user selects town from menu "views"
+     */
+    @FXML
+    private void handleShowTown() {
+        mainApp.showTownView();
+    }
 
     /**
      * Called when the user clicks Exit.

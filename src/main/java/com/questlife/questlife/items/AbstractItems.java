@@ -1,5 +1,8 @@
 package main.java.com.questlife.questlife.items;
 
+import main.java.com.questlife.questlife.hero.Hero;
+import main.java.com.questlife.questlife.util.StatCalculator;
+
 import java.io.Serializable;
 
 /**
@@ -30,5 +33,12 @@ public abstract class AbstractItems implements Serializable {
 
     public String getDescription() {
         return description;
+    }
+
+    public abstract void setHeroLevel(int levelOfHero);
+
+    public void updatePrice(Hero hero) {
+        StatCalculator statCalculator = new StatCalculator();
+        this.price -= statCalculator.getRebate(hero, price);
     }
 }

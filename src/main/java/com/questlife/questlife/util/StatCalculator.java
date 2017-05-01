@@ -70,8 +70,16 @@ public class StatCalculator {
         return attackValue;
     }
 
+    /**
+     * Calculates weaponprice based on base and level of hero.
+     * Half the baseprice is the minimumprice, and it can go up dramatically from there
+     * @param baseprice
+     * @param levelOfHero
+     * @return weaponprice
+     */
     public int calculateWeaponPrice(int baseprice, int levelOfHero) {
-        return generator.generateNumber()%(baseprice+levelOfHero*5);
+        return (baseprice + generator.generateNumber()%(baseprice+levelOfHero*2));
+        //TODO: Rethink this formula
     }
 
     public int calculateWeaponDamage(int basedamage, int maxdamage, int levelOfHero) {
@@ -115,6 +123,8 @@ public class StatCalculator {
 
     public int getRebate(Hero hero, int cost) {
         //TODO: Add inverse square function to get slowly rising rebates with asymptote at 0.501 (to reach 0.5)
-        return Math.round((hero.getCharisma()/100)*cost);
+        double rebate = hero.getCharisma()/100;
+        int number = (int) Math.ceil(rebate*cost);
+        return number;
     }
 }

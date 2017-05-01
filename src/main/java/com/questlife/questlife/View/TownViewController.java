@@ -2,6 +2,7 @@ package main.java.com.questlife.questlife.View;
 
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
+import main.java.com.questlife.questlife.MainApp;
 
 /**
  *
@@ -10,6 +11,7 @@ import javafx.stage.Stage;
 public class TownViewController {
 
     private Stage dialogStage;
+    private MainApp mainApp;
 
     /**
      * Initializes the controller class. This method is automatically called
@@ -19,6 +21,14 @@ public class TownViewController {
     private void initialize() {
     }
 
+    /**
+     * Is called by the main application to give a reference back to itself.
+     *
+     * @param mainApp reference
+     */
+    public void setMainApp(MainApp mainApp) {
+        this.mainApp = mainApp;
+    }
 
     /**
      * Sets the stage of this dialog.
@@ -34,9 +44,12 @@ public class TownViewController {
         dialogStage.close();
     }
 
+    /**
+     * Called when user clicks invisible button for shop
+     */
     @FXML
     private void handleShop() {
-
+        mainApp.showShopDialog();
     }
 
     @FXML
