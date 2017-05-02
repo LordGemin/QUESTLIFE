@@ -1,5 +1,11 @@
 <keymap version="1" name="Default copy" parent="$default">
+  <action id="CommentByBlockComment">
+    <keyboard-shortcut first-keystroke="shift ctrl slash" />
+    <keyboard-shortcut first-keystroke="shift ctrl divide" />
+    <keyboard-shortcut first-keystroke="shift ctrl 7" />
+  </action>
   <action id="CreateLibraryFromFile">
     <keyboard-shortcut first-keystroke="shift ctrl alt #10000fc" />
   </action>
+  <action id="ToggleBookmark7" />
 </keymap>
