@@ -141,6 +141,7 @@ public class ShopDialogController {
             alert.setTitle("Item sale failed");
             alert.setHeaderText("Problem");
             alert.setContentText("Too many items selected!\nPlease select only one item.");
+            alert.show();
             return;
         }
         if (itemsTable.getSelectionModel().getSelectedItems() == null) {
@@ -148,6 +149,7 @@ public class ShopDialogController {
             alert.setTitle("Item sale failed");
             alert.setHeaderText("Problem");
             alert.setContentText("No item selected!\nPlease select an item.");
+            alert.show();
         }
 
         AbstractItems item = itemsTable.getSelectionModel().getSelectedItem();

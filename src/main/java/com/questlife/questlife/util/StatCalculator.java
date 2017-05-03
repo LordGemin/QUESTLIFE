@@ -41,7 +41,7 @@ public class StatCalculator {
 
     public int calculateHeroesAttack(Hero hero) {
         int attackValue;
-        //If hero has no weapon equipped, give him nonsense weapon;
+        //If hero has no weapon equipped, give him some weapon;
         AbstractWeapons heroWeapon = (hero.getWeapon() != null) ? hero.getWeapon() : new Weapon("Bare knuckle", 4,4,AttackType.PHYSICAL);
 
         switch (heroWeapon.getAttackType()) {

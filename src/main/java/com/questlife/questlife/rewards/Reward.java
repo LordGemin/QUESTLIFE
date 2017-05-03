@@ -14,13 +14,12 @@ public class Reward implements Serializable{
     private String name;
     private String description;
     private RewardType rewardType;
-    private Skill associatedSkill = new Skill();
+    private Skill associatedSkill;
     private int cost;
     private int canReceive;
     private int risingCost;
 
     public Reward() {
-        this.associatedSkill = new Skill();
     }
 
     public Reward(String name, RewardType rewardType, Skill associatedSkill, int cost, int canReceive, int risingCost) {
@@ -41,7 +40,7 @@ public class Reward implements Serializable{
     }
 
     public Skill getAssociatedSkill() {
-        return associatedSkill;
+        return (associatedSkill == null) ? new Skill():associatedSkill;
     }
 
     public int getCost() {

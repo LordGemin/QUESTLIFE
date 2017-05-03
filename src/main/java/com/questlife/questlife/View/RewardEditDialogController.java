@@ -38,10 +38,10 @@ public class RewardEditDialogController {
     @FXML
     private TableView<Skill> rewardAssociatedSkillTable;
     @FXML
-    private TableColumn<Reward, String> rewardAssociatedSkillName;
+    private TableColumn<Skill, String> rewardAssociatedSkillName;
 
 
-    private Reward reward = new Reward();
+    private Reward reward;
 
     private Stage dialogStage;
     private boolean okClicked = false;
@@ -53,7 +53,7 @@ public class RewardEditDialogController {
      */
     @FXML
     private void initialize() {
-        rewardAssociatedSkillName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getAssociatedSkill().getName()));
+        rewardAssociatedSkillName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
     }
 
     /**
@@ -86,6 +86,8 @@ public class RewardEditDialogController {
             switch (reward.getRewardType()) {
                 case SKILL_LEVEL_BASED:
                     rewardType.selectToggle(skillBased);
+                    rewardAmount.setText(""+1);
+                    rewardAmount.setDisable(true);
                     break;
                 case GOLD_BASED:
                     rewardType.selectToggle(goldBased);
@@ -120,6 +122,21 @@ public class RewardEditDialogController {
         dialogStage.close();
     }
 
+    /**
+     * Called when the user toggles a radio button.
+     * For skill based rewards, there are no multiple rewards and therefore no rising costs
+     */
+    @FXML
+    private void handleToggleSkillBased() {
+        if (rewardType.getSelectedToggle() == skillBased) {
+            rewardAmount.setDisable(true);
+            rewardRisingCost.setDisable(true);
+        } else {
+            rewardAmount.setDisable(false);
+            rewardRisingCost.setDisable(false);
+        }
+    }
+
 
     /**
      * Called when the user clicks ok.
@@ -130,8 +147,13 @@ public class RewardEditDialogController {
             reward.setName(rewardName.getText());
             reward.setDescription(rewardDescription.getText());
             reward.setCost(parseInt(rewardCost.getText()));
-            reward.setRisingCost(parseInt(rewardRisingCost.getText()));
-            reward.setCanReceive(parseInt(rewardAmount.getText()));
+            if(rewardType.getSelectedToggle() == skillBased) {
+                reward.setCanReceive(1);
+                reward.setRisingCost(0);
+            } else {
+                reward.setCanReceive(parseInt(rewardAmount.getText()));
+                reward.setRisingCost(parseInt(rewardRisingCost.getText()));
+            }
 
             reward.setRewardType(RewardType.getField(rewardType.getSelectedToggle().getUserData().toString()));
 
@@ -196,6 +218,10 @@ public class RewardEditDialogController {
             } catch (NumberFormatException e) {
                 errorMessage += "Amount must be a whole number!\n";
             }
+        }
+
+        if(rewardType.getSelectedToggle() == skillBased && Integer.parseInt(rewardAmount.getText()) > 1) {
+            errorMessage += "You can only receive skill based rewards once";
         }
 
         /*

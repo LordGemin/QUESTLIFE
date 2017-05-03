@@ -1,6 +1,7 @@
 package main.java.com.questlife.questlife.town;
 
 import main.java.com.questlife.questlife.hero.Hero;
+import main.java.com.questlife.questlife.util.Generator;
 
 /**
  *
@@ -11,7 +12,7 @@ public class Tavern extends AbstractBuilding {
     private Integer cost;
 
     public Tavern() {
-
+        this(new Generator().generateShopNames(), 50);
     }
 
     public Tavern(String name, int cost) {

@@ -60,7 +60,7 @@ public class TownViewController {
 
     @FXML
     private void handleMarket() {
-
+        mainApp.showMarketBoardView();
     }
 
     @FXML

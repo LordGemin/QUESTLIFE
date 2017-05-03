@@ -43,12 +43,12 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <RadioButton fx:id="skillBased" mnemonicParsing="false" styleClass="label-bright" text="Skill level based">
+                  <RadioButton fx:id="skillBased" mnemonicParsing="false" onAction="#handleToggleSkillBased" styleClass="label-bright" text="Skill level based">
                      <toggleGroup>
                         <ToggleGroup fx:id="rewardType" />
                      </toggleGroup>
                   </RadioButton>
-                  <RadioButton fx:id="goldBased" mnemonicParsing="false" styleClass="label-bright" text="Gold based" toggleGroup="$rewardType" GridPane.rowIndex="1" />
+                  <RadioButton fx:id="goldBased" mnemonicParsing="false" onAction="#handleToggleSkillBased" styleClass="label-bright" text="Gold based" toggleGroup="$rewardType" GridPane.rowIndex="1" />
                </children>
             </GridPane>
             <Label text="Cost" GridPane.rowIndex="3" />
@@ -57,7 +57,7 @@
             <TextArea fx:id="rewardDescription" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <TableView fx:id="rewardAssociatedSkillTable" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
               <columns>
-                <TableColumn prefWidth="75.0" text="Skills" />
+                <TableColumn fx:id="rewardAssociatedSkillName" prefWidth="75.0" text="Skills" />
               </columns>
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

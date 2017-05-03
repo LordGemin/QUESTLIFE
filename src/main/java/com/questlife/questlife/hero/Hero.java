@@ -205,11 +205,36 @@ public class Hero implements Serializable {
     }
 
     public Quest getActiveQuest() {
+        if(activeQuest == null && questList.size() > 0) {
+            activeQuest = questList.get(0);
+            questList.get(0).setAsActive();
+        }
+
         return activeQuest;
     }
 
-    public void setActiveQuest(Quest activeQuest) {
-        this.activeQuest = activeQuest;
+    public boolean setActiveQuest(Quest activeQuest) {
+        Quest oldQuest = this.activeQuest;
+        if (this.activeQuest != null) {
+            this.activeQuest.setInactive();
+        }
+
+        if(activeQuest == null) {
+            for(Quest q:questList) {
+                if (!q.equals(oldQuest)) {
+                    q.setAsActive();
+                    this.activeQuest = q;
+                }
+            }
+            return true;
+        }
+
+        if(questList.contains(activeQuest)) {
+            activeQuest.setAsActive();
+            this.activeQuest = activeQuest;
+            return true;
+        }
+        return false;
     }
 
     public List<Quest> getQuestList() {
@@ -228,7 +253,7 @@ public class Hero implements Serializable {
         //TODO: Notify player.
         gainGold(activeQuest.getRewardGold());
         gainExperience(activeQuest.getRewardExp());
-        getQuestList().remove(activeQuest);
+        questList.remove(activeQuest);
         activeQuest.setInactive();
         activeQuest = null;
     }
@@ -387,6 +412,20 @@ public class Hero implements Serializable {
         return false;
     }
 
+    /**
+     * When hero buys rewards, he gets no rebate.
+     *
+     * @param cost Cost of the reward that is to be bought
+     * @return true if hero had enough gold
+     */
+    public boolean spendGoldForReward(int cost) {
+        if(gold >= cost) {
+            gold -= cost;
+            return true;
+        }
+        return false;
+    }
+
     public void sendToField() {
         if(getHealth() > 0) {
             Field field = new Field(this);
@@ -408,4 +447,5 @@ public class Hero implements Serializable {
         }
 
     }
+
 }

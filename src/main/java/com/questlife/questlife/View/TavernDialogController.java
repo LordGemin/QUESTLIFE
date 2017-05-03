@@ -38,7 +38,7 @@ public class TavernDialogController {
      */
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
-        this.tavern = mainApp.getTavern();
+        this.tavern = new Tavern();
         tavernName.setText(tavern.getName());
     }
 

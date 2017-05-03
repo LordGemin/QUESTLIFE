@@ -6,7 +6,8 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
-
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane prefHeight="389.0" prefWidth="268.0" styleClass="background" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.java.com.questlife.questlife.View.PotionDetailDialogController">
    <children>
@@ -29,10 +30,14 @@
             <Label text="MP effect" GridPane.rowIndex="3" />
             <Label text="Base price" GridPane.rowIndex="4" />
             <Label fx:id="potionName" styleClass="label-bright" text="Label" GridPane.columnIndex="1" />
-            <Label fx:id="potionDescription" styleClass="label-bright" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <Label fx:id="potionStrengthHP" styleClass="label-bright" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <Label fx:id="potionStrengthMP" styleClass="label-bright" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <Label fx:id="potionPrice" styleClass="label-bright" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Text fx:id="potionDescription" fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="98.13671875" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <font>
+                  <Font name="Segoe UI" size="12.0" />
+               </font>
+            </Text>
          </children>
       </GridPane>
       <Button layoutX="69.0" layoutY="327.0" mnemonicParsing="false" onAction="#handleExit" text="Close details" />

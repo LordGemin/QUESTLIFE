@@ -51,8 +51,9 @@ public class TempleDialogController {
 
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
-        this.temple = mainApp.getTemple();
+        this.temple = new Temple();
 
+        temple.setRewardList(mainApp.getRewardData());
         rewardTableView.setItems(mainApp.getRewardData());
     }
 
@@ -83,8 +84,14 @@ public class TempleDialogController {
                 alert.setHeaderText("Problem");
                 alert.setContentText((selection.getRewardType().equals(RewardType.GOLD_BASED)) ? "Hero does not have enough gold" : "Hero didn't train enough to receive blessing");
                 alert.show();
+                return;
             }
-            mainApp.getRewardData().remove(removed);
+            if(removed.getCanReceive() == 0) {
+                mainApp.getRewardData().remove(removed);
+            } else {
+                // Update the reward to reflect rising cost
+                mainApp.getRewardData().set(mainApp.getRewardData().indexOf(selection), removed);
+            }
         } catch (NoSuchFieldException | NoSuchElementException e) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Could not get reward");

@@ -40,6 +40,14 @@ public class Temple {
         return rewardList;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     /**
      * Checks if hero can acquire a given reward.
      * Removes the reward from the reward list to symbolise getting it.
@@ -60,13 +68,19 @@ public class Temple {
 
         // check if hero can BUY reward, remove it and return removed reward for further handling
         if(reward.getRewardType().equals(RewardType.GOLD_BASED)) {
-            if(!hero.spendGold(reward.getCost())) {
+            if(!hero.spendGoldForReward(reward.getCost())) {
                 return null;
             }
-            return rewardList.remove(pos);
+            if(reward.getCanReceive() == 0) {
+                return rewardList.remove(pos);
+            } else {
+                reward.setCanReceive(reward.getCanReceive()-1);
+                reward.setCost(reward.getCost()+reward.getRisingCost());
+                return reward;
+            }
         }
 
-        // check if hero is skillfull enough to obtain reward, remove it and return removed reward
+        // check if hero is skillful enough to obtain reward, remove it and return removed reward
         if(reward.getRewardType().equals(RewardType.SKILL_LEVEL_BASED)) {
             if(reward.getAssociatedSkill().getLevel() != reward.getCost()) {
                 return null;

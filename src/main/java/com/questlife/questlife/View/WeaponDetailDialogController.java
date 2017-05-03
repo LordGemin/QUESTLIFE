@@ -2,6 +2,7 @@ package main.java.com.questlife.questlife.View;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import main.java.com.questlife.questlife.items.AbstractItems;
 import main.java.com.questlife.questlife.items.AbstractWeapons;
@@ -18,7 +19,7 @@ public class WeaponDetailDialogController {
     @FXML
     private Label weaponName;
     @FXML
-    private Label weaponDescription;
+    private Text weaponDescription;
     @FXML
     private Label weaponPhysicalAttack;
     @FXML

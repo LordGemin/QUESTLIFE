@@ -19,15 +19,12 @@ import main.java.com.questlife.questlife.quests.Quest;
 import main.java.com.questlife.questlife.rewards.Reward;
 import main.java.com.questlife.questlife.skills.Skill;
 import main.java.com.questlife.questlife.town.Shop;
-import main.java.com.questlife.questlife.town.Tavern;
-import main.java.com.questlife.questlife.town.Temple;
 import main.java.com.questlife.questlife.util.AttackType;
 import main.java.com.questlife.questlife.util.Generator;
 import org.reflections.Reflections;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
@@ -160,7 +157,7 @@ public class MainApp extends Application {
     private void initializeEnemies() {
         Generator generator = new Generator();
 
-        for(int i=0; i < 10; i++) {
+        for(int i=0; i < 20; i++) {
             AttackType attackType = AttackType.PHYSICAL;
             String enemyName = generator.generateEnemyName();
             if(enemyName.contains("Blue")) {
@@ -187,24 +184,6 @@ public class MainApp extends Application {
 
     public Shop getShop() {
         return shop;
-    }
-
-    /**
-     * A tavern to pass on to the controller
-     */
-    private Tavern tavern = new Tavern(new Generator().generateShopNames(), TAVERNCOST);
-
-    public Tavern getTavern() {
-        return tavern;
-    }
-
-    /**
-     * A tavern to pass on to the controller
-     */
-    private Temple temple = new Temple("Temple");
-
-    public Temple getTemple() {
-        return temple;
     }
 
     /**
@@ -409,11 +388,11 @@ public class MainApp extends Application {
         }
     }
 
-    public boolean showQuestEditDialog(Quest tempQuest) {
+    public boolean showQuestDetailDialog(Quest tempQuest) {
         try {
             // Load the fxml file and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("view/questEditDialog.fxml"));
+            loader.setLocation(MainApp.class.getResource("view/questDetailDialog.fxml"));
             AnchorPane page = (AnchorPane) loader.load();
 
             // Create the dialog Stage.
@@ -427,14 +406,14 @@ public class MainApp extends Application {
             dialogStage.setResizable(false);
 
             // Set the goal into the controller.
-            QuestEditDialogController controller = loader.getController();
+            QuestDetailDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage);
-            controller.setQuest(tempQuest,this);
+            controller.setQuest(tempQuest);
 
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();
 
-            return controller.isOkClicked();
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
             return false;
@@ -626,6 +605,42 @@ public class MainApp extends Application {
 
             // Set the goal into the controller.
             TempleDialogController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setMainApp(this);
+
+            // Show the dialog and wait until the user closes it
+            dialogStage.showAndWait();
+
+            return true;
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean showMarketBoardView() {
+        try {
+            // Load the fxml file and create a new stage for the popup dialog.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/marketboardView.fxml"));
+            AnchorPane page = (AnchorPane) loader.load();
+
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Marketboard");
+            dialogStage.getIcons().add(new Image("file:resources/images/Address_Book.png"));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            // Disable resizing of the window
+            // TODO: Enable by smart design
+            dialogStage.setResizable(false);
+
+            // Set the goal into the controller.
+            MarketboardViewController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.setMainApp(this);
 

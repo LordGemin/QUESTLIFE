@@ -5,7 +5,7 @@ package main.java.com.questlife.questlife.util;
  * Created by Gemin on 10.04.2017.
  */
 public enum AttackType {
-    PHYSICAL("Physical dealDamage"), MAGICAL("Magical dealDamage"), BOTH("Both");
+    PHYSICAL("Physical"), MAGICAL("Magical"), BOTH("Physical & Magical");
 
     private final String fieldDescription;
 

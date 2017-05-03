@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -110,7 +111,13 @@
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                            </columnResizePolicy>
                         </TableView>
-                        <Button layoutX="161.0" layoutY="304.0" mnemonicParsing="false" onAction="#handleNewGoal" text="New" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="161.0" AnchorPane.rightAnchor="161.0" />
+                        <ButtonBar layoutX="21.0" layoutY="302.0" prefHeight="40.0" prefWidth="353.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="35.0">
+                           <buttons>
+                              <Button mnemonicParsing="false" onAction="#handleNewGoal" text="New" />
+                              <Button mnemonicParsing="false" text="Edit..." />
+                              <Button mnemonicParsing="false" prefHeight="33.0" prefWidth="112.0" text="Delete..." />
+                           </buttons>
+                        </ButtonBar>
                      </children>
                   </AnchorPane>
             </content>
@@ -130,7 +137,13 @@
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                            </columnResizePolicy>
                         </TableView>
-                        <Button layoutX="161.0" layoutY="304.0" mnemonicParsing="false" onAction="#handleNewQuest" text="New" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="161.0" AnchorPane.rightAnchor="161.0" />
+                        <ButtonBar layoutX="93.0" layoutY="302.0" prefHeight="40.0" prefWidth="390.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="25.0">
+                          <buttons>
+                            <Button mnemonicParsing="false" onAction="#handleAbandonQuest" text="Abandon" />
+                              <Button mnemonicParsing="false" onAction="#handleQuestDetail" prefHeight="33.0" prefWidth="106.0" text="Details" />
+                              <Button mnemonicParsing="false" onAction="#handleSetActiveQuest" text="Set active" />
+                          </buttons>
+                        </ButtonBar>
                      </children>
                   </AnchorPane>
               </content>
@@ -151,7 +164,13 @@
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                            </columnResizePolicy>
                         </TableView>
-                        <Button layoutX="174.0" layoutY="320.0" mnemonicParsing="false" onAction="#handleNewReward" text="New" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="161.0" AnchorPane.rightAnchor="161.0" />
+                        <ButtonBar layoutX="5.0" layoutY="300.0" prefHeight="40.0" prefWidth="360.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="35.0">
+                          <buttons>
+                              <Button mnemonicParsing="false" onAction="#handleNewReward" text="New" />
+                            <Button mnemonicParsing="false" onAction="#handleEditReward" text="Edit..." />
+                              <Button mnemonicParsing="false" onAction="#handleDeleteReward" text="Delete..." />
+                          </buttons>
+                        </ButtonBar>
                      </children>
                   </AnchorPane>
             </content>
@@ -171,7 +190,13 @@
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                            </columnResizePolicy>
                         </TableView>
-                        <Button layoutX="174.0" layoutY="310.0" mnemonicParsing="false" onAction="#handleNewSkill" text="New" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="161.0" AnchorPane.rightAnchor="161.0" />
+                        <ButtonBar layoutX="20.0" layoutY="302.0" prefHeight="40.0" prefWidth="360.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="35.0">
+                           <buttons>
+                              <Button mnemonicParsing="false" onAction="#handleNewSkill" text="New" />
+                              <Button mnemonicParsing="false" onAction="#handleEditSkill" text="Edit..." />
+                              <Button mnemonicParsing="false" onAction="#handleDeleteSkill" text="Delete..." />
+                           </buttons>
+                        </ButtonBar>
                      </children>
                   </AnchorPane>
               </content>
@@ -180,7 +205,7 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TableView fx:id="inventoryTable" layoutX="62.0" prefHeight="363.0" prefWidth="408.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <TableView fx:id="inventoryTable" layoutX="62.0" prefHeight="309.0" prefWidth="400.0" AnchorPane.bottomAnchor="54.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <columns>
                             <TableColumn fx:id="inventoryName" prefWidth="113.0" text="Item Name" />
                             <TableColumn fx:id="inventoryDescription" prefWidth="293.0" text="Description" />
@@ -189,6 +214,14 @@
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                            </columnResizePolicy>
                         </TableView>
+                        <ButtonBar layoutX="148.0" layoutY="309.0" prefHeight="36.0" prefWidth="208.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="60.0">
+                          <buttons>
+                              <Button mnemonicParsing="false" onAction="#handleItemDetail" text="Detail" />
+                              <Button mnemonicParsing="false" onAction="#handleSellItem" text="Sell..." />
+                          </buttons>
+                        </ButtonBar>
+                        <Button fx:id="inventoryWeaponEquip" layoutX="68.0" layoutY="313.0" mnemonicParsing="false" onAction="#handleEquipWeapon" text="Equip" visible="false" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="250.0" />
+                        <Button fx:id="inventoryPotionUse" layoutX="69.0" layoutY="313.0" mnemonicParsing="false" onAction="#handleUsePotion" prefHeight="33.0" prefWidth="84.0" text="Use" visible="false" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="250.0" />
                      </children>
                   </AnchorPane>
               </content>
@@ -196,5 +229,6 @@
         </tabs>
       </TabPane>
       <ImageView fitHeight="100.0" fitWidth="99.0" layoutX="6.0" layoutY="106.0" pickOnBounds="true" preserveRatio="true" />
+      <Button layoutX="8.0" layoutY="140.0" mnemonicParsing="false" onAction="#sendHeroToField" text="Send out" />
    </children>
 </AnchorPane>

@@ -1,5 +1,7 @@
 package main.java.com.questlife.questlife.util;
 
+import main.java.com.questlife.questlife.enemy.Enemy;
+
 import java.util.Random;
 
 /**
@@ -29,6 +31,17 @@ public class Generator {
         generatedName = generatedName.concat(suffixes[generateNumber()%suffixes.length]);
 
         return generatedName;
+    }
+
+    public String generateQuestDescription(Enemy enemy) {
+        String description = "";
+
+        String[] what={"You need to hunt some ", "Please get rid of some ", "Please harvest meat from "};
+        String[] why={"the town needs the food.", "they ravage the fields.", "they look silly with their hats."};
+
+        description = what[generateNumber()%what.length]+enemy.getName()+" because "+why[generateNumber()%why.length];
+
+        return description;
     }
 
     public String generateEnemyName() {

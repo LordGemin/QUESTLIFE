@@ -33,7 +33,7 @@ public class Battle extends AbstractBattle {
             runTurn();
         }
         if (getParticipatingHero().getHealth() > 0 ) {
-                getParticipatingHero().gainGold(Math.round(goldGained * (1+(getParticipatingHero().getObservation()/100))));
+                getParticipatingHero().gainGold(Math.round(goldGained * (1+(getParticipatingHero().getObservation()/100.0f))));
                 return true;
         }
         //Hero died during battle. Set current time as time of death
@@ -50,7 +50,7 @@ public class Battle extends AbstractBattle {
 
         for(int i = 0; i < getParticipatingEnemies().size(); i++) {
             if(getParticipatingEnemyAt(i).getHealth() <= 0 ) {
-                //Circle to the next enemy
+                //Circle to the next enemy if current one died
             } else if (enemyPosition == -1) {
                 //looking for the leftmost enemy alive, skipping all afterwards.
                 enemyPosition = i;

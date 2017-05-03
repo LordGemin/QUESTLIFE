@@ -9,9 +9,12 @@ import main.java.com.questlife.questlife.goals.Goals;
 import main.java.com.questlife.questlife.hero.Attributes;
 import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.items.AbstractItems;
+import main.java.com.questlife.questlife.items.AbstractPotions;
+import main.java.com.questlife.questlife.items.AbstractWeapons;
 import main.java.com.questlife.questlife.quests.Quest;
 import main.java.com.questlife.questlife.rewards.Reward;
 import main.java.com.questlife.questlife.skills.Skill;
+import main.java.com.questlife.questlife.town.Field;
 import main.java.com.questlife.questlife.util.RewardType;
 
 import java.util.List;
@@ -47,6 +50,11 @@ public class mainLayoutController {
     private Label piety;
     @FXML
     private Label gold;
+
+    @FXML
+    private Button inventoryPotionUse;
+    @FXML
+    private Button inventoryWeaponEquip;
 
 
     /**
@@ -162,11 +170,32 @@ public class mainLayoutController {
         inventoryName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
         inventoryDescription.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDescription()));
 
+        inventoryPotionUse.setDisable(true);
+        inventoryPotionUse.setVisible(false);
+        inventoryWeaponEquip.setDisable(true);
+        inventoryWeaponEquip.setVisible(false);
 
-     /*   // Listen for selection changes and show the person details accordingly
-        personTable.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> showPersonDetails(newValue));
-*/
+        // Listen for selection changes and show the person details accordingly
+        inventoryTable.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> handleInvSelection(newValue));
+
+    }
+
+    private void handleInvSelection(AbstractItems newValue) {
+        if(newValue instanceof AbstractPotions) {
+            inventoryPotionUse.setDisable(false);
+            inventoryPotionUse.setVisible(true);
+            inventoryWeaponEquip.setDisable(true);
+            inventoryWeaponEquip.setVisible(false);
+            return;
+        }
+        if(newValue instanceof AbstractWeapons) {
+            inventoryPotionUse.setDisable(true);
+            inventoryPotionUse.setVisible(false);
+
+            inventoryWeaponEquip.setDisable(false);
+            inventoryWeaponEquip.setVisible(true);
+        }
     }
 
     /**
@@ -214,6 +243,66 @@ public class mainLayoutController {
         }
     }
 
+    /**
+     * Called when user wants to edit a reward.
+     */
+    @FXML
+    private void handleEditSkill() {
+        if (skillsTable.getSelectionModel().getSelectedItems().size() != 1) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Can only edit one element");
+            alert.setHeaderText("Select skill");
+            alert.setContentText("Please select one skill from the table above\n");
+
+            alert.showAndWait();
+            return;
+        }
+        Skill skill = skillsTable.getSelectionModel().getSelectedItem();
+        mainApp.showSkillEditDialog(skill);
+    }
+
+    /**
+     * Called when user wants to delete a skill
+     */
+    @FXML
+    private void handleDeleteSkill() {
+        if (skillsTable.getSelectionModel().getSelectedItems().size() != 1) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Can only delete one element");
+            alert.setHeaderText("Select skill");
+            alert.setContentText("Please select one skill from the table above\n");
+
+            alert.showAndWait();
+            return;
+        }
+        Skill skill = skillsTable.getSelectionModel().getSelectedItem();
+
+        for(Reward r:mainApp.getRewardData()) {
+            if(r.getAssociatedSkill() == skill) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Can't delete");
+                alert.setHeaderText("Reward");
+                alert.setContentText(r.getName() + " is based on this skill.\nPlease delete the reward first!");
+
+                alert.showAndWait();
+                return;
+            }
+        }
+        for(Goals r:mainApp.getGoalData()) {
+            if(r.getAssociatedSkills().contains(skill)) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Can't delete");
+                alert.setHeaderText("Goal");
+                alert.setContentText(r.getName() + " is based on this skill.\nPlease remove it from the goal first!");
+
+                alert.showAndWait();
+                return;
+            }
+        }
+
+        mainApp.getSkillData().remove(skill);
+    }
+
     @FXML
     private void handleNewReward(){
         Reward tempReward = new Reward();
@@ -223,12 +312,186 @@ public class mainLayoutController {
         }
     }
 
+    /**
+     * Called when user wants to edit a reward.
+     */
     @FXML
-    private void handleNewQuest(){
-        Quest tempQuest = new Quest();
-        boolean okClicked = mainApp.showQuestEditDialog(tempQuest);
-        if (okClicked) {
-            mainApp.getQuestData().add(tempQuest);
+    private void handleEditReward() {
+        if (rewardTable.getSelectionModel().getSelectedItems().size() != 1) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Can only edit one element");
+            alert.setHeaderText("Select reward");
+            alert.setContentText("Please select one reward from the table above\n");
+
+            alert.showAndWait();
+            return;
+        }
+        Reward reward = rewardTable.getSelectionModel().getSelectedItem();
+        mainApp.showRewardEditDialog(reward);
+    }
+
+    /**
+     * Called when user wants to delete a reward
+     */
+    @FXML
+    private void handleDeleteReward() {
+        if (rewardTable.getSelectionModel().getSelectedItems().size() != 1) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Can't delete");
+            alert.setHeaderText("Select reward");
+            alert.setContentText("Please select one reward from the table above\n");
+
+            alert.showAndWait();
+            return;
+        }
+
+        Reward reward = rewardTable.getSelectionModel().getSelectedItem();
+        mainApp.getRewardData().remove(reward);
+
+    }
+
+    /**
+     * Called when user wants to see the details of a quest
+     */
+    @FXML
+    private void handleQuestDetail(){
+        if (questsTable.getSelectionModel().getSelectedItems().size() != 1) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Could not display detail");
+            alert.setHeaderText("Select Quest");
+            alert.setContentText("Please select one quest from the table above\n");
+
+            alert.showAndWait();
+            return;
+        }
+        Quest detail = questsTable.getSelectionModel().getSelectedItem();
+        mainApp.showQuestDetailDialog(detail);
+
+    }
+
+    /**
+     * Called when user abandons a quest
+     */
+    @FXML
+    private void handleAbandonQuest() {
+        if (questsTable.getSelectionModel().getSelectedItems().size() != 1) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Can't abandon");
+            alert.setHeaderText("Select Quest");
+            alert.setContentText("Please select one quest from the table above\n");
+
+            alert.showAndWait();
+            return;
+        }
+        Quest deletion = questsTable.getSelectionModel().getSelectedItem();
+        if(hero.getActiveQuest() == deletion) {
+            hero.setActiveQuest(null);
+        }
+        hero.getQuestList().remove(deletion);
+        mainApp.getQuestData().remove(deletion);
+    }
+
+    /**
+     * Called when user clicks the set active button on a quest
+     */
+    @FXML
+    private void handleSetActiveQuest() {
+        if (questsTable.getSelectionModel().getSelectedItems().size() != 1) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Could not set active");
+            alert.setHeaderText("Select one quest");
+            alert.setContentText("Please select one quest from the table above\n");
+
+            alert.showAndWait();
+            return;
+        }
+        hero.setActiveQuest(questsTable.getSelectionModel().getSelectedItem());
+    }
+
+    /**
+     * Called when user clicks the use potion button, which is only enabled when user has selected a potion
+     */
+    @FXML
+    private void handleUsePotion() {
+        if (inventoryTable.getSelectionModel().getSelectedItems().size() != 1) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Could not use");
+            alert.setHeaderText("Select potion");
+            alert.setContentText("Please select one potion from the table above\n");
+
+            alert.showAndWait();
+            return;
+        }
+        hero.takePotion((AbstractPotions) inventoryTable.getSelectionModel().getSelectedItem());
+    }
+
+    /**
+     * Called when user clicks the equip weapon button, which is only enabled when user has selected a weapon
+     */
+    @FXML
+    private void handleEquipWeapon() {
+        if (inventoryTable.getSelectionModel().getSelectedItems().size() != 1) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Could equip");
+            alert.setHeaderText("Select weapon");
+            alert.setContentText("Please select one weapon from the table above\n");
+
+            alert.showAndWait();
+            return;
+        }
+        hero.changeWeapon((AbstractWeapons) inventoryTable.getSelectionModel().getSelectedItem());
+    }
+
+    /**
+     * Called when user clicks to sell some items
+     */
+    @FXML
+    private void handleSellItem() {
+        if (inventoryTable.getSelectionModel().getSelectedItems().size() == 0) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Couldn't sell");
+            alert.setHeaderText("Select item");
+            alert.setContentText("Please select at least one item from the table above\n");
+
+            alert.showAndWait();
+            return;
+        }
+        int value = 0;
+        for(AbstractItems a:inventoryTable.getSelectionModel().getSelectedItems()){
+            value += a.getPrice();
+        }
+        // Resell value is much lower than new item value
+        hero.gainGold(Math.round(value/3.0f));
+        gold.setText(""+hero.getGold());
+    }
+
+    /**
+     * Called when user clicks to sell some items
+     */
+    @FXML
+    private void handleItemDetail() {
+        if (inventoryTable.getSelectionModel().getSelectedItems().size() != 1) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Detail error");
+            alert.setHeaderText("Select item");
+            alert.setContentText("Please select one item from the table above\n");
+
+            alert.showAndWait();
+            return;
+        }
+        AbstractItems selected = inventoryTable.getSelectionModel().getSelectedItem();
+        if(selected instanceof AbstractPotions) {
+            mainApp.showPotionDetailDialog(selected);
+        } else if(selected instanceof AbstractWeapons) {
+            mainApp.showWeaponDetailDialog(selected);
+        }
+    }
+
+    @FXML
+    private void sendHeroToField() {
+        if(hero.getHealth() > 0) {
+            Field field = new Field(hero, mainApp.getEnemyData());
+            field.run();
         }
     }
 

@@ -2,6 +2,7 @@ package main.java.com.questlife.questlife.View;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import main.java.com.questlife.questlife.items.AbstractItems;
 import main.java.com.questlife.questlife.items.AbstractPotions;
@@ -17,7 +18,7 @@ public class PotionDetailDialogController {
     @FXML
     private Label potionName;
     @FXML
-    private Label potionDescription;
+    private Text potionDescription;
     @FXML
     private Label potionStrengthHP;
     @FXML
