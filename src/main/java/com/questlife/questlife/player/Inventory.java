@@ -1,8 +1,6 @@
 package main.java.com.questlife.questlife.player;
 
-import main.java.com.questlife.questlife.items.AbstractItems;
-import main.java.com.questlife.questlife.items.Potion;
-import main.java.com.questlife.questlife.items.Weapon;
+import main.java.com.questlife.questlife.items.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -23,11 +21,11 @@ public class Inventory {
         return itemsInInventory;
     }
 
-    public List<Potion> getPotionsInInventory() {
-        List<Potion> potions = new ArrayList<>();
+    public List<AbstractPotions> getPotionsInInventory() {
+        List<AbstractPotions> potions = new ArrayList<>();
         for(Iterator<AbstractItems> i = itemsInInventory.iterator(); i.hasNext(); ) {
             AbstractItems potion = i.next();
-            if (potion instanceof Potion) potions.add(((Potion) potion));
+            if (potion instanceof AbstractPotions) potions.add(((AbstractPotions) potion));
         }
         return potions;
     }
@@ -41,11 +39,15 @@ public class Inventory {
         this.itemsInInventory = itemsInInventory;
     }
 
+    public void addPotion(AbstractPotions toAdd) {
+        this.itemsInInventory.add(toAdd);
+    }
+
     public void addPotion(Potion toAdd) {
         this.itemsInInventory.add(toAdd);
     }
 
-    public void addWeapon (Weapon toAdd) {
+    public void addWeapon (AbstractWeapons toAdd) {
         this.itemsInInventory.add(toAdd);
     }
 

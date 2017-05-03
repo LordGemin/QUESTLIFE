@@ -2,6 +2,8 @@ package test.java.com.questlife.questlife.hero;
 
 import main.java.com.questlife.questlife.game.Game;
 import main.java.com.questlife.questlife.hero.Hero;
+import main.java.com.questlife.questlife.items.AbstractItems;
+import main.java.com.questlife.questlife.items.AbstractPotions;
 import main.java.com.questlife.questlife.items.Potion;
 import main.java.com.questlife.questlife.items.Weapon;
 import main.java.com.questlife.questlife.player.Player;

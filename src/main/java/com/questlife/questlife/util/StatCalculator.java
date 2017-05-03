@@ -3,6 +3,7 @@ package main.java.com.questlife.questlife.util;
 import main.java.com.questlife.questlife.enemy.Enemy;
 import main.java.com.questlife.questlife.goals.Goals;
 import main.java.com.questlife.questlife.hero.Hero;
+import main.java.com.questlife.questlife.items.AbstractWeapons;
 import main.java.com.questlife.questlife.items.Weapon;
 
 /**
@@ -20,7 +21,7 @@ public class StatCalculator {
     public int calculateHeroesDefense(Hero hero) {
         int baseValue = hero.getStrength();
         //If hero has no weapon equipped, give him nonsense weapon;
-        Weapon heroWeapon = (hero.getWeapon() != null) ? hero.getWeapon() : new Weapon("Bare knuckle", 0,0,AttackType.PHYSICAL);
+        AbstractWeapons heroWeapon = (hero.getWeapon() != null) ? hero.getWeapon() : new Weapon("Bare knuckle", 0,0,AttackType.PHYSICAL);
 
         baseValue += Math.round(heroWeapon.getPhysicalAttack()/10);
 
@@ -30,7 +31,7 @@ public class StatCalculator {
     public int calculateHeroesResistance(Hero hero) {
         int baseValue = hero.getMind();
         //If hero has no weapon equipped, give him nonsense weapon;
-        Weapon heroWeapon = (hero.getWeapon() != null) ? hero.getWeapon() : new Weapon("Bare knuckle", 0,0,AttackType.PHYSICAL);
+        AbstractWeapons heroWeapon = (hero.getWeapon() != null) ? hero.getWeapon() : new Weapon("Bare knuckle", 0,0,AttackType.PHYSICAL);
 
         baseValue += Math.round(heroWeapon.getMagicalAttack()/15);
 
@@ -41,7 +42,7 @@ public class StatCalculator {
     public int calculateHeroesAttack(Hero hero) {
         int attackValue;
         //If hero has no weapon equipped, give him nonsense weapon;
-        Weapon heroWeapon = (hero.getWeapon() != null) ? hero.getWeapon() : new Weapon("Bare knuckle", 4,4,AttackType.PHYSICAL);
+        AbstractWeapons heroWeapon = (hero.getWeapon() != null) ? hero.getWeapon() : new Weapon("Bare knuckle", 4,4,AttackType.PHYSICAL);
 
         switch (heroWeapon.getAttackType()) {
             case PHYSICAL:
@@ -97,7 +98,7 @@ public class StatCalculator {
     public int getExperienceFromGoal(Goals goal) {
         // We want the gained experience to be split between all associated skills.
 
-        int div = goal.getAssociatedSkills().size();
+        float div = goal.getAssociatedSkills().size();
 
         if(div == 0) {
             div=1;
@@ -123,8 +124,8 @@ public class StatCalculator {
 
     public int getRebate(Hero hero, int cost) {
         //TODO: Add inverse square function to get slowly rising rebates with asymptote at 0.501 (to reach 0.5)
-        double rebate = hero.getCharisma()/100;
-        int number = (int) Math.ceil(rebate*cost);
-        return number;
+        float div = 100;
+        float rebate = hero.getCharisma()/div;
+        return Math.round(rebate*cost);
     }
 }

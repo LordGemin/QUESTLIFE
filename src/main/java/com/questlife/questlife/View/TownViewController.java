@@ -54,6 +54,7 @@ public class TownViewController {
 
     @FXML
     private void handleTemple() {
+        mainApp.showTempleDialog();
 
     }
 
@@ -64,6 +65,6 @@ public class TownViewController {
 
     @FXML
     private void handleTavern() {
-
+        mainApp.showTavernDialog();
     }
 }

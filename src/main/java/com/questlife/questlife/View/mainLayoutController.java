@@ -46,7 +46,7 @@ public class mainLayoutController {
     @FXML
     private Label piety;
     @FXML
-    private Label level;
+    private Label gold;
 
 
     /**
@@ -193,7 +193,7 @@ public class mainLayoutController {
         observation.setText(""+hero.getObservation());
         constitution.setText(""+hero.getConstitution());
         piety.setText(""+hero.getPiety());
-        level.setText(""+hero.getLevel());
+        gold.setText(""+ hero.getGold());
     }
 
     @FXML
@@ -238,6 +238,7 @@ public class mainLayoutController {
     @FXML
     private void handleShowTown() {
         mainApp.showTownView();
+        updateLabels();
     }
 
     /**
@@ -259,6 +260,19 @@ public class mainLayoutController {
         alert.setContentText("Author: Robert Buschmann\n");
 
         alert.showAndWait();
+    }
+
+    private void updateLabels() {
+        heroName.setText(hero.getName());
+        experienceToNextLevel.setProgress(hero.getExperience()/hero.getExperienceToNextLevel());
+        strength.setText(""+hero.getStrength());
+        dexterity.setText(""+hero.getDexterity());
+        mind.setText(""+hero.getMind());
+        charisma.setText(""+hero.getCharisma());
+        observation.setText(""+hero.getObservation());
+        constitution.setText(""+hero.getConstitution());
+        piety.setText(""+hero.getPiety());
+        gold.setText(""+hero.getGold());
     }
 
 }

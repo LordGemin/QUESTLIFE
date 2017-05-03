@@ -81,10 +81,10 @@
             <Label text="OBSERVATION" GridPane.columnIndex="2" />
             <Label text="CONSTITUTION" GridPane.columnIndex="2" GridPane.rowIndex="1" />
             <Label text="PIETY" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-            <Label text="LEVEL" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <Label text="Gold" GridPane.columnIndex="2" GridPane.rowIndex="3" />
             <Label fx:id="constitution" styleClass="label-bright" stylesheets="@DarkTheme.css" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="1" />
             <Label fx:id="piety" styleClass="label-bright" stylesheets="@DarkTheme.css" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-            <Label fx:id="level" styleClass="label-bright" stylesheets="@DarkTheme.css" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+            <Label fx:id="gold" styleClass="label-bright" stylesheets="@DarkTheme.css" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="3" />
          </children>
       </GridPane>
       <Label layoutX="125.0" layoutY="39.0" prefHeight="36.0" prefWidth="84.0" text="EXP">

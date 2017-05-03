@@ -31,12 +31,13 @@ public class Tavern extends AbstractBuilding {
         this.cost = cost;
     }
 
-    public void lodgeHero(Hero hero) {
+    public boolean lodgeHero(Hero hero) {
         if (hero.spendGold(cost)) {
             hero.setHealth(hero.getMaxHealth());
             hero.setMana(hero.getMaxMana());
+            return true;
         } else {
-            //TODO: Notify player that they did not have enough gold to cover the fees
+            return false;
         }
     }
 

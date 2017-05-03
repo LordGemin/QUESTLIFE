@@ -41,7 +41,7 @@ public class RewardEditDialogController {
     private TableColumn<Reward, String> rewardAssociatedSkillName;
 
 
-    private Reward reward;
+    private Reward reward = new Reward();
 
     private Stage dialogStage;
     private boolean okClicked = false;

@@ -31,6 +31,7 @@ public class Skill implements Serializable{
     }
 
     public Skill() {
+        name = "";
         associatedAttribute = null;
         skilltype = null;
     }

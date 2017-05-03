@@ -9,7 +9,7 @@ import java.util.*;
  *
  * Created by Gemin on 10.04.2017.
  */
-public class Weapon extends AbstractItems {
+public class Weapon extends AbstractWeapons {
 
     private int physicalAttack, magicalAttack;
     private AttackType attackType;
@@ -29,20 +29,6 @@ public class Weapon extends AbstractItems {
         this.physicalAttack = physicalAttack;
         this.magicalAttack = magicalAttack;
         this.attackType = attackType;
-    }
-
-    /**
-     * @return provides physical attack value of the weapon
-     */
-    public int getPhysicalAttack() {
-        return physicalAttack;
-    }
-
-    /**
-     * @return provides magical attack value of the weapon
-     */
-    public int getMagicalAttack() {
-        return magicalAttack;
     }
 
     /**

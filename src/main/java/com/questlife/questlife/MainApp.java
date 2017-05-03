@@ -19,6 +19,8 @@ import main.java.com.questlife.questlife.quests.Quest;
 import main.java.com.questlife.questlife.rewards.Reward;
 import main.java.com.questlife.questlife.skills.Skill;
 import main.java.com.questlife.questlife.town.Shop;
+import main.java.com.questlife.questlife.town.Tavern;
+import main.java.com.questlife.questlife.town.Temple;
 import main.java.com.questlife.questlife.util.AttackType;
 import main.java.com.questlife.questlife.util.Generator;
 import org.reflections.Reflections;
@@ -35,6 +37,7 @@ import java.util.prefs.Preferences;
  */
 public class MainApp extends Application {
 
+    private static final int TAVERNCOST = 50;
     private Stage primaryStage;
 
     private AnchorPane mainLayout;
@@ -43,7 +46,6 @@ public class MainApp extends Application {
      * The data as an observable list of Goals.
      */
     private ObservableList<Goals> goalData = FXCollections.observableArrayList();
-
     public ObservableList<Goals> getGoalData() {
         return goalData;
     }
@@ -77,7 +79,7 @@ public class MainApp extends Application {
     }
 
     /**
-     * The data as an observable list of items.
+     * The inventory data as obersvable list of items
      */
     private ObservableList<AbstractItems> inventory = FXCollections.observableArrayList();
 
@@ -94,6 +96,12 @@ public class MainApp extends Application {
         return itemsData;
     }
 
+    private ObservableList<Class> itemsRaw = FXCollections.observableArrayList();
+
+    public ObservableList<Class> getItemsRaw() {
+        return itemsRaw;
+    }
+
     /**
      * Initializes all items using reflections.
      * This is will continue to add all future items.
@@ -102,23 +110,30 @@ public class MainApp extends Application {
      */
     private boolean initializeItems() {
         boolean flag = false;
+        // Set up the reflection API at root directory
         Reflections reflections = new Reflections("main.java");
+        // Find all classes that extend on abstract items in any way
         Set<Class<? extends AbstractItems>> classes = reflections.getSubTypesOf(AbstractItems.class);
+        // Iterate through all extending classes
         for (Object a : classes) {
-            AbstractItems potion;
+            AbstractItems item;
             try {
-                Class b = Class.forName(a.toString().replace("class ", ""));
-                potion = (AbstractItems) b.newInstance();
+                // We can only take the mostly fully quantified name of a class to create it internally
+                Class rawItem = Class.forName(a.toString().replace("class ", ""));
+                // We add the class to our raw items data to randomly generate different versions of the same class
+                // We also add all items as some one time generated form into the itemsData list
+                item = (AbstractItems) rawItem.newInstance();
+                itemsRaw.add(rawItem);
             } catch (Exception e) {
-                potion = null;
+                item = null;
             }
-            if (potion instanceof AbstractPotions) {
-                itemsData.add((AbstractPotions) potion);
+            if (item instanceof AbstractPotions) {
+                itemsData.add((AbstractPotions) item);
                 flag = true;
                 continue;
             }
-            if (potion instanceof AbstractWeapons) {
-                itemsData.add((AbstractWeapons) potion);
+            if (item instanceof AbstractWeapons) {
+                itemsData.add((AbstractWeapons) item);
                 flag = true;
                 continue;
             }
@@ -170,9 +185,26 @@ public class MainApp extends Application {
      */
     private Shop shop = new Shop(new Generator().generateShopNames());
 
-
     public Shop getShop() {
         return shop;
+    }
+
+    /**
+     * A tavern to pass on to the controller
+     */
+    private Tavern tavern = new Tavern(new Generator().generateShopNames(), TAVERNCOST);
+
+    public Tavern getTavern() {
+        return tavern;
+    }
+
+    /**
+     * A tavern to pass on to the controller
+     */
+    private Temple temple = new Temple("Temple");
+
+    public Temple getTemple() {
+        return temple;
     }
 
     /**
@@ -532,6 +564,77 @@ public class MainApp extends Application {
 
             return true;
         } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean showTavernDialog() {
+        try {
+            // Load the fxml file and create a new stage for the popup dialog.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/tavernDialog.fxml"));
+            AnchorPane page = (AnchorPane) loader.load();
+
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Tavern");
+            dialogStage.getIcons().add(new Image("file:resources/images/Address_Book.png"));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            // Disable resizing of the window
+            // TODO: Enable by smart design
+            dialogStage.setResizable(false);
+
+            // Set the goal into the controller.
+            TavernDialogController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setMainApp(this);
+
+            // Show the dialog and wait until the user closes it
+            dialogStage.showAndWait();
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean showTempleDialog() {
+        try {
+            // Load the fxml file and create a new stage for the popup dialog.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/templeDialog.fxml"));
+            AnchorPane page = (AnchorPane) loader.load();
+
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Temple");
+            dialogStage.getIcons().add(new Image("file:resources/images/Address_Book.png"));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            // Disable resizing of the window
+            // TODO: Enable by smart design
+            dialogStage.setResizable(false);
+
+            // Set the goal into the controller.
+            TempleDialogController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setMainApp(this);
+
+            // Show the dialog and wait until the user closes it
+            dialogStage.showAndWait();
+
+            return true;
+        }
+        catch (IOException e) {
             e.printStackTrace();
             return false;
         }

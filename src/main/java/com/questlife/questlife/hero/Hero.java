@@ -1,6 +1,8 @@
 package main.java.com.questlife.questlife.hero;
 
 import main.java.com.questlife.questlife.enemy.Enemy;
+import main.java.com.questlife.questlife.items.AbstractPotions;
+import main.java.com.questlife.questlife.items.AbstractWeapons;
 import main.java.com.questlife.questlife.items.Potion;
 import main.java.com.questlife.questlife.items.Weapon;
 import main.java.com.questlife.questlife.player.Inventory;
@@ -12,8 +14,6 @@ import main.java.com.questlife.questlife.util.Generator;
 import main.java.com.questlife.questlife.util.StatCalculator;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class Hero implements Serializable {
     private Integer experience = 0;
     private Integer experienceToNextLevel;
     private Integer gold = 0;
-    private Weapon weapon;
+    private AbstractWeapons weapon;
     private Quest activeQuest;
     private Long lastDeath;
 
@@ -43,7 +43,7 @@ public class Hero implements Serializable {
 
     }
 
-    public Hero (Player player, String name, Weapon weapon) {
+    public Hero (Player player, String name, AbstractWeapons weapon) {
         this.player = player;
         this.name = name;
         this.weapon = weapon;
@@ -104,7 +104,7 @@ public class Hero implements Serializable {
         return Attributes.OBSERVATION.getLevel();
     }
 
-    public Weapon getWeapon() {
+    public AbstractWeapons getWeapon() {
         return weapon;
     }
 
@@ -144,7 +144,7 @@ public class Hero implements Serializable {
         Attributes.OBSERVATION.setLevel(observation);
     }
 
-    private void setWeapon (Weapon weapon) {
+    private void setWeapon (AbstractWeapons weapon) {
         this.weapon = weapon;
     }
 
@@ -245,7 +245,7 @@ public class Hero implements Serializable {
         return statCalculator.calculateHeroesAttack(this);
     }
 
-    public void changeWeapon(Weapon toEquip) {
+    public void changeWeapon(AbstractWeapons toEquip) {
         if (player.getInventory().getItemsInInventory().contains(toEquip))
             player.getInventory().getItemsInInventory().remove(toEquip);
         player.getInventory().addWeapon(this.weapon);
@@ -286,9 +286,9 @@ public class Hero implements Serializable {
         int potionCounter = 0;
 
         Inventory inv = player.getInventory();
-        List<Potion> potions = inv.getPotionsInInventory();
+        List<AbstractPotions> potions = inv.getPotionsInInventory();
 
-        for (Potion potion : potions) {
+        for (AbstractPotions potion : potions) {
             String identifier = potion.getName();
 
             //Take all potions until full health
@@ -314,21 +314,14 @@ public class Hero implements Serializable {
         return potionCounter;
     }
 
-    public void takePotion (Potion potionToTake) {
+    public void takePotion (AbstractPotions potionToTake) {
         player.getInventory().getItemsInInventory().remove(potionToTake);
-        
-        int healthNeed = getMaxHealth() - health;
-        int manaNeed = getMaxMana() - mana;
-        
-        if(healthNeed < potionToTake.getStrengthHP()) { //if the potion provides to much we have to power it down
-            potionToTake.setStrengthHP(healthNeed);
-        }
-        if (manaNeed < potionToTake.getStrengthMP()) {
-            potionToTake.setStrengthMP(manaNeed);
-        }
-        
-        this.health += potionToTake.getStrengthHP();
-        this.mana += potionToTake.getStrengthMP();
+
+        health += potionToTake.getStrengthHP();
+        mana += potionToTake.getStrengthMP();
+
+        health = (health < getMaxHealth()) ? health:getMaxHealth();
+        mana = (mana < getMaxMana()) ? mana:getMaxMana();
     }
 
     public void takeDamage(int damageDealt) {

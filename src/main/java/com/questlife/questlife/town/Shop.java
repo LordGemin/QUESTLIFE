@@ -14,8 +14,7 @@ import java.util.List;
  */
 public class Shop extends AbstractBuilding {
 
-    private List<AbstractItems> itemsList = new ArrayList<>();
-    private ObservableList<AbstractItems> itemList = FXCollections.observableArrayList();
+    private List<AbstractItems> itemList = new ArrayList<>();
 
     public Shop() {
 
@@ -38,12 +37,12 @@ public class Shop extends AbstractBuilding {
         this.name = name;
     }
 
-    public ObservableList<AbstractItems> getItemList() {
+    public List<AbstractItems> getItemList() {
         return  itemList;
     }
 
     public void setItemList(List<AbstractItems> itemsList) {
-        this.itemList.addAll(itemsList);
+        this.itemList = itemsList;
     }
 
     public void addItem(AbstractItems item) {
@@ -82,6 +81,16 @@ public class Shop extends AbstractBuilding {
         for (AbstractItems item : itemList) {
             if (item.getName().equals(name)) {
                 sellItem(itemList.indexOf(item), hero);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean sellItem(AbstractItems item, Hero hero) {
+        for (AbstractItems a : itemList) {
+            if (a.equals(item)) {
+                sellItem(itemList.indexOf(a), hero);
                 return true;
             }
         }

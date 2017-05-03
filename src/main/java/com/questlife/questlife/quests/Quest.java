@@ -14,7 +14,7 @@ public class Quest implements Serializable{
     private String name;
     private String description;
     private Enemy enemyType;
-    private Integer mobsToHunt;
+    private Integer mobsToHunt = 0;
     private Integer rewardExp;
     private Integer rewardGold;
     private Boolean isActive = false;
