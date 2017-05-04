@@ -197,6 +197,7 @@ public class MainApp extends Application {
         heroData.get(0).setCharisma(20);
         heroData.get(0).setConstitution(50);
         heroData.get(0).setGold(5000);
+        heroData.get(0).setHealth(heroData.get(0).getMaxHealth());
 
         //TODO: SampleData?
         goalData.add(new Goals());
@@ -345,6 +346,7 @@ public class MainApp extends Application {
             SkillEditDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.setSkill(tempSkill);
+            controller.setMainApp(this);
 
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();
@@ -652,6 +654,43 @@ public class MainApp extends Application {
         catch (IOException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public Skill showAddTimeDialog(Skill skill) {
+        try {
+            // Load the fxml file and create a new stage for the popup dialog.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/addTimeDialog.fxml"));
+            AnchorPane page = (AnchorPane) loader.load();
+
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Add time");
+            dialogStage.getIcons().add(new Image("file:resources/images/Address_Book.png"));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            // Disable resizing of the window
+            // TODO: Enable by smart design
+            dialogStage.setResizable(false);
+
+            // Set the goal into the controller.
+            AddTimeDialogController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setSkill(skill);
+
+            // Show the dialog and wait until the user closes it
+            dialogStage.showAndWait();
+
+
+            return controller.getSkill();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

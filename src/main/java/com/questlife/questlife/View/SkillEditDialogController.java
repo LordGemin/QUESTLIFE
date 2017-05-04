@@ -3,6 +3,7 @@ package main.java.com.questlife.questlife.View;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import main.java.com.questlife.questlife.MainApp;
 import main.java.com.questlife.questlife.hero.Attributes;
 import main.java.com.questlife.questlife.skills.Skill;
 import main.java.com.questlife.questlife.util.SkillType;
@@ -39,6 +40,8 @@ public class SkillEditDialogController {
     private RadioButton rb_timeBased;
     @FXML
     private RadioButton rb_goalBased;
+    @FXML
+    private Button addTime;
 
 
 
@@ -46,7 +49,7 @@ public class SkillEditDialogController {
 
     private Stage dialogStage;
     private boolean okClicked = false;
-
+    private MainApp mainApp;
 
 
     /**
@@ -55,6 +58,8 @@ public class SkillEditDialogController {
      */
     @FXML
     private void initialize() {
+        addTime.setVisible(false);
+        addTime.setDisable(true);
     }
 
 
@@ -67,6 +72,9 @@ public class SkillEditDialogController {
         this.dialogStage = dialogStage;
     }
 
+    public void setMainApp(MainApp mainApp) {
+        this.mainApp = mainApp;
+    }
 
     /**
      * Sets the skill to be edited in the dialog.
@@ -123,9 +131,13 @@ public class SkillEditDialogController {
             switch (skill.getSkilltype()) {
                 case GOALBASED:
                     skillType.selectToggle(rb_goalBased);
+                    addTime.setVisible(false);
+                    addTime.setDisable(true);
                     break;
                 case TIMEBASED:
                     skillType.selectToggle(rb_timeBased);
+                    addTime.setVisible(true);
+                    addTime.setDisable(false);
                     break;
             }
         }
@@ -211,6 +223,12 @@ public class SkillEditDialogController {
 
             return false;
         }
+    }
+
+    @FXML
+    private void handleAddTime(){
+        this.skill = mainApp.showAddTimeDialog(skill);
+        System.out.println("Time to next level: "+skill.getExperienceToNextLevel());
     }
 
 }

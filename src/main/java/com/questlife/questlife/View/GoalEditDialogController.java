@@ -1,12 +1,14 @@
 package main.java.com.questlife.questlife.View;
 
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import main.java.com.questlife.questlife.MainApp;
 import main.java.com.questlife.questlife.goals.Goals;
 import main.java.com.questlife.questlife.skills.Skill;
+import main.java.com.questlife.questlife.util.SkillType;
 
 /**
  *
@@ -67,7 +69,17 @@ public class GoalEditDialogController {
         this.goal = goal;
 
         overarchingGoalTable.setItems(mainApp.getGoalData());
-        associatedSkill.setItems(mainApp.getSkillData());
+
+        // Add only skills to the goallist if they are goalbased!
+        // Timebased skills get their own way of receiving exp
+        ObservableList<Skill> skills = mainApp.getSkillData();
+        for(Skill s:skills) {
+            if(s.getSkilltype().equals(SkillType.TIMEBASED)) {
+                skills.remove(s);
+            }
+        }
+        associatedSkill.setItems(skills);
+
         goalName.setText(goal.getName());
         amountOfWordSlider.setValue(goal.getAmountOfWork());
         complexitySlider.setValue(goal.getComplexity());

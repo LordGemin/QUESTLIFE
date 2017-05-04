@@ -17,7 +17,7 @@ public class Skill implements Serializable{
     private String description;
     private SkillType skilltype;
     private Integer level =1;
-    private Integer experience;
+    private Integer experience = 0;
     private Integer experienceToNextLevel;
 
 
@@ -61,6 +61,9 @@ public class Skill implements Serializable{
     }
 
     public int getExperienceToNextLevel() {
+        if(skilltype.equals(SkillType.TIMEBASED)) {
+            experienceToNextLevel=600;
+        }
         if(experienceToNextLevel==null) {
             experienceToNextLevel = statCalculator.getExpToNextLevel(0,1);
         }
@@ -80,6 +83,15 @@ public class Skill implements Serializable{
     }
 
     public void setSkilltype(SkillType skilltype) {
+        if(skilltype == SkillType.TIMEBASED) {
+            experienceToNextLevel = 600*level;
+        } else if(skilltype == SkillType.GOALBASED) {
+            experienceToNextLevel=statCalculator.getExpToNextLevel(0,1);
+            // If the level is greater than 1, we shall iteratively find the appropriate experience to next level
+            for(int i = 2; i<level;i++) {
+                this.experienceToNextLevel = statCalculator.getExpToNextLevel(experienceToNextLevel, i);
+            }
+        }
         this.skilltype = skilltype;
     }
 
@@ -97,7 +109,12 @@ public class Skill implements Serializable{
 
     private void levelUp() {
         this.level++;
-        this.experienceToNextLevel = statCalculator.getExpToNextLevel(experienceToNextLevel,level);
+        System.out.println(name+" leveled up!");
+        if(skilltype.equals(SkillType.GOALBASED)) {
+            this.experienceToNextLevel = statCalculator.getExpToNextLevel(experienceToNextLevel, level);
+        } else if(skilltype.equals(SkillType.TIMEBASED)){
+            this.experienceToNextLevel += 600;
+        }
         associatedAttribute.levelUp();
     }
 

@@ -15,7 +15,7 @@ public enum Attributes implements Serializable {
 
     private final String fieldDescription;
     private Integer experience;
-    private Integer experienceToNextLevel;
+    private Integer experienceToNextLevel = 1000;
     private Integer level = 1;
 
     Attributes(String value) {
@@ -47,6 +47,7 @@ public enum Attributes implements Serializable {
     public void levelUp() {
         StatCalculator stats = new StatCalculator();
         level++;
+        System.out.println(fieldDescription+" leveld up!");
         this.experienceToNextLevel = stats.getExpToNextLevel(experienceToNextLevel,level);
     }
 

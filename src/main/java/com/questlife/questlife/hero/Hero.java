@@ -426,26 +426,28 @@ public class Hero implements Serializable {
         return false;
     }
 
-    public void sendToField() {
+    public boolean sendToField() {
         if(getHealth() > 0) {
             Field field = new Field(this);
             field.runBattles(getActiveQuest());
         } else {
-            System.out.println(name+" can barely stand. he is not suitable for questing. Heal him first");
+            System.out.println(name+" can barely stand. They are not suitable for questing. Heal them first");
+            return false;
             //TODO: Message to player that hero is barely able to walk.
         }
-
+        return true;
     }
 
-    public void sendToField(int loops) {
+    public boolean sendToField(int loops) {
         if(getHealth() > 0) {
             Field field = new Field(this,loops);
             field.runBattles(getActiveQuest());
         } else {
-            System.out.println(name+" can barely stand. he is not suitable for questing. Heal him first");
+            System.out.println(name+" can barely stand. They are not suitable for questing. Heal first");
             //TODO: Message to player that hero is barely able to walk.
+            return false;
         }
-
+        return true;
     }
 
 }

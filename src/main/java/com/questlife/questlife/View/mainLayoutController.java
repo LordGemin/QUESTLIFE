@@ -2,6 +2,7 @@ package main.java.com.questlife.questlife.View;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import main.java.com.questlife.questlife.MainApp;
@@ -16,7 +17,9 @@ import main.java.com.questlife.questlife.rewards.Reward;
 import main.java.com.questlife.questlife.skills.Skill;
 import main.java.com.questlife.questlife.town.Field;
 import main.java.com.questlife.questlife.util.RewardType;
+import main.java.com.questlife.questlife.util.SkillType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -210,8 +213,8 @@ public class mainLayoutController {
         goalsTable.setItems(mainApp.getGoalData());
         questsTable.setItems(mainApp.getQuestData());
         rewardTable.setItems(mainApp.getRewardData());
-        skillsTable.setItems(mainApp.getSkillData());
         inventoryTable.setItems(mainApp.getInventory());
+        skillsTable.setItems(mainApp.getSkillData());
 
         heroName.setText(hero.getName());
         experienceToNextLevel.setProgress(hero.getExperience()/hero.getExperienceToNextLevel());
@@ -301,6 +304,32 @@ public class mainLayoutController {
         }
 
         mainApp.getSkillData().remove(skill);
+    }
+
+    @FXML
+    private void handleAddTimeToSkill() {
+        if (skillsTable.getSelectionModel().getSelectedItems().size() != 1) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Can not add time");
+            alert.setHeaderText("Select skill");
+            alert.setContentText("Please select one skill from the table above\n");
+
+            alert.showAndWait();
+            return;
+        }
+
+        Skill skill = skillsTable.getSelectionModel().getSelectedItem();
+
+        if(skill.getSkilltype() != SkillType.TIMEBASED) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Can not add time");
+            alert.setHeaderText("Goalbased skill");
+            alert.setContentText("Please select a time based skill!\nOr edit this skill to be time based.");
+
+            alert.showAndWait();
+            return;
+        }
+
     }
 
     @FXML
@@ -489,9 +518,11 @@ public class mainLayoutController {
 
     @FXML
     private void sendHeroToField() {
+        System.out.println("Hero health: "+hero.getHealth());
         if(hero.getHealth() > 0) {
+            System.out.println("Sending "+hero.getName()+" to the field.");
             Field field = new Field(hero, mainApp.getEnemyData());
-            field.run();
+            field.runBattles(hero.getActiveQuest());
         }
     }
 
