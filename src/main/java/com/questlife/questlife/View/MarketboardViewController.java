@@ -48,6 +48,9 @@ public class MarketboardViewController {
         this.mainApp = mainApp;
 
 
+        if(marketboard.getQuestList() == null) {
+            questObservableList.add(marketboard.generateQuest(mainApp.getEnemyData()));
+        }
         while(marketboard.getQuestList().size() < 10) {
             questObservableList.add(marketboard.generateQuest(mainApp.getEnemyData()));
         }
@@ -70,6 +73,7 @@ public class MarketboardViewController {
             alert.setHeaderText("Too many quests");
             alert.setContentText("The townsfolk won't trust someone who is all talks!\nProve your worth and complete some quests!");
             alert.show();
+            return;
         }
         if(isOneSelected()) {
             quest = questTable.getSelectionModel().getSelectedItem();

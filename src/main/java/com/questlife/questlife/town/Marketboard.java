@@ -5,6 +5,7 @@ import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.quests.Quest;
 import main.java.com.questlife.questlife.util.Generator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ import java.util.List;
  */
 public class Marketboard {
 
-    private List<Quest> questList;
+    private List<Quest> questList = new ArrayList<>();
 
     public Marketboard() {
 
@@ -53,6 +54,8 @@ public class Marketboard {
 
         // The description will be a bit silly in some cases. But it's never shown unless the player selects detailed view
         generatedQuest.setDescription(generator.generateQuestDescription(generatedQuest.getEnemyType()));
+
+        questList.add(generatedQuest);
 
         return generatedQuest;
     }

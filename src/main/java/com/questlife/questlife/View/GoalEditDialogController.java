@@ -37,6 +37,7 @@ public class GoalEditDialogController {
 
     private Stage dialogStage;
     private Goals goal;
+    private MainApp mainApp;
     private boolean okClicked = false;
 
 
@@ -65,8 +66,9 @@ public class GoalEditDialogController {
      *
      * @param goal
      */
-    public void setGoal(Goals goal, MainApp mainApp) {
+    public void setGoalAndMainApp(Goals goal, MainApp mainApp) {
         this.goal = goal;
+        this.mainApp = mainApp;
 
         overarchingGoalTable.setItems(mainApp.getGoalData());
 
@@ -129,6 +131,19 @@ public class GoalEditDialogController {
     }
 
     @FXML
+    private void handleComplete() {
+        if (isInputValid()) {
+            if(goal.getRecurring()) {
+                goal.completeGoal(mainApp.showDefineNewDeadlineDialog(goal));
+            }
+            goal.completeGoal(null);
+
+            okClicked = true;
+            dialogStage.close();
+        }
+    }
+
+    @FXML
     private void handleSliderDrag() {
         goal.setAmountOfWork((int)amountOfWordSlider.getValue());
         goal.setComplexity((int)complexitySlider.getValue());
@@ -146,6 +161,13 @@ public class GoalEditDialogController {
         }
         if (deadlinePicker.getValue() == null) {
             errorMessage += "Set a deadline!\n";
+        }
+
+        if (associatedSkill.getSelectionModel() == null) {
+            errorMessage += "Set at least one associated skill";
+        }
+        if (associatedSkill.getSelectionModel().getSelectedItems().size() < 0 ) {
+            errorMessage += "Set at least one associated skill";
         }
 
         if (errorMessage.length() == 0) {

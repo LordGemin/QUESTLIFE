@@ -9,6 +9,7 @@ import main.java.com.questlife.questlife.util.DateUtil;
 import main.java.com.questlife.questlife.util.StatCalculator;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +20,9 @@ import java.util.List;
  */
 public class Goals {
 
-    private LocalDateTime creation = LocalDateTime.now();
+    private long creation = System.currentTimeMillis();
     private LocalDateTime deadline;
-    private TemporalAmount duration;
+    private long duration;
     private StringProperty name;
     private Integer amountOfWork;
     private Integer complexity;
@@ -39,7 +40,7 @@ public class Goals {
         deadline = LocalDateTime.now();
     }
 
-    public Goals(LocalDateTime deadline, TemporalAmount duration, String name, int amountOfWork,
+    public Goals(LocalDateTime deadline, long duration, String name, int amountOfWork,
                  int complexity, List<Skill> associatedSkills, List<Goals> subGoals, boolean isRecurring) {
         this.deadline = deadline;
         this.duration = duration;
@@ -63,11 +64,11 @@ public class Goals {
         this.deadline = deadline;
     }
 
-    public TemporalAmount getDuration() {
+    public long getDuration() {
         return duration;
     }
 
-    public void setDuration(TemporalAmount duration) {
+    public void setDuration(long duration) {
         this.duration = duration;
     }
 
@@ -157,15 +158,15 @@ public class Goals {
     }
 
     public boolean completeGoal(LocalDateTime newDeadline) {
-        LocalDateTime checkDuration = creation.plus(duration);
-        if(getProgress() == 100 && creation.isBefore(LocalDateTime.now())) {
-            if (isRecurring || newDeadline == null) {
+        if(getProgress() == 100) {
+            if (isRecurring && newDeadline != null) {
                 this.deadline = newDeadline;
                 for (Goals subGoal : subGoals) {
                     subGoal.completeGoal(newDeadline);
                 }
-                isComplete = true;
+                isComplete = false;
             } else {
+                isRecurring = false;
                 for (Goals subGoal : subGoals) {
                     subGoal.completeGoal(newDeadline);
                 }
@@ -175,15 +176,19 @@ public class Goals {
 
         for(Skill skill:associatedSkills) {
             skill.gainExperience(getExperienceReward());
-            int expGained = LocalDateTime.now().compareTo(deadline);
-            expGained *= -1;
-            if (expGained < 0) {
-                expGained=0;
-            } else {
-                expGained = Math.round(expGained/10000);
-            }
-            Attributes.PIETY.gainExperience(Math.round(expGained+getExperienceReward()/4));
         }
+
+        // get in milliseconds the time the goal was finished before deadline
+        long expGained = deadline.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()-System.currentTimeMillis();
+        if (expGained < 0) {
+            expGained=0;
+        } else {
+            // One experience point per minute earlier than deadline.
+            // One minute = 60000 milliseconds
+            expGained = Math.round(expGained/60000.0f);
+        }
+        Attributes.PIETY.gainExperience(Math.round(expGained));
+
         return isComplete;
     }
 

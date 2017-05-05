@@ -33,8 +33,10 @@ public class Battle extends AbstractBattle {
             runTurn();
         }
         if (getParticipatingHero().getHealth() > 0 ) {
-                getParticipatingHero().gainGold(Math.round(goldGained * (1+(getParticipatingHero().getObservation()/100.0f))));
-                return true;
+            int gained = Math.round(goldGained * (1+(getParticipatingHero().getObservation()/100.0f)));
+            System.out.println(getParticipatingHero().getName() + " gains "+gained+" Gold!");
+            getParticipatingHero().gainGold(gained);
+            return true;
         }
         //Hero died during battle. Set current time as time of death
         getParticipatingHero().setLastDeath(System.currentTimeMillis());
@@ -46,15 +48,21 @@ public class Battle extends AbstractBattle {
     @Override
     public void runTurn() {
         Hero hero = getParticipatingHero();
-        int enemyPosition = -1;
+        int enemyPosition = 0;
 
         for(int i = 0; i < getParticipatingEnemies().size(); i++) {
             if(getParticipatingEnemyAt(i).getHealth() <= 0 ) {
+                getParticipatingEnemies().remove(getParticipatingEnemyAt(i));
                 //Circle to the next enemy if current one died
-            } else if (enemyPosition == -1) {
-                //looking for the leftmost enemy alive, skipping all afterwards.
-                enemyPosition = i;
             }
+            //looking for the leftmost enemy alive, skipping all afterwards.
+            enemyPosition = i;
+            i = getParticipatingEnemies().size();
+        }
+
+        if(getParticipatingEnemies().size() == 0) {
+            System.out.println("No enemies left!");
+            return;
         }
 
         // Always try to survive at least the first dealDamage, approximate total damage to decide if potions should be taken
@@ -64,17 +72,26 @@ public class Battle extends AbstractBattle {
         int criticalMana = (hero.getWeapon().getAttackType() == AttackType.MAGICAL) ? hero.getAttack()/100 : 0;
 
         if(hero.getHealth() < criticalHealth || hero.getMana() < criticalMana ) {
+            System.out.println(hero.getName()+" taking some potions to prepare.");
             hero.takePotion();
         } else {
+            System.out.println(hero.getName()+" attacks the " + getParticipatingEnemyAt(enemyPosition).getName()+".");
             hero.dealDamage(getParticipatingEnemyAt(enemyPosition));
+            System.out.println(getParticipatingEnemyAt(enemyPosition).getName()+" now has "+getParticipatingEnemyAt(enemyPosition).getHealth()+" health left.");
         }
+
+        if (getParticipatingEnemyAt(enemyPosition).getHealth() <= 0) {
+            System.out.println(hero.getName() + " has felled the "+getParticipatingEnemyAt(enemyPosition).getName()+"!");
+            getParticipatingHero().gainExperience(getParticipatingEnemyAt(enemyPosition).getExperieceReward());
+            System.out.println(hero.getName() + " gains "+ getParticipatingEnemyAt(enemyPosition).getExperieceReward()+ " Experience!");
+            goldGained += getParticipatingEnemyAt(enemyPosition).getGoldReward();
+            getParticipatingEnemies().remove(getParticipatingEnemyAt(enemyPosition));
+        }
+
         for (Enemy enemy:getParticipatingEnemies()) {
             enemy.dealDamage(hero);
-        }
-        if (getParticipatingEnemyAt(enemyPosition).getHealth() <= 0) {
-            getParticipatingEnemies().remove(getParticipatingEnemyAt(enemyPosition));
-            getParticipatingHero().gainExperience(getParticipatingEnemyAt(enemyPosition).getExperieceReward());
-            goldGained += getParticipatingEnemyAt(enemyPosition).getGoldReward();
+            System.out.println(getParticipatingEnemyAt(enemyPosition).getName() + " strikes "+ hero.getName()+".");
+            System.out.println(hero.getName()+ " now has "+hero.getHealth()+" health left.");
         }
     }
 }

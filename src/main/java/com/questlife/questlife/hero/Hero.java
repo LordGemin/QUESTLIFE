@@ -1,10 +1,9 @@
 package main.java.com.questlife.questlife.hero;
 
 import main.java.com.questlife.questlife.enemy.Enemy;
+import main.java.com.questlife.questlife.items.AbstractItems;
 import main.java.com.questlife.questlife.items.AbstractPotions;
 import main.java.com.questlife.questlife.items.AbstractWeapons;
-import main.java.com.questlife.questlife.items.Potion;
-import main.java.com.questlife.questlife.items.Weapon;
 import main.java.com.questlife.questlife.player.Inventory;
 import main.java.com.questlife.questlife.player.Player;
 import main.java.com.questlife.questlife.quests.Quest;
@@ -37,6 +36,7 @@ public class Hero implements Serializable {
 
     private StatCalculator statCalculator = new StatCalculator();
     private List<Quest> questList = new ArrayList<>();
+    private List<AbstractItems> inventory = new ArrayList<>();
 
 
     public Hero() {
@@ -61,10 +61,9 @@ public class Hero implements Serializable {
         if(lastDeath == null)
             return health;
         else {
-            long timeSinceDeath = System.currentTimeMillis() - lastDeath;
             //refill complete health within 6 hours of last death
             //If user wants to go out adventuring before then: pay gold for tavern. It should be cheap enough
-            health = (int) Math.ceil((getMaxHealth()/24)*(Math.floor(timeSinceDeath/600000)));
+            health = (int) Math.ceil((getMaxHealth()/24)*(Math.floor(getTimeSinceLastDeath()/600000)));
             if (health > getMaxHealth()) {
                 health = getMaxHealth();
             }
@@ -108,6 +107,10 @@ public class Hero implements Serializable {
         return weapon;
     }
 
+    public List<AbstractItems> getInventory() {
+        return inventory;
+    }
+
     public void setHealth(int health) {
         this.health = health;
     }
@@ -146,6 +149,10 @@ public class Hero implements Serializable {
 
     private void setWeapon (AbstractWeapons weapon) {
         this.weapon = weapon;
+    }
+
+    public void setInventory(List<AbstractItems> inventory) {
+        this.inventory = inventory;
     }
 
     public int getLevel() {
@@ -271,9 +278,9 @@ public class Hero implements Serializable {
     }
 
     public void changeWeapon(AbstractWeapons toEquip) {
-        if (player.getInventory().getItemsInInventory().contains(toEquip))
-            player.getInventory().getItemsInInventory().remove(toEquip);
-        player.getInventory().addWeapon(this.weapon);
+        if (inventory.contains(toEquip))
+            inventory.remove(toEquip);
+        inventory.add(this.weapon);
         this.setWeapon(toEquip);
     }
 
@@ -310,7 +317,8 @@ public class Hero implements Serializable {
         int manaGotten = 0;
         int potionCounter = 0;
 
-        Inventory inv = player.getInventory();
+        Inventory inv = new Inventory();
+        inv.setItemsInInventory(inventory);
         List<AbstractPotions> potions = inv.getPotionsInInventory();
 
         for (AbstractPotions potion : potions) {
@@ -340,7 +348,7 @@ public class Hero implements Serializable {
     }
 
     public void takePotion (AbstractPotions potionToTake) {
-        player.getInventory().getItemsInInventory().remove(potionToTake);
+        inventory.remove(potionToTake);
 
         health += potionToTake.getStrengthHP();
         mana += potionToTake.getStrengthMP();
@@ -378,6 +386,10 @@ public class Hero implements Serializable {
             } else {
                 damageDealt = this.getAttack() - enemy.getResistance();
             }
+        }
+
+        if(damageDealt <= 0) {
+            damageDealt=1;
         }
 
         int criticalCheck =  new Generator().generateNumber();

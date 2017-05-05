@@ -25,6 +25,7 @@ import org.reflections.Reflections;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
@@ -312,7 +313,7 @@ public class MainApp extends Application {
             // Set the goal into the controller.
             GoalEditDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage);
-            controller.setGoal(tempGoal, this);
+            controller.setGoalAndMainApp(tempGoal, this);
 
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();
@@ -687,6 +688,43 @@ public class MainApp extends Application {
 
 
             return controller.getSkill();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public LocalDateTime showDefineNewDeadlineDialog(Goals goal) {
+        try {
+            // Load the fxml file and create a new stage for the popup dialog.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/defineNewGoalDeadlineDialog.fxml"));
+            AnchorPane page = (AnchorPane) loader.load();
+
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Set new deadline");
+            dialogStage.getIcons().add(new Image("file:resources/images/Address_Book.png"));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            // Disable resizing of the window
+            // TODO: Enable by smart design
+            dialogStage.setResizable(false);
+
+            // Set the goal into the controller.
+            DefineNewGoalDeadlineDialogController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setGoal(goal);
+
+            // Show the dialog and wait until the user closes it
+            dialogStage.showAndWait();
+
+
+            return controller.getLDT();
         }
         catch (IOException e) {
             e.printStackTrace();

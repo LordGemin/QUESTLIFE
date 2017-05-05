@@ -17,6 +17,7 @@ public class Enemy implements Serializable {
 
     private StringProperty name = new SimpleStringProperty();
     private Integer health;
+    private Integer maxHealth;
     private Integer attackPower;
     private Integer defense;
     private Integer resistance;
@@ -34,6 +35,7 @@ public class Enemy implements Serializable {
     public Enemy(String name,int health, int attackPower, int defense, int resistance, AttackType attackType) {
         this.name.set(name);
         this.health = health;
+        this.maxHealth = health;
         this.attackPower = attackPower;
         this.defense = defense;
         this.resistance = resistance;
@@ -42,18 +44,23 @@ public class Enemy implements Serializable {
 
     private void createEnemy(int level, AttackType attackType) {
         Generator generator = new Generator();
-        this.health = generator.generateNumber()%level*10;
-        this.attackPower = generator.generateNumber()%level*5;
-        this.defense = generator.generateNumber() % level * 4;
-        this.resistance = generator.generateNumber() % level * 3;
+        this.health = 10+generator.generateNumber()%level*20;
+        this.maxHealth = health;
+        if(name.toString().contains("Shiny")) {
+            this.attackPower = 4 + generator.generateNumber() % level * 15;
+        } else {
+            this.attackPower = 2 + generator.generateNumber() % level * 10;
+        }
+        this.defense = 1+generator.generateNumber() % level * 8;
+        this.resistance = 1+generator.generateNumber() % level * 6;
 
         if(attackType == AttackType.PHYSICAL) {
-            this.defense = generator.generateNumber() % level * 5;
+            this.defense = 1+generator.generateNumber() % level * 10;
         } else {
             // If attackType isn't physical, it is magical
             // Magic enemies are rare, so they should be more challenging
-            this.attackPower = generator.generateNumber()%level*6;
-            this.resistance = generator.generateNumber() % level * 6;
+            this.attackPower = 2+generator.generateNumber()%level*12;
+            this.resistance = 1+generator.generateNumber() % level * 12;
         }
     }
 
@@ -105,6 +112,10 @@ public class Enemy implements Serializable {
         return health;
     }
 
+    public int getMaxHealth() {
+        return maxHealth;
+    }
+
     public void setHealth(int health) {
         this.health = health;
     }
@@ -115,6 +126,8 @@ public class Enemy implements Serializable {
             damageDealt = this.getAttackPower()-attackedHero.getDefense();
         if (attackType == AttackType.MAGICAL)
             damageDealt = this.getAttackPower()-attackedHero.getResistance();
+        if(damageDealt<=0)
+            damageDealt=1;
         attackedHero.takeDamage(damageDealt);
     }
 

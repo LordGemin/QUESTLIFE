@@ -23,7 +23,7 @@ public class StatCalculator {
         //If hero has no weapon equipped, give him nonsense weapon;
         AbstractWeapons heroWeapon = (hero.getWeapon() != null) ? hero.getWeapon() : new Weapon("Bare knuckle", 0,0,AttackType.PHYSICAL);
 
-        baseValue += Math.round(heroWeapon.getPhysicalAttack()/10);
+        baseValue += Math.round(heroWeapon.getPhysicalAttack()/10.0f);
 
         return baseValue*2;
     }
@@ -33,7 +33,7 @@ public class StatCalculator {
         //If hero has no weapon equipped, give him nonsense weapon;
         AbstractWeapons heroWeapon = (hero.getWeapon() != null) ? hero.getWeapon() : new Weapon("Bare knuckle", 0,0,AttackType.PHYSICAL);
 
-        baseValue += Math.round(heroWeapon.getMagicalAttack()/15);
+        baseValue += Math.round(heroWeapon.getMagicalAttack()/15.0f);
 
         // Resistance will usually be higher than defense
         return  (int)Math.round(baseValue*2.5);
@@ -84,15 +84,15 @@ public class StatCalculator {
     }
 
     public int calculateWeaponDamage(int basedamage, int maxdamage, int levelOfHero) {
-        return (generator.generateNumber()%((maxdamage+levelOfHero*3)-(basedamage+levelOfHero*2)));
+        return (basedamage + generator.generateNumber()%(maxdamage+levelOfHero*3));
     }
 
     public int getMaxHealth(Hero hero) {
-        return (hero.getConstitution() < 10) ?  50:hero.getConstitution()*5;
+        return (hero.getConstitution() < 10) ?  100:hero.getConstitution()*30;
     }
 
     public int getMaxMana(Hero hero) {
-        return (hero.getPiety() < 10) ?  50:hero.getConstitution()*5;
+        return (hero.getPiety() < 10) ?  100:hero.getPiety()*20;
     }
 
     public int getExperienceFromGoal(Goals goal) {
@@ -108,11 +108,11 @@ public class StatCalculator {
     }
 
     public int getExperienceFromEnemy(Enemy enemy) {
-        return Math.round(enemy.getAttackPower()*enemy.getHealth()/2);
+        return Math.round(enemy.getAttackPower()*enemy.getMaxHealth()/2.0f);
     }
 
     public int getGoldFromEnemy(Enemy enemy) {
-        return Math.round(enemy.getAttackPower()*enemy.getHealth()/4);
+        return Math.round(enemy.getAttackPower()*enemy.getMaxHealth()/4.0f);
     }
 
     public int getExpToNextLevel (int experienceToThisLevel, int level) {

@@ -38,6 +38,8 @@ public class mainLayoutController {
     @FXML
     private Label heroName;
     @FXML
+    private Label level;
+    @FXML
     private Label strength;
     @FXML
     private Label dexterity;
@@ -167,7 +169,7 @@ public class mainLayoutController {
         skillName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
         skillAssociatedAttribute.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getAssociatedAttribute()));
         skillLevel.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getLevel()));
-        skillExperience.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getExperienceToNextLevel()));
+        skillExperience.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getExperienceToNextLevel()-cellData.getValue().getExperience()));
 
         // Initialize the inventory with two columns
         inventoryName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
@@ -216,16 +218,7 @@ public class mainLayoutController {
         inventoryTable.setItems(mainApp.getInventory());
         skillsTable.setItems(mainApp.getSkillData());
 
-        heroName.setText(hero.getName());
-        experienceToNextLevel.setProgress(hero.getExperience()/hero.getExperienceToNextLevel());
-        strength.setText(""+hero.getStrength());
-        dexterity.setText(""+hero.getDexterity());
-        mind.setText(""+hero.getMind());
-        charisma.setText(""+hero.getCharisma());
-        observation.setText(""+hero.getObservation());
-        constitution.setText(""+hero.getConstitution());
-        piety.setText(""+hero.getPiety());
-        gold.setText(""+ hero.getGold());
+        updateLabels();
     }
 
     @FXML
@@ -235,6 +228,37 @@ public class mainLayoutController {
         if (okClicked) {
             mainApp.getGoalData().add(tempGoal);
         }
+        updateLabels();
+    }
+
+    @FXML
+    private void handleDeleteGoal() {
+        if (goalsTable.getSelectionModel().getSelectedItems().size() != 1) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Can only delete one element");
+            alert.setHeaderText("Select goal");
+            alert.setContentText("Please select one goal from the table above\n");
+
+            alert.showAndWait();
+            return;
+        }
+        mainApp.getGoalData().remove(goalsTable.getSelectionModel().getSelectedItem());
+    }
+
+    @FXML
+    private void handleEditGoal() {
+        if (goalsTable.getSelectionModel().getSelectedItems().size() != 1) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Can only edit one element");
+            alert.setHeaderText("Select goal");
+            alert.setContentText("Please select one goal from the table above\n");
+
+            alert.showAndWait();
+            return;
+        }
+        Goals goal = goalsTable.getSelectionModel().getSelectedItem();
+        mainApp.showGoalEditDialog(goal);
+        updateLabels();
     }
 
     @FXML
@@ -244,6 +268,7 @@ public class mainLayoutController {
         if (okClicked) {
             mainApp.getSkillData().add(tempSkill);
         }
+        updateLabels();
     }
 
     /**
@@ -262,6 +287,7 @@ public class mainLayoutController {
         }
         Skill skill = skillsTable.getSelectionModel().getSelectedItem();
         mainApp.showSkillEditDialog(skill);
+        updateLabels();
     }
 
     /**
@@ -304,6 +330,7 @@ public class mainLayoutController {
         }
 
         mainApp.getSkillData().remove(skill);
+        updateLabels();
     }
 
     @FXML
@@ -329,6 +356,10 @@ public class mainLayoutController {
             alert.showAndWait();
             return;
         }
+        mainApp.showAddTimeDialog(skill);
+        System.out.println("Time to next level: "+skill.getExperienceToNextLevel());
+
+        updateLabels();
 
     }
 
@@ -339,6 +370,7 @@ public class mainLayoutController {
         if (okClicked) {
             mainApp.getRewardData().add(tempReward);
         }
+        updateLabels();
     }
 
     /**
@@ -357,6 +389,7 @@ public class mainLayoutController {
         }
         Reward reward = rewardTable.getSelectionModel().getSelectedItem();
         mainApp.showRewardEditDialog(reward);
+        updateLabels();
     }
 
     /**
@@ -376,6 +409,7 @@ public class mainLayoutController {
 
         Reward reward = rewardTable.getSelectionModel().getSelectedItem();
         mainApp.getRewardData().remove(reward);
+        updateLabels();
 
     }
 
@@ -395,6 +429,7 @@ public class mainLayoutController {
         }
         Quest detail = questsTable.getSelectionModel().getSelectedItem();
         mainApp.showQuestDetailDialog(detail);
+        updateLabels();
 
     }
 
@@ -418,6 +453,7 @@ public class mainLayoutController {
         }
         hero.getQuestList().remove(deletion);
         mainApp.getQuestData().remove(deletion);
+        updateLabels();
     }
 
     /**
@@ -435,6 +471,7 @@ public class mainLayoutController {
             return;
         }
         hero.setActiveQuest(questsTable.getSelectionModel().getSelectedItem());
+        updateLabels();
     }
 
     /**
@@ -442,6 +479,7 @@ public class mainLayoutController {
      */
     @FXML
     private void handleUsePotion() {
+        hero.setInventory(inventoryTable.getItems());
         if (inventoryTable.getSelectionModel().getSelectedItems().size() != 1) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Could not use");
@@ -452,6 +490,7 @@ public class mainLayoutController {
             return;
         }
         hero.takePotion((AbstractPotions) inventoryTable.getSelectionModel().getSelectedItem());
+        updateLabels();
     }
 
     /**
@@ -459,6 +498,7 @@ public class mainLayoutController {
      */
     @FXML
     private void handleEquipWeapon() {
+        hero.setInventory(inventoryTable.getItems());
         if (inventoryTable.getSelectionModel().getSelectedItems().size() != 1) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Could equip");
@@ -469,6 +509,7 @@ public class mainLayoutController {
             return;
         }
         hero.changeWeapon((AbstractWeapons) inventoryTable.getSelectionModel().getSelectedItem());
+        updateLabels();
     }
 
     /**
@@ -488,10 +529,12 @@ public class mainLayoutController {
         int value = 0;
         for(AbstractItems a:inventoryTable.getSelectionModel().getSelectedItems()){
             value += a.getPrice();
+            mainApp.getInventory().remove(a);
         }
         // Resell value is much lower than new item value
         hero.gainGold(Math.round(value/3.0f));
         gold.setText(""+hero.getGold());
+        updateLabels();
     }
 
     /**
@@ -514,6 +557,7 @@ public class mainLayoutController {
         } else if(selected instanceof AbstractWeapons) {
             mainApp.showWeaponDetailDialog(selected);
         }
+        updateLabels();
     }
 
     @FXML
@@ -524,6 +568,7 @@ public class mainLayoutController {
             Field field = new Field(hero, mainApp.getEnemyData());
             field.runBattles(hero.getActiveQuest());
         }
+        updateLabels();
     }
 
     /**
@@ -558,7 +603,8 @@ public class mainLayoutController {
 
     private void updateLabels() {
         heroName.setText(hero.getName());
-        experienceToNextLevel.setProgress(hero.getExperience()/hero.getExperienceToNextLevel());
+        level.setText(""+hero.getLevel());
+        experienceToNextLevel.setProgress(((float)hero.getExperience())/hero.getExperienceToNextLevel());
         strength.setText(""+hero.getStrength());
         dexterity.setText(""+hero.getDexterity());
         mind.setText(""+hero.getMind());

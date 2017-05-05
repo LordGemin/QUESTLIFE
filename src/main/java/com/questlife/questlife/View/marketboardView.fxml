@@ -7,15 +7,14 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
 <AnchorPane prefHeight="500.0" prefWidth="350.0" styleClass="background" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.java.com.questlife.questlife.View.MarketboardViewController">
    <children>
       <Label layoutX="35.0" layoutY="14.0" prefHeight="62.0" prefWidth="280.0" styleClass="label-header" text="Hunting Quests" textOverrun="CLIP" AnchorPane.topAnchor="14.0" />
-      <TableView layoutX="14.0" layoutY="67.0" prefHeight="335.0" prefWidth="329.0" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0">
+      <TableView fx:id="questTable" layoutX="14.0" layoutY="67.0" prefHeight="335.0" prefWidth="329.0" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0">
         <columns>
-          <TableColumn prefWidth="83.0" text="Name" />
-          <TableColumn prefWidth="86.0" text="Amount" />
-            <TableColumn prefWidth="75.0" text="Reward" />
+          <TableColumn fx:id="enemyName" prefWidth="83.0" text="Name" />
+          <TableColumn fx:id="enemyAmount" prefWidth="86.0" text="Amount" />
+            <TableColumn fx:id="questReward" prefWidth="75.0" text="Reward" />
         </columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -23,9 +22,9 @@
       </TableView>
       <ButtonBar layoutX="16.0" layoutY="423.0" prefHeight="40.0" prefWidth="319.0" AnchorPane.bottomAnchor="37.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="15.0">
         <buttons>
-          <Button minWidth="62.0" mnemonicParsing="false" prefHeight="33.0" text="Details" />
-            <Button mnemonicParsing="false" prefHeight="33.0" text="Accept" />
-            <Button mnemonicParsing="false" text="Leave" />
+          <Button minWidth="62.0" mnemonicParsing="false" onAction="#handleDetails" prefHeight="33.0" text="Details" />
+            <Button mnemonicParsing="false" onAction="#handleAccept" prefHeight="33.0" text="Accept" />
+            <Button mnemonicParsing="false" onAction="#handleLeave" text="Leave" />
         </buttons>
       </ButtonBar>
    </children>

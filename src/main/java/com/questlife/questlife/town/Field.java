@@ -109,7 +109,9 @@ public class Field implements Runnable{
 
         Thread fieldThread = new Thread(this, "Field Battle Thread");
 
-        if (!this.activeQuest.equals(activeQuest)) {
+        if(activeQuest== null) {
+            this.activeQuest = null;
+        } else if (!this.activeQuest.equals(activeQuest)) {
             this.activeQuest = activeQuest;
         }
         fieldThread.start();
@@ -166,7 +168,7 @@ public class Field implements Runnable{
             List<Enemy> enemiesInBattle = new ArrayList<>();
 
             // Generate a random amount of randomly picked enemies to add to the battle.
-            for(int i = 0; i<generator.generateNumber()%ENEMYAMOUNT; i++) {
+            for(int i = 0; i<1+generator.generateNumber()%ENEMYAMOUNT; i++) {
                 Enemy enemy = enemiesInField.get(generator.generateNumber()%ENEMYAMOUNT);
 
                 /*
@@ -178,15 +180,31 @@ public class Field implements Runnable{
                 int difficulty = hero.getLevel()-generator.generateNumber()%3;
                 difficulty = difficulty+generator.generateNumber()%5;
 
+                if(difficulty == 0) {
+                    difficulty = hero.getLevel();
+                }
+
                 enemy.setHerolevel(difficulty);
 
                 enemiesInBattle.add(enemy);
             }
 
             Battle battle = new Battle(hero, enemiesInBattle);
+            System.out.println(hero.getName() + " engages "+enemiesInBattle.size()+" enemies!");
 
             questActive = activeQuest != null && activeQuest.getIsActive();
 
+            StringBuilder enemies= new StringBuilder();
+            for(int i = 0; i<enemiesInBattle.size();i++) {
+                if(battle.getParticipatingEnemyAt(i).getHealth()<=0) {
+                    continue;
+                }
+                enemies.append(battle.getParticipatingEnemyAt(i).getName());
+                if(i<enemiesInBattle.size()-1) {
+                    enemies.append(" and a ");
+                }
+            }
+            System.out.println("Hero fighting "+enemies);
 
             if(battle.runBattle()) {
                 battleCtr++;
