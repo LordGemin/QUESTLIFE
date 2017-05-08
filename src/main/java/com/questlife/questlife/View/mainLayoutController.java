@@ -568,6 +568,8 @@ public class mainLayoutController {
             System.out.println("Sending "+hero.getName()+" to the field.");
             Field field = new Field(hero, mainApp.getEnemyData());
             field.runBattles(hero.getActiveQuest());
+        } else {
+            System.out.println(hero.getName()+" should rest some more.");
         }
         updateLabels();
     }

@@ -21,15 +21,17 @@ public class Enemy implements Serializable {
     private Integer attackPower;
     private Integer defense;
     private Integer resistance;
+    private Integer level;
     private AttackType attackType;
 
     public Enemy() {
-        this("",1,AttackType.PHYSICAL);
+        this("",1);
     }
 
-    public Enemy(String name, int levelOfHero, AttackType attackType) {
+    public Enemy(String name, int levelOfHero) {
         this.name.set(name);
-        createEnemy(levelOfHero, attackType);
+        this.level = levelOfHero;
+        createEnemy(levelOfHero);
     }
 
     public Enemy(String name,int health, int attackPower, int defense, int resistance, AttackType attackType) {
@@ -42,8 +44,10 @@ public class Enemy implements Serializable {
         this.attackType = attackType;
     }
 
-    private void createEnemy(int level, AttackType attackType) {
+    private void createEnemy(int level) {
         Generator generator = new Generator();
+        this.level = level;
+
         this.health = 10+generator.generateNumber()%level*20;
         this.maxHealth = health;
         if(name.toString().contains("Shiny")) {
@@ -53,6 +57,11 @@ public class Enemy implements Serializable {
         }
         this.defense = 1+generator.generateNumber() % level * 8;
         this.resistance = 1+generator.generateNumber() % level * 6;
+
+        attackType = AttackType.PHYSICAL;
+        if(name.toString().contains("Blue")) {
+            attackType = AttackType.MAGICAL;
+        }
 
         if(attackType == AttackType.PHYSICAL) {
             this.defense = 1+generator.generateNumber() % level * 10;
@@ -120,19 +129,22 @@ public class Enemy implements Serializable {
         this.health = health;
     }
 
-    public void dealDamage(Hero attackedHero) {
-        int damageDealt= 0;
-        if (attackType == AttackType.PHYSICAL)
-            damageDealt = this.getAttackPower()-attackedHero.getDefense();
-        if (attackType == AttackType.MAGICAL)
-            damageDealt = this.getAttackPower()-attackedHero.getResistance();
-        if(damageDealt<=0)
-            damageDealt=1;
-        attackedHero.takeDamage(damageDealt);
+    public Integer getLevel() {
+        return level;
     }
 
-    public void takeDamage(int damageDealt) {
-        this.setHealth(this.getHealth()-damageDealt);
+    public void takeDamage(int damageDealt, AttackType attackType) {
+        int damageTaken = 0;
+        if (attackType == AttackType.PHYSICAL)
+            damageTaken = damageDealt-getDefense();
+        if (attackType == AttackType.MAGICAL)
+            damageTaken = damageDealt-getResistance();
+
+        if(damageTaken <= 0) {
+            damageTaken = 1;
+        }
+
+        this.setHealth(this.getHealth()-damageTaken);
     }
 
     public int getExperieceReward() {
@@ -146,6 +158,6 @@ public class Enemy implements Serializable {
     }
 
     public void setHerolevel(int herolevel) {
-        createEnemy(herolevel, getAttackType());
+        createEnemy(herolevel);
     }
 }

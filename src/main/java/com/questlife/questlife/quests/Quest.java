@@ -57,9 +57,6 @@ public class Quest implements Serializable{
     }
 
     public int countEnemyKilled(Enemy enemy) {
-        if(!isActive) {
-            return mobsToHunt;
-        }
         if(enemy.getName().equals(enemyType.getName())) {
             mobsToHunt -= 1;
         }

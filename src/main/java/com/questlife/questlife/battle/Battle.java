@@ -2,9 +2,13 @@ package main.java.com.questlife.questlife.battle;
 
 import main.java.com.questlife.questlife.enemy.Enemy;
 import main.java.com.questlife.questlife.hero.Hero;
+import main.java.com.questlife.questlife.items.AbstractItems;
+import main.java.com.questlife.questlife.items.AbstractPotions;
+import main.java.com.questlife.questlife.quests.Quest;
 import main.java.com.questlife.questlife.util.AttackType;
 
 import java.time.LocalDateTime;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 /**
@@ -67,20 +71,57 @@ public class Battle extends AbstractBattle {
 
         // Always try to survive at least the first dealDamage, approximate total damage to decide if potions should be taken
         int criticalHealth = getParticipatingEnemyAt(target).getAttackPower()*getParticipatingEnemies().size();
+        int criticalMana = (hero.getWeapon().getAttackType() == AttackType.MAGICAL) ? 10 : 0;
 
-        //TODO: Find the amount of mana that should be used on dealDamage.
-        int criticalMana = (hero.getWeapon().getAttackType() == AttackType.MAGICAL) ? hero.getAttack()/100 : 0;
+        boolean hasManaPotions = false;
+        boolean hasHealthPotions = false;
 
-        if(hero.getHealth() < criticalHealth || hero.getMana() < criticalMana ) {
+        // Checking if hero even can fix their hp/mp problem. if there are no potions, there is no luck
+        for(AbstractItems a:hero.getInventory()) {
+            if(a instanceof AbstractPotions) {
+                if(((AbstractPotions) a).getStrengthMP() > 0) {
+                    hasManaPotions = true;
+                    break;
+                }
+                if(((AbstractPotions) a).getStrengthHP() > 0) {
+                    hasHealthPotions = true;
+                    break;
+                }
+            }
+        }
+
+        // Hero will drink at least something appropriate when they feel like they need to prepare.
+        if(hero.getHealth() < criticalHealth && hasHealthPotions) {
+            System.out.println(hero.getName()+" taking some potions to prepare.");
+            hero.takePotion();
+        } else if (hero.getMana() < criticalMana && hasManaPotions) {
             System.out.println(hero.getName()+" taking some potions to prepare.");
             hero.takePotion();
         } else {
             System.out.println(hero.getName()+" attacks the " + getParticipatingEnemyAt(target).getName()+".");
-            hero.dealDamage(getParticipatingEnemyAt(target));
+
+            // Damage calculation is here.
+            int damage = hero.dealDamage();
+            getParticipatingEnemyAt(target).takeDamage(damage, hero.getWeapon().getAttackType());
+
             System.out.println(getParticipatingEnemyAt(target).getName()+" now has "+getParticipatingEnemyAt(target).getHealth()+" health left.");
         }
 
         if (getParticipatingEnemyAt(target).getHealth() <= 0) {
+            try {
+                for(Quest q:hero.getQuestList()) {
+                    // countEnemyKilled checks for validity of enemy
+                    q.countEnemyKilled(getParticipatingEnemyAt(target));
+                    if (q.getMobsToHunt()<=0) {
+                        hero.completeQuest(q);
+                    }
+                }
+            } catch (ConcurrentModificationException | NullPointerException e) {
+                /*
+                TODO: We don't have any quests accepted / one of our quests was finished
+                Should we then ignore the obvious error? What is justice even.
+                */
+            }
             System.out.println(hero.getName() + " has felled the "+getParticipatingEnemyAt(target).getName()+"!");
             getParticipatingHero().gainExperience(getParticipatingEnemyAt(target).getExperieceReward());
             System.out.println(hero.getName() + " gains "+ getParticipatingEnemyAt(target).getExperieceReward()+ " Experience!");
@@ -89,8 +130,13 @@ public class Battle extends AbstractBattle {
         }
 
         for (Enemy enemy:getParticipatingEnemies()) {
-            enemy.dealDamage(hero);
+            int damage = enemy.getAttackPower();
+            hero.takeDamage(damage, enemy.getAttackType());
             System.out.println(getParticipatingEnemyAt(target).getName() + " strikes "+ hero.getName()+".");
+            if(hero.getHealth() <= 0) {
+                System.out.println(hero.getName()+" succumbed to the pain.\nHe was brought back to the town to recover from his wounds.");
+                break;
+            }
             System.out.println(hero.getName()+ " now has "+hero.getHealth()+" health left.");
         }
     }

@@ -49,10 +49,10 @@ public class MarketboardViewController {
 
 
         if(marketboard.getQuestList() == null) {
-            questObservableList.add(marketboard.generateQuest(mainApp.getEnemyData()));
+            questObservableList.add(marketboard.generateQuest(mainApp.getEnemyData(), mainApp.getHeroData().get(0).getLevel()));
         }
         while(marketboard.getQuestList().size() < 10) {
-            questObservableList.add(marketboard.generateQuest(mainApp.getEnemyData()));
+            questObservableList.add(marketboard.generateQuest(mainApp.getEnemyData(), mainApp.getHeroData().get(0).getLevel()));
         }
 
         questTable.setItems(questObservableList);

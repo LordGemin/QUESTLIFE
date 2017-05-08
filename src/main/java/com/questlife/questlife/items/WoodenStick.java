@@ -8,7 +8,7 @@ import main.java.com.questlife.questlife.util.AttackType;
  */
 public final class WoodenStick extends AbstractWeapons {
 
-    private final Integer BASEPRICE = 30;
+    private final Integer BASEPRICE = 75;
     private final Integer BASEMINDAMAGE = 5;
     private final Integer BASEMAXDAMAGE = 7;
 

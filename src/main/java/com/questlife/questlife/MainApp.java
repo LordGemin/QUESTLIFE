@@ -145,8 +145,8 @@ public class MainApp extends Application {
     /**
      * The data as an observable list of enemies.
      */
-    private ObservableList<Enemy> enemyData = FXCollections.observableArrayList();
-    public ObservableList<Enemy> getEnemyData() {
+    private ObservableList<String> enemyData = FXCollections.observableArrayList();
+    public ObservableList<String> getEnemyData() {
         return enemyData;
     }
 
@@ -161,10 +161,7 @@ public class MainApp extends Application {
         for(int i=0; i < 20; i++) {
             AttackType attackType = AttackType.PHYSICAL;
             String enemyName = generator.generateEnemyName();
-            if(enemyName.contains("Blue")) {
-                attackType = AttackType.MAGICAL;
-            }
-            enemyData.add(new Enemy(enemyName, 1, attackType));
+            enemyData.add(enemyName);
         }
     }
 

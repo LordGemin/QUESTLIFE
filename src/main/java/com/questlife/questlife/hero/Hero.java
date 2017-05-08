@@ -61,7 +61,7 @@ public class Hero implements Serializable {
         if(lastDeath == null)
             return health;
         else {
-            //refill complete health within 6 hours of last death
+            //refill complete health within 4 hours of last death
             //If user wants to go out adventuring before then: pay gold for tavern. It should be cheap enough
             health = (int) Math.ceil((getMaxHealth()/24)*(Math.floor(getTimeSinceLastDeath()/600000)));
             if (health > getMaxHealth()) {
@@ -265,7 +265,7 @@ public class Hero implements Serializable {
         activeQuest = null;
     }
 
-    private void completeQuest(Quest quest) {
+    public void completeQuest(Quest quest) {
         //TODO: Notify player.
         gainGold(quest.getRewardGold());
         gainExperience(quest.getRewardExp());
@@ -365,23 +365,33 @@ public class Hero implements Serializable {
         mana = (mana < getMaxMana()) ? mana:getMaxMana();
     }
 
-    public void takeDamage(int damageDealt) {
-        this.setHealth(this.getHealth()-damageDealt);
+    public void takeDamage(int damageDealt, AttackType attackType) {
+        int damageTaken = 0;
+        if (attackType == AttackType.PHYSICAL)
+            damageTaken = damageDealt-getDefense();
+        if (attackType == AttackType.MAGICAL)
+            damageTaken = damageDealt-getResistance();
+
+        if(damageTaken <= 0) {
+            damageTaken =1;
+        }
+
+        this.setHealth(this.getHealth()-damageTaken);
     }
 
-    public void dealDamage(Enemy enemy) {
+    public int dealDamage() {
         int damageDealt = 0;
 
-        // Physical Damage is easier to deal, but should in general deal slightly less damage
-        if (weapon.getAttackType() == AttackType.PHYSICAL)
-            damageDealt = this.getAttack()-enemy.getDefense();
+        if (weapon.getAttackType() == AttackType.PHYSICAL) {
+            damageDealt = getAttack();
+        }
 
         if (weapon.getAttackType() == AttackType.BOTH) {
             if(mana <= 0) { //If Hero has not enough Mana to perform full attack, he attack with the weapon physically
-                damageDealt = this.getAttack() - enemy.getDefense();
+                damageDealt = getAttack();
                 mana = 10;
             } else {
-                damageDealt = this.getAttack() - enemy.getResistance();
+                damageDealt = getAttack();
             }
         }
 
@@ -389,15 +399,11 @@ public class Hero implements Serializable {
         if (weapon.getAttackType() == AttackType.MAGICAL) {
             if(mana < 10) { //If Hero has not enough Mana to perform full attack, we refresh some mana for next round and deal substantially less damage this round
                 mana = 10;
-                damageDealt = Math.round((this.getAttack() - enemy.getResistance())/2);
+                damageDealt = Math.round(damageDealt/2.0f);
             } else {
                 this.mana -= 10;
-                damageDealt = this.getAttack() - enemy.getResistance();
+                damageDealt = getAttack();
             }
-        }
-
-        if(damageDealt <= 0) {
-            damageDealt=1;
         }
 
         int criticalCheck =  new Generator().generateNumber()%(getObservation()*getObservation());
@@ -408,25 +414,7 @@ public class Hero implements Serializable {
             System.out.println(name+" strikes a critical blow.\n");
         }
 
-        enemy.takeDamage(damageDealt);
-
-        if (enemy.getHealth() <= 0) {
-            try {
-                for(Quest q:questList) {
-                    if(q.getEnemyType().getName().equals(enemy.getName())) {
-                        q.countEnemyKilled(enemy);
-                    }
-                    if (q.getMobsToHunt()<=0) {
-                        completeQuest(q);
-                    }
-                }
-            } catch (NullPointerException e) {
-                /*
-                TODO: We don't have any quests accepted
-                Should we then ignore the obvious error? What is justice even.
-                */
-            }
-        }
+        return damageDealt;
     }
 
     public boolean spendGold(int cost) {

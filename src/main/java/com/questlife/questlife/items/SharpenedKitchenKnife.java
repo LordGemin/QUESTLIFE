@@ -8,7 +8,7 @@ import main.java.com.questlife.questlife.util.AttackType;
  */
 public final class SharpenedKitchenKnife extends AbstractWeapons {
 
-    private final Integer BASEPRICE = 50;
+    private final Integer BASEPRICE = 200;
     private final Integer BASEMINDAMAGE = 10;
     private final Integer BASEMAXDAMAGE = 15;
 

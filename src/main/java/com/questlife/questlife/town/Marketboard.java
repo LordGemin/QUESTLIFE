@@ -3,6 +3,7 @@ package main.java.com.questlife.questlife.town;
 import main.java.com.questlife.questlife.enemy.Enemy;
 import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.quests.Quest;
+import main.java.com.questlife.questlife.util.AttackType;
 import main.java.com.questlife.questlife.util.Generator;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class Marketboard {
         this.questList = questList;
     }
 
-    public Quest generateQuest(List<Enemy> enemyList) {
+    public Quest generateQuest(List<String> enemyList, int level) {
         if(enemyList.size() == 0) {
             return null;
         }
@@ -36,24 +37,25 @@ public class Marketboard {
         Generator generator = new Generator();
         int pick = generator.generateNumber()%enemyList.size();
 
-        // Pick an enemy from the list, set it as enemytype
-        generatedQuest.setEnemyType(enemyList.get(pick));
+        Enemy enemy = new Enemy(enemyList.get(pick), level);
 
-        // Set mobs to hunt between 1 and 10
-        generatedQuest.setMobsToHunt(1 + generator.generateNumber()%10);
+        // Pick an enemy from the list, set it as enemy
+        generatedQuest.setEnemyType(enemy);
 
-        // We want to "Defeat 1 blue slime" but "3 blue slimeS"
-        String enemyName = (generatedQuest.getMobsToHunt()== 1) ? generatedQuest.getEnemyType().getName():generatedQuest.getEnemyType().getName()+"s";
-        generatedQuest.setName("Defeat "+generatedQuest.getMobsToHunt()+" "+enemyName);
+        // Set mobs to hunt between 5 and 10
+        generatedQuest.setMobsToHunt(5 + generator.generateNumber()%6);
+
+        // We want to "Defeat 5 Blue SlimeS"
+        generatedQuest.setName("Defeat "+generatedQuest.getMobsToHunt()+" "+enemy.getName()+"s");
 
         // The reward should be in accordance with the expected difficulty
-        generatedQuest.setRewardExp(Math.round((generatedQuest.getEnemyType().getExperieceReward())*(generatedQuest.getMobsToHunt())/3.5f));
+        generatedQuest.setRewardExp(Math.round((enemy.getExperieceReward())*(generatedQuest.getMobsToHunt())*2.5f));
 
         // We want to receive lower gold rewards than experience rewards, because progress feels nice, but gold should feel rewarding
-        generatedQuest.setRewardGold(Math.round((generatedQuest.getEnemyType().getGoldReward())*(generatedQuest.getMobsToHunt())/4.5f));
+        generatedQuest.setRewardGold(Math.round((enemy.getGoldReward())*(generatedQuest.getMobsToHunt())*1.5f));
 
         // The description will be a bit silly in some cases. But it's never shown unless the player selects detailed view
-        generatedQuest.setDescription(generator.generateQuestDescription(generatedQuest.getEnemyType()));
+        generatedQuest.setDescription(generator.generateQuestDescription(enemy));
 
         questList.add(generatedQuest);
 
