@@ -265,6 +265,14 @@ public class Hero implements Serializable {
         activeQuest = null;
     }
 
+    private void completeQuest(Quest quest) {
+        //TODO: Notify player.
+        gainGold(quest.getRewardGold());
+        gainExperience(quest.getRewardExp());
+        questList.remove(quest);
+        quest.setInactive();
+    }
+
     public int getDefense(){
         return statCalculator.calculateHeroesDefense(this);
     }
@@ -370,7 +378,7 @@ public class Hero implements Serializable {
 
         if (weapon.getAttackType() == AttackType.BOTH) {
             if(mana <= 0) { //If Hero has not enough Mana to perform full attack, he attack with the weapon physically
-                damageDealt = Math.round((this.getAttack() - enemy.getDefense()/2));
+                damageDealt = this.getAttack() - enemy.getDefense();
                 mana = 10;
             } else {
                 damageDealt = this.getAttack() - enemy.getResistance();
@@ -379,11 +387,11 @@ public class Hero implements Serializable {
 
         // Magical Damage can be more destructive, but uses mana. If Hero has not enough mana, it will deal less damage
         if (weapon.getAttackType() == AttackType.MAGICAL) {
-            this.mana -= 10;
-            if(mana <= 0) { //If Hero has not enough Mana to perform full attack, we refresh some mana for next round and deal substantially less damage this round
+            if(mana < 10) { //If Hero has not enough Mana to perform full attack, we refresh some mana for next round and deal substantially less damage this round
                 mana = 10;
                 damageDealt = Math.round((this.getAttack() - enemy.getResistance())/2);
             } else {
+                this.mana -= 10;
                 damageDealt = this.getAttack() - enemy.getResistance();
             }
         }
@@ -392,23 +400,29 @@ public class Hero implements Serializable {
             damageDealt=1;
         }
 
-        int criticalCheck =  new Generator().generateNumber();
+        int criticalCheck =  new Generator().generateNumber()%(getObservation()*getObservation());
 
         // Critical Attacks based on observation stat. Deals double damage
-        if(getObservation() >= criticalCheck*5)
+        if(getObservation() >= criticalCheck*5) {
             damageDealt *= 2;
-            //TODO: Message to player
+            System.out.println(name+" strikes a critical blow.\n");
+        }
 
         enemy.takeDamage(damageDealt);
 
         if (enemy.getHealth() <= 0) {
             try {
-                if (activeQuest.countEnemyKilled(enemy) <= 0) {
-                    completeQuest();
+                for(Quest q:questList) {
+                    if(q.getEnemyType().getName().equals(enemy.getName())) {
+                        q.countEnemyKilled(enemy);
+                    }
+                    if (q.getMobsToHunt()<=0) {
+                        completeQuest(q);
+                    }
                 }
             } catch (NullPointerException e) {
                 /*
-                TODO: There is no assigned quest anymore, or ever was.
+                TODO: We don't have any quests accepted
                 Should we then ignore the obvious error? What is justice even.
                 */
             }

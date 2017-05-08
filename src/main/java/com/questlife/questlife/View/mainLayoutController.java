@@ -2,6 +2,7 @@ package main.java.com.questlife.questlife.View;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -613,6 +614,13 @@ public class mainLayoutController {
         constitution.setText(""+hero.getConstitution());
         piety.setText(""+hero.getPiety());
         gold.setText(""+hero.getGold());
+
+        for(Quest q: mainApp.getQuestData()) {
+            if(q.getMobsToHunt() <= 0) {
+                mainApp.getQuestData().remove(q);
+            }
+        }
+        questEnemyCount.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getMobsToHunt()));
     }
 
 }

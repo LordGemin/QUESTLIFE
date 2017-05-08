@@ -108,11 +108,11 @@ public class StatCalculator {
     }
 
     public int getExperienceFromEnemy(Enemy enemy) {
-        return Math.round(enemy.getAttackPower()*enemy.getMaxHealth()/2.0f);
+        return Math.round(enemy.getAttackPower()*enemy.getMaxHealth()/20.0f);
     }
 
     public int getGoldFromEnemy(Enemy enemy) {
-        return Math.round(enemy.getAttackPower()*enemy.getMaxHealth()/4.0f);
+        return Math.round(enemy.getAttackPower()*enemy.getMaxHealth()/35.0f);
     }
 
     public int getExpToNextLevel (int experienceToThisLevel, int level) {
@@ -123,9 +123,22 @@ public class StatCalculator {
     }
 
     public int getRebate(Hero hero, int cost) {
-        //TODO: Add inverse square function to get slowly rising rebates with asymptote at 0.501 (to reach 0.5)
-        float div = 100;
-        float rebate = hero.getCharisma()/div;
-        return Math.round(rebate*cost);
+
+        if(hero.getCharisma() < 50) {
+            return Math.round(0.0025f*hero.getCharisma()*cost);
+        }
+        else {
+            // We want to slowly increase the correction value from -5.5 to 0
+            int fiftyToHundred = hero.getCharisma()-50;
+            // For this we need to step by step increase the value, by whatever step/9.09090909090909
+            float div = 50/5.5f;
+            // Now we have a correction value
+            float correction = (-5.5f+fiftyToHundred/div);
+            // But we only want it smaller 0. No overcorrection.
+            if(correction > 0) {
+                correction = 0;
+            }
+            return (int)(Math.round((-1/(0.4f)*Math.sqrt(hero.getCharisma()+correction))+0.5f)*cost);
+        }
     }
 }

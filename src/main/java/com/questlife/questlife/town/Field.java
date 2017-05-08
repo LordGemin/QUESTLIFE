@@ -164,7 +164,7 @@ public class Field implements Runnable{
             questActive = false;
         }
 
-        while (questActive || (battleCtr <= loops)) {
+        while (questActive && (battleCtr <= loops)) {
             List<Enemy> enemiesInBattle = new ArrayList<>();
 
             // Generate a random amount of randomly picked enemies to add to the battle.
