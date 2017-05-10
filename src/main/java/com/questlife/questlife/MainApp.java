@@ -46,10 +46,6 @@ public class MainApp extends Application {
         return TAVERNCOST;
     }
 
-    public long getShopCounter() {
-        return shopCounter;
-    }
-
     public void setShopCounter(long shopCounter) {
         this.shopCounter = shopCounter;
     }
