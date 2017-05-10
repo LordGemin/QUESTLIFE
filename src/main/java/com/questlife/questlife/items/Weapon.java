@@ -11,9 +11,6 @@ import java.util.*;
  */
 public class Weapon extends AbstractWeapons {
 
-    private int physicalAttack, magicalAttack;
-    private AttackType attackType;
-
     public Weapon (int heroLevel) {
         generateWeapon(heroLevel);
     }
@@ -25,10 +22,10 @@ public class Weapon extends AbstractWeapons {
      * @param attackType define the attackType of the weapon
      */
     public Weapon (String name, int physicalAttack, int magicalAttack, AttackType attackType) {
-        this.name = name;
         this.physicalAttack = physicalAttack;
         this.magicalAttack = magicalAttack;
         this.attackType = attackType;
+        this.name = name;
     }
 
     /**

@@ -4,11 +4,9 @@ import main.java.com.questlife.questlife.battle.Battle;
 import main.java.com.questlife.questlife.enemy.Enemy;
 import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.quests.Quest;
-import main.java.com.questlife.questlife.util.AttackType;
 import main.java.com.questlife.questlife.util.Generator;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**

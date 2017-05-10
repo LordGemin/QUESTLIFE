@@ -6,6 +6,8 @@ import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.items.AbstractWeapons;
 import main.java.com.questlife.questlife.items.Weapon;
 
+import java.text.DecimalFormat;
+
 /**
  * 
  * Created by Gemin on 11.04.2017.
@@ -120,6 +122,15 @@ public class StatCalculator {
             return 1000;
         }
         return experienceToThisLevel + 1000+100*Math.round(level/10);
+    }
+
+    public long getExpToNextLevel (int level) {
+        if(level == 1) {
+            return 500;
+        }
+        long exp = 10*level*level+1840*level-720;
+        long cut = exp/1000;
+        return exp;
     }
 
     public int getRebate(Hero hero, int cost) {

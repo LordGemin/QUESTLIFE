@@ -92,7 +92,7 @@ public class Player implements Serializable {
      */
     public void createHero () {
         //TODO: Let the player actually add his hero, with name and stuff
-        Hero hero = new Hero(this,"", null);
+        Hero hero = new Hero("");
         playerHero = hero;
     }
 

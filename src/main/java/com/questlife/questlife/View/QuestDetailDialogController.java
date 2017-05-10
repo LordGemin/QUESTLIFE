@@ -1,12 +1,9 @@
 package main.java.com.questlife.questlife.View;
 
-import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import main.java.com.questlife.questlife.MainApp;
-import main.java.com.questlife.questlife.enemy.Enemy;
 import main.java.com.questlife.questlife.quests.Quest;
 
 

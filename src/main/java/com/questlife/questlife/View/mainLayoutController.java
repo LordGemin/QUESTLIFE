@@ -2,8 +2,6 @@ package main.java.com.questlife.questlife.View;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import main.java.com.questlife.questlife.MainApp;
@@ -20,7 +18,6 @@ import main.java.com.questlife.questlife.town.Field;
 import main.java.com.questlife.questlife.util.RewardType;
 import main.java.com.questlife.questlife.util.SkillType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -607,7 +604,7 @@ public class mainLayoutController {
     private void updateLabels() {
         heroName.setText(hero.getName());
         level.setText(""+hero.getLevel());
-        experienceToNextLevel.setProgress(((float)hero.getExperience())/hero.getExperienceToNextLevel());
+        experienceToNextLevel.setProgress(((float)hero.getExperience()-hero.getExperienceToLastLevel())/(hero.getExperienceToNextLevel()-hero.getExperienceToLastLevel()));
         strength.setText(""+hero.getStrength());
         dexterity.setText(""+hero.getDexterity());
         mind.setText(""+hero.getMind());
@@ -617,12 +614,7 @@ public class mainLayoutController {
         piety.setText(""+hero.getPiety());
         gold.setText(""+hero.getGold());
 
-        for(Quest q: mainApp.getQuestData()) {
-            if(q.getMobsToHunt() <= 0) {
-                mainApp.getQuestData().remove(q);
-            }
-        }
-        questEnemyCount.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getMobsToHunt()));
+        mainApp.getQuestData().removeIf(e -> (e.getMobsToHunt() <= 0));
     }
 
 }

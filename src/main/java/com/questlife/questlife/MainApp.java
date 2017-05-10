@@ -191,7 +191,7 @@ public class MainApp extends Application {
         initializeItems();
         initializeEnemies();
 
-        heroData.add(new Hero(new Player(), "Bolgerig", new Weapon(1)));
+        heroData.add(new Hero("Bolgerig"));
         heroData.get(0).setCharisma(20);
         heroData.get(0).setConstitution(50);
         heroData.get(0).setGold(5000);

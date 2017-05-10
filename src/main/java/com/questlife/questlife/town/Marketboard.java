@@ -1,9 +1,7 @@
 package main.java.com.questlife.questlife.town;
 
 import main.java.com.questlife.questlife.enemy.Enemy;
-import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.quests.Quest;
-import main.java.com.questlife.questlife.util.AttackType;
 import main.java.com.questlife.questlife.util.Generator;
 
 import java.util.ArrayList;
@@ -37,7 +35,7 @@ public class Marketboard {
         Generator generator = new Generator();
         int pick = generator.generateNumber()%enemyList.size();
 
-        Enemy enemy = new Enemy(enemyList.get(pick), level);
+        Enemy enemy = new Enemy(enemyList.get(pick), level+1);
 
         // Pick an enemy from the list, set it as enemy
         generatedQuest.setEnemyType(enemy);

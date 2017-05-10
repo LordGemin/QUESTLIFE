@@ -1,11 +1,9 @@
 package main.java.com.questlife.questlife.hero;
 
-import main.java.com.questlife.questlife.enemy.Enemy;
 import main.java.com.questlife.questlife.items.AbstractItems;
 import main.java.com.questlife.questlife.items.AbstractPotions;
 import main.java.com.questlife.questlife.items.AbstractWeapons;
 import main.java.com.questlife.questlife.player.Inventory;
-import main.java.com.questlife.questlife.player.Player;
 import main.java.com.questlife.questlife.quests.Quest;
 import main.java.com.questlife.questlife.town.Field;
 import main.java.com.questlife.questlife.util.AttackType;
@@ -23,12 +21,12 @@ import java.util.List;
 public class Hero implements Serializable {
 
     private String name;
-    private Player player;
     private Integer health = 0;
     private Integer mana = 0;
     private Integer level = 1;
     private Integer experience = 0;
     private Integer experienceToNextLevel;
+    private Integer experienceToLastLevel = 0;
     private Integer gold = 0;
     private AbstractWeapons weapon;
     private Quest activeQuest;
@@ -43,8 +41,11 @@ public class Hero implements Serializable {
 
     }
 
-    public Hero (Player player, String name, AbstractWeapons weapon) {
-        this.player = player;
+    public Hero(String name) {
+        this.name = name;
+    }
+
+    public Hero (String name, AbstractWeapons weapon) {
         this.name = name;
         this.weapon = weapon;
     }
@@ -178,6 +179,10 @@ public class Hero implements Serializable {
         return experienceToNextLevel;
     }
 
+    public int getExperienceToLastLevel() {
+        return experienceToLastLevel;
+    }
+
     public void setExperienceToNextLevel(int experienceToNextLevel) {
         this.experienceToNextLevel = experienceToNextLevel;
     }
@@ -288,12 +293,14 @@ public class Hero implements Serializable {
     public void changeWeapon(AbstractWeapons toEquip) {
         if (inventory.contains(toEquip))
             inventory.remove(toEquip);
-        inventory.add(this.weapon);
+        if (this.weapon != null)
+            inventory.add(this.weapon);
         this.setWeapon(toEquip);
     }
 
     private void levelUp() {
         this.level++;
+        this.experienceToLastLevel = experienceToNextLevel;
         this.experienceToNextLevel = statCalculator.getExpToNextLevel(experienceToNextLevel,level);
         //TODO: Rethink this formula
     }
@@ -380,7 +387,12 @@ public class Hero implements Serializable {
     }
 
     public int dealDamage() {
-        int damageDealt = 0;
+        int damageDealt = getAttack();
+        AttackType weaponAttackType = null;
+
+        if(weapon.getAttackType() != null) {
+            weaponAttackType = weapon.getAttackType();
+        }
 
         if (weapon.getAttackType() == AttackType.PHYSICAL) {
             damageDealt = getAttack();

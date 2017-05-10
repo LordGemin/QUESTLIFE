@@ -1,7 +1,6 @@
 package main.java.com.questlife.questlife.quests;
 
 import main.java.com.questlife.questlife.enemy.Enemy;
-import main.java.com.questlife.questlife.hero.Hero;
 
 import java.io.Serializable;
 
@@ -14,6 +13,7 @@ public class Quest implements Serializable{
     private String name;
     private String description;
     private Enemy enemyType;
+    private String questEnemy;
     private Integer mobsToHunt = 0;
     private Integer rewardExp;
     private Integer rewardGold;

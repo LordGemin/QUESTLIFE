@@ -7,8 +7,7 @@ import main.java.com.questlife.questlife.items.AbstractPotions;
 import main.java.com.questlife.questlife.quests.Quest;
 import main.java.com.questlife.questlife.util.AttackType;
 
-import java.time.LocalDateTime;
-import java.util.ConcurrentModificationException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,27 +51,34 @@ public class Battle extends AbstractBattle {
     @Override
     public void runTurn() {
         Hero hero = getParticipatingHero();
+        AttackType heroWeaponAttackType = AttackType.PHYSICAL;
+        List<Quest> quests = new ArrayList<>();
+        quests.addAll(hero.getQuestList());
+        List<Enemy> enemies = getParticipatingEnemies();
         int target = 0;
 
-        for(int i = 0; i < getParticipatingEnemies().size(); i++) {
-            if(getParticipatingEnemyAt(i).getHealth() <= 0 ) {
+        for(int i = 0; i < enemies.size(); i++) {
+            if(enemies.get(i).getHealth() <= 0 ) {
                 getParticipatingEnemies().remove(getParticipatingEnemyAt(i));
                 //Circle to the next enemy if current one died
+                continue;
             }
             //looking for the "left"most enemy alive, skipping all afterwards.
             target = i;
-            i = getParticipatingEnemies().size();
+            break;
         }
 
-        if(getParticipatingEnemies().size() == 0) {
+        if(enemies.size() == 0) {
             System.out.println("No enemies left!");
             return;
         }
 
         // Always try to survive at least the first dealDamage, approximate total damage to decide if potions should be taken
-        int criticalHealth = getParticipatingEnemyAt(target).getAttackPower()*getParticipatingEnemies().size();
-        int criticalMana = (hero.getWeapon().getAttackType() == AttackType.MAGICAL) ? 10 : 0;
-
+        int criticalHealth = enemies.get(target).getAttackPower()*enemies.size();
+        if(hero.getWeapon() != null) {
+            heroWeaponAttackType = hero.getWeapon().getAttackType();
+        }
+        int criticalMana = (heroWeaponAttackType == AttackType.MAGICAL) ? 10 : 0;
         boolean hasManaPotions = false;
         boolean hasHealthPotions = false;
 
@@ -102,23 +108,23 @@ public class Battle extends AbstractBattle {
 
             // Damage calculation is here.
             int damage = hero.dealDamage();
-            getParticipatingEnemyAt(target).takeDamage(damage, hero.getWeapon().getAttackType());
+            getParticipatingEnemyAt(target).takeDamage(damage, heroWeaponAttackType);
 
             System.out.println(getParticipatingEnemyAt(target).getName()+" now has "+getParticipatingEnemyAt(target).getHealth()+" health left.");
         }
 
-        if (getParticipatingEnemyAt(target).getHealth() <= 0) {
+        if (enemies.get(target).getHealth() <= 0) {
             try {
-                for(Quest q:hero.getQuestList()) {
+                for(Quest q:quests) {
                     // countEnemyKilled checks for validity of enemy
-                    q.countEnemyKilled(getParticipatingEnemyAt(target));
+                    q.countEnemyKilled(enemies.get(target));
                     if (q.getMobsToHunt()<=0) {
                         hero.completeQuest(q);
                     }
                 }
-            } catch (ConcurrentModificationException | NullPointerException e) {
+            } catch (NullPointerException e) {
                 /*
-                TODO: We don't have any quests accepted / one of our quests was finished
+                TODO: We don't have any quests accepted
                 Should we then ignore the obvious error? What is justice even.
                 */
             }
@@ -129,10 +135,10 @@ public class Battle extends AbstractBattle {
             getParticipatingEnemies().remove(getParticipatingEnemyAt(target));
         }
 
-        for (Enemy enemy:getParticipatingEnemies()) {
+        for (Enemy enemy:enemies) {
             int damage = enemy.getAttackPower();
             hero.takeDamage(damage, enemy.getAttackType());
-            System.out.println(getParticipatingEnemyAt(target).getName() + " strikes "+ hero.getName()+".");
+            System.out.println(enemy.getName() + " strikes "+ hero.getName()+".");
             if(hero.getHealth() <= 0) {
                 System.out.println(hero.getName()+" succumbed to the pain.\nHe was brought back to the town to recover from his wounds.");
                 break;
