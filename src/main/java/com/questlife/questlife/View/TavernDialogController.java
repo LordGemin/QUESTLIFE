@@ -7,6 +7,9 @@ import javafx.stage.Stage;
 import main.java.com.questlife.questlife.MainApp;
 import main.java.com.questlife.questlife.town.Tavern;
 
+// Import the static cost for lodging set within mainApp
+import static main.java.com.questlife.questlife.MainApp.getTAVERNCOST;
+
 /**
  *
  * Created by Gemin on 02.05.2017.
@@ -39,6 +42,7 @@ public class TavernDialogController {
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
         this.tavern = new Tavern();
+        tavern.setCost(getTAVERNCOST());
         tavernName.setText(tavern.getName());
     }
 

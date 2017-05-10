@@ -10,11 +10,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import main.java.com.questlife.questlife.View.*;
-import main.java.com.questlife.questlife.enemy.Enemy;
 import main.java.com.questlife.questlife.goals.Goals;
 import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.items.*;
-import main.java.com.questlife.questlife.player.Player;
 import main.java.com.questlife.questlife.quests.Quest;
 import main.java.com.questlife.questlife.rewards.Reward;
 import main.java.com.questlife.questlife.skills.Skill;
@@ -36,9 +34,29 @@ import java.util.prefs.Preferences;
 public class MainApp extends Application {
 
     private static final int TAVERNCOST = 50;
+    private long shopCounter = System.currentTimeMillis();
     private Stage primaryStage;
 
     private AnchorPane mainLayout;
+
+    /**
+     * Getter & Setters for various variables
+     */
+    public static int getTAVERNCOST() {
+        return TAVERNCOST;
+    }
+
+    public long getShopCounter() {
+        return shopCounter;
+    }
+
+    public void setShopCounter(long shopCounter) {
+        this.shopCounter = shopCounter;
+    }
+
+    public long getSinceLastShopCounterUpdate() {
+        return shopCounter - System.currentTimeMillis();
+    }
 
     /**
      * The data as an observable list of Goals.
@@ -191,10 +209,10 @@ public class MainApp extends Application {
         initializeItems();
         initializeEnemies();
 
-        heroData.add(new Hero("Bolgerig"));
-        heroData.get(0).setCharisma(20);
-        heroData.get(0).setConstitution(50);
-        heroData.get(0).setGold(5000);
+        heroData.add(new Hero("Bolderig"));
+        heroData.get(0).setCharisma(1);
+        heroData.get(0).setConstitution(1);
+        heroData.get(0).setGold(200);
         heroData.get(0).setHealth(heroData.get(0).getMaxHealth());
 
         //TODO: SampleData?

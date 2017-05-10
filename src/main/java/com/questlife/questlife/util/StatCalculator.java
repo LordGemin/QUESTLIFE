@@ -129,7 +129,15 @@ public class StatCalculator {
             return 500;
         }
         long exp = 10*level*level+1840*level-720;
+        // Eliminate last three digits
         long cut = exp/1000;
+        cut *= 1000;
+        // When subtracting we will be left with a number 0-999. We round according to that.
+        exp = (exp-cut<500) ? cut:cut+1000;
+
+        // Result:
+        // 1011080 --> 1011000
+        // 1022100730 --> 1022101000
         return exp;
     }
 

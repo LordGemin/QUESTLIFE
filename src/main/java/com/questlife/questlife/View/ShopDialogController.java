@@ -60,61 +60,20 @@ public class ShopDialogController {
         this.mainApp = mainApp;
 
         shop = mainApp.getShop();
-        Hero hero = mainApp.getHeroData().get(0);
 
         if(shop.getItemList().size() == 0) {
-            // Our shop needs restocking
-            System.out.println("Shop restocked");
-            AbstractItems item;
-            Generator generator = new Generator();
-            while(shop.getItemList().size() <= 10) {
-                int pick = generator.generateNumber()%(mainApp.getItemsRaw().size());
-
-                // Should we picked anything but 0, decrease pick by one to avoid out of bounds problems.
-                // TODO: Even distribution. Like this we get too many 0
-                if(pick != 0)
-                    pick--;
-
-                try {
-                    item = (AbstractItems) mainApp.getItemsRaw().get(pick).newInstance();
-                } catch (InstantiationException | IllegalAccessException e) {
-                    item = null;
-                    e.printStackTrace();
-                }
-
-                if (item instanceof AbstractPotions) {
-                    shop.addItem((AbstractPotions) item);
-                    item.setHeroLevel(hero.getLevel());
-                    item.updatePrice(hero);
-                }
-                if (item instanceof AbstractWeapons) {
-                    shop.addItem((AbstractWeapons) item);
-                    item.setHeroLevel(hero.getLevel());
-                    item.updatePrice(hero);
-                }
-
-            }
-
-         /*
-            // Adds all items found in mainApp as the respective class they inherit from.
-            // TODO: Add only some items
-            // TODO: randomly adjust with new stats
-            for (AbstractItems a : mainApp.getItemsData()) {
-                if (a instanceof AbstractPotions) {
-                    shop.addItem((AbstractPotions) a);
-                    a.setHeroLevel(hero.getLevel());
-                    a.updatePrice(hero);
-                }
-                if (a instanceof AbstractWeapons) {
-                    shop.addItem((AbstractWeapons) a);
-                    a.setHeroLevel(hero.getLevel());
-                    a.updatePrice(hero);
-                }
-            }
-         */
+            // We want a restocking if we have no items in the shop
+            shopRestocking();
+        } else if (mainApp.getSinceLastShopCounterUpdate() >= 14400000) {
+            // We also want a restocking every four hours
+            // We clear the item list, and start a new
+            shop.getItemList().clear();
+            shopRestocking();
+            // Reset our clock
+            mainApp.setShopCounter(System.currentTimeMillis());
         } else {
             for(AbstractItems a: shop.getItemList()) {
-                a.updatePrice(hero);
+                a.updatePrice(mainApp.getHeroData().get(0));
             }
         }
 
@@ -124,6 +83,42 @@ public class ShopDialogController {
         itemsTable.sort();
 
         shopname.setText(shop.getName());
+    }
+
+    private void shopRestocking() {
+        Hero hero = mainApp.getHeroData().get(0);
+
+        // Our shop needs restocking
+        System.out.println("Shop restocked");
+        AbstractItems item;
+        Generator generator = new Generator();
+        while(shop.getItemList().size() <= 10) {
+            int pick = generator.generateNumber()%(mainApp.getItemsRaw().size());
+
+            // Should we picked anything but 0, decrease pick by one to avoid out of bounds problems.
+            // TODO: Even distribution. Like this we get too many 0
+            if(pick != 0)
+                pick--;
+
+            try {
+                item = (AbstractItems) mainApp.getItemsRaw().get(pick).newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                item = null;
+                e.printStackTrace();
+            }
+
+            if (item instanceof AbstractPotions) {
+                shop.addItem((AbstractPotions) item);
+                item.setHeroLevel(hero.getLevel());
+                item.updatePrice(hero);
+            }
+            if (item instanceof AbstractWeapons) {
+                shop.addItem((AbstractWeapons) item);
+                item.setHeroLevel(hero.getLevel());
+                item.updatePrice(hero);
+            }
+
+        }
     }
 
     @FXML

@@ -24,9 +24,9 @@ public class Hero implements Serializable {
     private Integer health = 0;
     private Integer mana = 0;
     private Integer level = 1;
-    private Integer experience = 0;
-    private Integer experienceToNextLevel;
-    private Integer experienceToLastLevel = 0;
+    private Long experience = (long) 0;
+    private Long experienceToNextLevel;
+    private Long experienceToLastLevel = (long) 0;
     private Integer gold = 0;
     private AbstractWeapons weapon;
     private Quest activeQuest;
@@ -164,26 +164,26 @@ public class Hero implements Serializable {
         this.level = level;
     }
 
-    public int getExperience() {
+    public long getExperience() {
         return experience;
     }
 
-    public void setExperience(int experience) {
+    public void setExperience(long experience) {
         this.experience = experience;
     }
 
-    public int getExperienceToNextLevel() {
+    public long getExperienceToNextLevel() {
         if(experienceToNextLevel==null) {
-            experienceToNextLevel = statCalculator.getExpToNextLevel(0,1);
+            experienceToNextLevel = statCalculator.getExpToNextLevel(1);
         }
         return experienceToNextLevel;
     }
 
-    public int getExperienceToLastLevel() {
+    public long getExperienceToLastLevel() {
         return experienceToLastLevel;
     }
 
-    public void setExperienceToNextLevel(int experienceToNextLevel) {
+    public void setExperienceToNextLevel(long experienceToNextLevel) {
         this.experienceToNextLevel = experienceToNextLevel;
     }
 
@@ -301,16 +301,12 @@ public class Hero implements Serializable {
     private void levelUp() {
         this.level++;
         this.experienceToLastLevel = experienceToNextLevel;
-        this.experienceToNextLevel = statCalculator.getExpToNextLevel(experienceToNextLevel,level);
+        this.experienceToNextLevel = statCalculator.getExpToNextLevel(level);
         //TODO: Rethink this formula
     }
 
     public void gainExperience(int experienceGained) {
-        try {
-            this.experience = experienceGained + experience;
-        } catch (NullPointerException e) {
-            this.experience = experienceGained;
-        }
+        experience += experienceGained;
         while (this.experience >= this.experienceToNextLevel) {
             levelUp();
             //TODO: Message to Player. Congrats or something
