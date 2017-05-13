@@ -5,16 +5,17 @@ import main.java.com.questlife.questlife.skills.Skill;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
  *
  * Created by Gemin on 13.05.2017.
  */
-public class SkillListBindAdapter extends XmlAdapter<List<String>, List<Skill>> {
+public class SkillListBindAdapter extends XmlAdapter<List<String>, Collection<Skill>> {
 
     @Override
-    public List<Skill> unmarshal(List<String> values) throws Exception {
+    public Collection<Skill> unmarshal(List<String> values) throws Exception {
         List<Skill> skillList = new ArrayList<>();
 
         for(String v:values) {
@@ -40,7 +41,7 @@ public class SkillListBindAdapter extends XmlAdapter<List<String>, List<Skill>> 
     }
 
     @Override
-    public List<String> marshal(List<Skill> values) throws Exception {
+    public List<String> marshal(Collection<Skill> values) throws Exception {
         List<String> stringList = new ArrayList<>();
         
         for (Skill v: values) {

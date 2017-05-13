@@ -147,7 +147,7 @@ public class mainLayoutController {
     private void initialize() {
         // Initialize the goal table with the four columns.
         goalsName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
-        goalsAssociatedSkills.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getAssociatedSkills()));
+        goalsAssociatedSkills.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getAssociatedSkillsAsList()));
         goalsDeadline.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDeadLineAsString()));
         goalsExperience.setCellValueFactory(cellData -> new SimpleStringProperty(""+cellData.getValue().getExperienceReward()));
 

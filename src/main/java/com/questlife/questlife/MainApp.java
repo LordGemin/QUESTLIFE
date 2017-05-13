@@ -976,7 +976,7 @@ public class MainApp extends Application {
             //
             // SAVING GOALS
             //
-            JAXBContext goalContext = JAXBContext.newInstance(Goals.class);
+            JAXBContext goalContext = JAXBContext.newInstance(GoalWrapper.class);
             Marshaller mGoal = goalContext.createMarshaller();
 
             // wrapping goal data

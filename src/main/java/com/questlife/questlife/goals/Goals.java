@@ -1,7 +1,5 @@
 package main.java.com.questlife.questlife.goals;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import main.java.com.questlife.questlife.skills.Skill;
 import main.java.com.questlife.questlife.hero.Attributes;
 import main.java.com.questlife.questlife.util.*;
@@ -11,32 +9,27 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
  *
  * Created by Gemin on 10.04.2017.
  */
-@XmlRootElement
 public class Goals {
 
-    @XmlID
-    @XmlAttribute
     private String id;
-    private long creation = System.currentTimeMillis();
     private LocalDateTime deadline;
     private long duration;
     private String name;
     private Integer amountOfWork;
     private Integer complexity;
 
-    @XmlIDREF
     private Goals overarchingGoal;
 
-    @XmlElement(name = "subGoals")
-    @XmlIDREF
-    private List<Goals> subGoals = new ArrayList<>();
-    private List<Skill> associatedSkills = new ArrayList<>();
+    private Collection<Goals> subGoals = new ArrayList<>();
+    private Collection<Skill> associatedSkills = new ArrayList<>();
     private Boolean isRecurring = false; //default value
     private Boolean isComplete = false; //default value
 
@@ -120,9 +113,14 @@ public class Goals {
         overarchingGoal.addSubGoal(this);
     }
 
-    @XmlJavaTypeAdapter(SkillListBindAdapter.class)
-    public List<Skill> getAssociatedSkills() {
+    public Collection<Skill> getAssociatedSkills() {
         return associatedSkills;
+    }
+
+    public List<Skill> getAssociatedSkillsAsList() {
+        List<Skill> skillList = new ArrayList<>();
+        skillList.addAll(associatedSkills);
+        return skillList;
     }
 
     public void setAssociatedSkills(List<Skill> associatedSkills) {
@@ -130,6 +128,8 @@ public class Goals {
     }
 
     public List<Goals> getSubGoals() {
+        List<Goals> subGoals = new ArrayList<>();
+        subGoals.addAll(this.subGoals);
         return subGoals;
     }
 
