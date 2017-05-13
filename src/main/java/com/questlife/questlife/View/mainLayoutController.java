@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.FileChooser;
 import main.java.com.questlife.questlife.MainApp;
 import main.java.com.questlife.questlife.goals.Goals;
 import main.java.com.questlife.questlife.hero.Attributes;
@@ -18,6 +19,7 @@ import main.java.com.questlife.questlife.town.Field;
 import main.java.com.questlife.questlife.util.RewardType;
 import main.java.com.questlife.questlife.util.SkillType;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -144,14 +146,14 @@ public class mainLayoutController {
     @FXML
     private void initialize() {
         // Initialize the goal table with the four columns.
-        goalsName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+        goalsName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
         goalsAssociatedSkills.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getAssociatedSkills()));
         goalsDeadline.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDeadLineAsString()));
         goalsExperience.setCellValueFactory(cellData -> new SimpleStringProperty(""+cellData.getValue().getExperienceReward()));
 
 
         // Initialize the quest table with the four columns.
-        questEnemy.setCellValueFactory(cellData -> cellData.getValue().getEnemyType().nameProperty());
+        questEnemy.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getQuestEnemy()));
         questEnemyCount.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getMobsToHunt()));
         questExpReward.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getRewardGold()));
         questGoldReward.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getRewardExp()));
@@ -446,29 +448,10 @@ public class mainLayoutController {
             return;
         }
         Quest deletion = questsTable.getSelectionModel().getSelectedItem();
-        if(hero.getActiveQuest() == deletion) {
-            hero.setActiveQuest(null);
+        if(hero.getQuestList().contains(deletion)) {
+            hero.getQuestList().remove(deletion);
         }
-        hero.getQuestList().remove(deletion);
         mainApp.getQuestData().remove(deletion);
-        updateLabels();
-    }
-
-    /**
-     * Called when user clicks the set active button on a quest
-     */
-    @FXML
-    private void handleSetActiveQuest() {
-        if (questsTable.getSelectionModel().getSelectedItems().size() != 1) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Could not set active");
-            alert.setHeaderText("Select one quest");
-            alert.setContentText("Please select one quest from the table above\n");
-
-            alert.showAndWait();
-            return;
-        }
-        hero.setActiveQuest(questsTable.getSelectionModel().getSelectedItem());
         updateLabels();
     }
 
@@ -564,7 +547,7 @@ public class mainLayoutController {
         if(hero.getHealth() > 0) {
             System.out.println("Sending "+hero.getName()+" to the field.");
             Field field = new Field(hero, mainApp.getEnemyData());
-            field.runBattles(hero.getActiveQuest());
+            field.runBattles();
         } else {
             System.out.println(hero.getName()+" should rest some more.");
         }
@@ -579,6 +562,66 @@ public class mainLayoutController {
         mainApp.showTownView();
         updateLabels();
     }
+
+
+    /**
+     * Opens a FileChooser to let the user select an address book to load.
+     */
+    @FXML
+    private void handleOpen() {
+        FileChooser fileChooser = new FileChooser();
+
+        // Set extension filter
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
+                "XML files (*.xml)", "*.xml");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        // Show open file dialog
+        File file = fileChooser.showOpenDialog(mainApp.getPrimaryStage());
+
+        if (file != null) {
+            mainApp.loadDataFromFile(file);
+        }
+    }
+
+    /**
+     * Saves the file to the person file that is currently open. If there is no
+     * open file, the "save as" dialog is shown.
+     */
+    @FXML
+    private void handleSave() {
+        File personFile = mainApp.getFilePath();
+        if (personFile != null) {
+            mainApp.saveDataToFile(personFile);
+        } else {
+            handleSaveAs();
+        }
+    }
+
+    /**
+     * Opens a FileChooser to let the user select a file to save to.
+     */
+    @FXML
+    private void handleSaveAs() {
+        FileChooser fileChooser = new FileChooser();
+
+        // Set extension filter
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
+                "XML files (*.xml)", "*.xml");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        // Show save file dialog
+        File file = fileChooser.showSaveDialog(mainApp.getPrimaryStage());
+
+        if (file != null) {
+            // Make sure it has the correct extension
+            if (!file.getPath().endsWith(".xml")) {
+                file = new File(file.getPath() + ".xml");
+            }
+            mainApp.saveDataToFile(file);
+        }
+    }
+
 
     /**
      * Called when the user clicks Exit.

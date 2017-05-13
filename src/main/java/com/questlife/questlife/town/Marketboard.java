@@ -38,7 +38,7 @@ public class Marketboard {
         Enemy enemy = new Enemy(enemyList.get(pick), level+1);
 
         // Pick an enemy from the list, set it as enemy
-        generatedQuest.setEnemyType(enemy);
+        generatedQuest.setQuestEnemy(enemy.getName());
 
         // Set mobs to hunt between 5 and 10
         generatedQuest.setMobsToHunt(5 + generator.generateNumber()%6);

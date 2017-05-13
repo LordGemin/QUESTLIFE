@@ -56,7 +56,7 @@ public class QuestDetailDialogController {
     public void setQuest(Quest quest) {
         questName.setText(quest.getName());
         questDescription.setText(quest.getDescription());
-        enemyName.setText(quest.getEnemyType().getName());
+        enemyName.setText(quest.getQuestEnemy());
         questEnemyCount.setText(""+quest.getMobsToHunt());
     }
 

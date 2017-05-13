@@ -5,25 +5,38 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import main.java.com.questlife.questlife.View.*;
+import main.java.com.questlife.questlife.goals.GoalWrapper;
 import main.java.com.questlife.questlife.goals.Goals;
+import main.java.com.questlife.questlife.hero.Attributes;
 import main.java.com.questlife.questlife.hero.Hero;
+import main.java.com.questlife.questlife.hero.HeroWrapper;
 import main.java.com.questlife.questlife.items.*;
 import main.java.com.questlife.questlife.quests.Quest;
+import main.java.com.questlife.questlife.quests.QuestListWrapper;
 import main.java.com.questlife.questlife.rewards.Reward;
+import main.java.com.questlife.questlife.rewards.RewardWrapper;
 import main.java.com.questlife.questlife.skills.Skill;
 import main.java.com.questlife.questlife.town.Shop;
 import main.java.com.questlife.questlife.util.AttackType;
 import main.java.com.questlife.questlife.util.Generator;
+import main.java.com.questlife.questlife.skills.SkillWrapper;
 import org.reflections.Reflections;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
@@ -45,6 +58,7 @@ public class MainApp extends Application {
     public static int getTAVERNCOST() {
         return TAVERNCOST;
     }
+
 
     public void setShopCounter(long shopCounter) {
         this.shopCounter = shopCounter;
@@ -259,10 +273,10 @@ public class MainApp extends Application {
         }
 
         // Try to load last opened person file.
-        /*File file = getSaveDataFilePath();
+        File file = getFilePath();
         if (file != null) {
-            loadSaveDataFromFile(file);
-        }*/
+            loadDataFromFile(file);
+        }
     }
 
 
@@ -273,7 +287,7 @@ public class MainApp extends Application {
      *
      * @return File at filepath
      */
-    public File getPersonFilePath() {
+    public File getFilePath() {
         Preferences prefs = Preferences.userNodeForPackage(MainApp.class);
         String filePath = prefs.get("filePath", null);
         if (filePath != null) {
@@ -289,7 +303,7 @@ public class MainApp extends Application {
      *
      * @param file the file or null to remove the path
      */
-    public void setPersonFilePath(File file) {
+    public void setFilePath(File file) {
         Preferences prefs = Preferences.userNodeForPackage(MainApp.class);
         if (file != null) {
             prefs.put("filePath", file.getPath());
@@ -740,6 +754,247 @@ public class MainApp extends Application {
         catch (IOException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    /**
+     * Loads person data from the specified file. The current person data will
+     * be replaced.
+     *
+     * @param file
+     */
+    public void loadDataFromFile(File file) {
+        try {
+
+            //
+            // LOADING QUESTS
+            //
+            JAXBContext questContext = JAXBContext
+                    .newInstance(QuestListWrapper.class);
+            Unmarshaller umQuest = questContext.createUnmarshaller();
+
+            // Reading XML from the file and unmarshalling.
+            QuestListWrapper questWrapper = (QuestListWrapper) umQuest.unmarshal(file);
+
+            // Setting up the List
+            questData.clear();
+            questData.addAll(questWrapper.getQuests());
+
+            //
+            // LOADING INVENTORY (WEAPON & POTION SEPARATE
+            //
+            JAXBContext absWeaponContext = JAXBContext
+                    .newInstance(InvAbstractWeaponsWrapper.class);
+            JAXBContext absPotionContext = JAXBContext
+                    .newInstance(InvAbstractPotionsWrapper.class);
+            Unmarshaller umWeapon = absWeaponContext.createUnmarshaller();
+            Unmarshaller umPotion = absPotionContext.createUnmarshaller();
+
+            // Reading XML from the file and unmarshalling.
+            InvAbstractWeaponsWrapper weaponWrapper = (InvAbstractWeaponsWrapper) umWeapon.unmarshal(file);
+            InvAbstractPotionsWrapper potionsWrapper = (InvAbstractPotionsWrapper) umPotion.unmarshal(file);
+
+            // Setting up the List
+            inventory.clear();
+            inventory.addAll(weaponWrapper.getWeapons());
+            inventory.addAll(potionsWrapper.getPotions());
+
+            //
+            // LOADING ATTRIBUTE
+            //
+            JAXBContext attrContext = JAXBContext.newInstance(Attributes.class);
+            Unmarshaller umAttr = attrContext.createUnmarshaller();
+            umAttr.unmarshal(file);
+
+            //
+            // LOADING HEROES
+            //
+            JAXBContext heroContext = JAXBContext
+                    .newInstance(HeroWrapper.class);
+            Unmarshaller umHero = heroContext.createUnmarshaller();
+
+            // Reading XML from the file and unmarshalling.
+            HeroWrapper heroWrapper = (HeroWrapper) umHero.unmarshal(file);
+
+            // Setting up the List
+            heroData.clear();
+            heroData.addAll(heroWrapper.getHeroes());
+            // Give the poor hero/ine their inventory & quests
+            for (Hero h:heroData) {
+                h.setInventory(inventory);
+                h.setQuestList(questData);
+            }
+
+            //
+            // LOADING SKILLS
+            //
+            JAXBContext skillContext = JAXBContext.newInstance(SkillWrapper.class);
+            Unmarshaller umSkill = skillContext.createUnmarshaller();
+
+            // Reading XML from the file and unmarshalling.
+            SkillWrapper skillWrapper = (SkillWrapper) umSkill.unmarshal(file);
+
+            // Setting up the List
+            skillData.clear();
+            skillData.addAll(skillWrapper.getSkills());
+
+            //
+            // LOADING REWARDS
+            //
+            JAXBContext rewardContext = JAXBContext.newInstance(RewardWrapper.class);
+            Unmarshaller umReward = rewardContext.createUnmarshaller();
+
+            // Reading XML from the file and unmarshalling.
+            RewardWrapper rewardWrapper = (RewardWrapper) umReward.unmarshal(file);
+
+            // Setting up the List
+            rewardData.clear();
+            rewardData.addAll(rewardWrapper.getRewards());
+
+            //
+            // LOADING GOALS
+            //
+            JAXBContext goalContext = JAXBContext.newInstance(Goals.class);
+            Unmarshaller umGoal = goalContext.createUnmarshaller();
+
+            // Reading XML from the file and unmarshalling.
+            GoalWrapper goalWrapper = (GoalWrapper) umGoal.unmarshal(file);
+
+            // Setting up the List
+            goalData.clear();
+            goalData.addAll(goalWrapper.getGoals());
+
+
+            // Save the file path to the registry.
+            setFilePath(file);
+
+        } catch (Exception e) { // catches ANY exception
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Could not load data");
+            alert.setContentText("Could not load data from file:\n" + file.getPath());
+
+            alert.showAndWait();
+        }
+    }
+
+    /**
+     * Saves the current person data to the specified file.
+     *
+     * @param file
+     */
+    public void saveDataToFile(File file) {
+        try {
+            //
+            // SAVING QUESTS
+            //
+            JAXBContext questContext = JAXBContext
+                    .newInstance(QuestListWrapper.class);
+            Marshaller mQuest = questContext.createMarshaller();
+            mQuest.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+            // Wrapping our quest data.
+            QuestListWrapper questWrapper = new QuestListWrapper();
+            questWrapper.setQuests(questData);
+
+            // Marshalling and saving XML to the file.
+            mQuest.marshal(questWrapper, file);
+
+            //
+            // SAVING INVENTORY
+            //
+            JAXBContext absWeaponContext = JAXBContext.newInstance(InvAbstractWeaponsWrapper.class);
+            JAXBContext absPotionContext = JAXBContext.newInstance(InvAbstractPotionsWrapper.class);
+            Marshaller mWeapon = absWeaponContext.createMarshaller();
+            mWeapon.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            Marshaller mPotion = absPotionContext.createMarshaller();
+            mPotion.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+            // Wrapping the inventory data.
+            InvAbstractWeaponsWrapper weaponsWrapper = new InvAbstractWeaponsWrapper();
+            InvAbstractPotionsWrapper potionsWrapper = new InvAbstractPotionsWrapper();
+            for(AbstractItems a:inventory) {
+                if(a instanceof AbstractWeapons)
+                    weaponsWrapper.getWeapons().add((AbstractWeapons) a);
+                if(a instanceof AbstractPotions)
+                    potionsWrapper.getPotions().add((AbstractPotions) a);
+            }
+            mWeapon.marshal(weaponsWrapper, file);
+            mPotion.marshal(potionsWrapper, file);
+
+            //
+            // SAVING ATTRIBUTES
+            //
+            JAXBContext attrContext = JAXBContext.newInstance(Attributes.class);
+            Marshaller mAttr = attrContext.createMarshaller();
+            mAttr.marshal(Attributes.STRENGTH, file);
+            mAttr.marshal(Attributes.DEXTERITY, file);
+            mAttr.marshal(Attributes.MIND, file);
+            mAttr.marshal(Attributes.CHARISMA, file);
+            mAttr.marshal(Attributes.CONSTITUTION, file);
+            mAttr.marshal(Attributes.OBSERVATION, file);
+            mAttr.marshal(Attributes.PIETY, file);
+
+            //
+            // SAVING HEROES
+            //
+            JAXBContext heroContext = JAXBContext
+                    .newInstance(HeroWrapper.class);
+            Marshaller mHero = heroContext.createMarshaller();
+
+            // wrapping hero data
+            HeroWrapper heroWrapper = new HeroWrapper();
+            heroWrapper.setHeroes(heroData);
+
+            mHero.marshal(heroWrapper, file);
+
+            //
+            // SAVING SKILLS
+            //
+            JAXBContext skillContext = JAXBContext.newInstance(SkillWrapper.class);
+            Marshaller mSkill = skillContext.createMarshaller();
+
+            // wrapping our skills
+            SkillWrapper skillWrapper = new SkillWrapper();
+            skillWrapper.setSkills(skillData);
+
+            mSkill.marshal(skillWrapper, file);
+
+
+            //
+            // SAVING REWARDS
+            //
+            JAXBContext rewardContext = JAXBContext.newInstance(RewardWrapper.class);
+            Marshaller mReward = rewardContext.createMarshaller();
+
+            // wrapping reward Data
+            RewardWrapper rewardWrapper = new RewardWrapper();
+            rewardWrapper.setRewards(rewardData);
+
+            mReward.marshal(rewardWrapper, file);
+
+            //
+            // SAVING GOALS
+            //
+            JAXBContext goalContext = JAXBContext.newInstance(Goals.class);
+            Marshaller mGoal = goalContext.createMarshaller();
+
+            // wrapping goal data
+            GoalWrapper goalWrapper = new GoalWrapper();
+            goalWrapper.setGoals(goalData);
+
+            mGoal.marshal(goalWrapper, file);
+
+            // Save the file path to the registry.
+            setFilePath(file);
+        } catch (Exception e) { // catches ANY exception
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Could not save data");
+            alert.setContentText("Could not save data to file:\n" + file.getPath());
+
+            alert.showAndWait();
         }
     }
 }

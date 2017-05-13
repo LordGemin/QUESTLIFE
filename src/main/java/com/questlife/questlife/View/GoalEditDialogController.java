@@ -1,6 +1,7 @@
 package main.java.com.questlife.questlife.View;
 
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -74,7 +75,9 @@ public class GoalEditDialogController {
 
         // Add only skills to the goallist if they are goalbased!
         // Timebased skills get their own way of receiving exp
-        ObservableList<Skill> skills = mainApp.getSkillData();
+        ObservableList<Skill> skills = FXCollections.observableArrayList();
+        skills.addAll(mainApp.getSkillData());
+
         for(Skill s:skills) {
             if(s.getSkilltype().equals(SkillType.TIMEBASED)) {
                 skills.remove(s);

@@ -2,8 +2,10 @@ package main.java.com.questlife.questlife.skills;
 
 import main.java.com.questlife.questlife.hero.Attributes;
 import main.java.com.questlife.questlife.util.SkillType;
+import main.java.com.questlife.questlife.util.SkillTypeAdapter;
 import main.java.com.questlife.questlife.util.StatCalculator;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 
 /**
@@ -13,7 +15,7 @@ import java.io.Serializable;
 public class Skill implements Serializable{
 
     private String name;
-    private Attributes associatedAttribute;
+    private String associatedAttribute;
     private String description;
     private SkillType skilltype;
     private Integer level =1;
@@ -25,7 +27,7 @@ public class Skill implements Serializable{
 
     public Skill(String name, Attributes associatedAttribute, String description, SkillType skilltype) {
         this.name = name;
-        this.associatedAttribute = associatedAttribute;
+        this.associatedAttribute = associatedAttribute.getFieldDescription();
         this.description = description;
         this.skilltype = skilltype;
     }
@@ -36,18 +38,29 @@ public class Skill implements Serializable{
         skilltype = null;
     }
 
+    public Skill(String name, String associatedAttribute, String description, SkillType skilltype, Integer level, Integer experience, Integer experienceToNextLevel) {
+        this.name = name;
+        this.associatedAttribute = associatedAttribute;
+        this.description = description;
+        this.skilltype = skilltype;
+        this.level = level;
+        this.experience = experience;
+        this.experienceToNextLevel = experienceToNextLevel;
+    }
+
     public String getName() {
         return name;
     }
 
     public Attributes getAssociatedAttribute() {
-        return associatedAttribute;
+        return Attributes.getField(associatedAttribute);
     }
 
     public String getDescription() {
         return description;
     }
 
+    @XmlJavaTypeAdapter(SkillTypeAdapter.class)
     public SkillType getSkilltype() {
         return skilltype;
     }
@@ -75,7 +88,7 @@ public class Skill implements Serializable{
     }
 
     public void setAssociatedAttribute(Attributes associatedAttribute) {
-        this.associatedAttribute = associatedAttribute;
+        this.associatedAttribute = associatedAttribute.getFieldDescription();
     }
 
     public void setDescription(String description) {
@@ -115,7 +128,7 @@ public class Skill implements Serializable{
         } else if(skilltype.equals(SkillType.TIMEBASED)){
             this.experienceToNextLevel += 600;
         }
-        associatedAttribute.levelUp();
+        Attributes.getField(associatedAttribute).levelUp();
     }
 
     public void gainExperience(int experienceGained) {

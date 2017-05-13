@@ -2,8 +2,11 @@ package main.java.com.questlife.questlife.items;
 
 import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.util.AttackType;
+import main.java.com.questlife.questlife.util.AttackTypeAdapter;
 import main.java.com.questlife.questlife.util.Generator;
 import main.java.com.questlife.questlife.util.StatCalculator;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  *
@@ -46,12 +49,25 @@ public abstract class AbstractWeapons extends AbstractItems{
         return physicalAttack;
     }
 
+    public void setPhysicalAttack(int physicalAttack) {
+        this.physicalAttack = physicalAttack;
+    }
+
     public Integer getMagicalAttack() {
         return magicalAttack;
     }
 
+    public void setMagicalAttack(int magicalAttack) {
+        this.magicalAttack = magicalAttack;
+    }
+
+    @XmlJavaTypeAdapter(AttackTypeAdapter.class)
     public AttackType getAttackType() {
         return attackType;
+    }
+
+    public void setAttackType(AttackType attackType) {
+        this.attackType = attackType;
     }
 
 }

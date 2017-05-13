@@ -2,15 +2,14 @@ package main.java.com.questlife.questlife.goals;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableValue;
 import main.java.com.questlife.questlife.skills.Skill;
 import main.java.com.questlife.questlife.hero.Attributes;
-import main.java.com.questlife.questlife.util.DateUtil;
-import main.java.com.questlife.questlife.util.StatCalculator;
+import main.java.com.questlife.questlife.util.*;
 
+import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,22 +17,31 @@ import java.util.List;
  *
  * Created by Gemin on 10.04.2017.
  */
+@XmlRootElement
 public class Goals {
 
+    @XmlID
+    @XmlAttribute
+    private String id;
     private long creation = System.currentTimeMillis();
     private LocalDateTime deadline;
     private long duration;
-    private StringProperty name;
+    private String name;
     private Integer amountOfWork;
     private Integer complexity;
+
+    @XmlIDREF
     private Goals overarchingGoal;
-    private List<Skill> associatedSkills = new ArrayList<>();
+
+    @XmlElement(name = "subGoals")
+    @XmlIDREF
     private List<Goals> subGoals = new ArrayList<>();
+    private List<Skill> associatedSkills = new ArrayList<>();
     private Boolean isRecurring = false; //default value
     private Boolean isComplete = false; //default value
 
     public Goals() {
-        this.name = new SimpleStringProperty("");
+        this.name = "";
         amountOfWork = 10;
         complexity = 5;
         overarchingGoal = null;
@@ -44,7 +52,7 @@ public class Goals {
                  int complexity, List<Skill> associatedSkills, List<Goals> subGoals, boolean isRecurring) {
         this.deadline = deadline;
         this.duration = duration;
-        this.name = new SimpleStringProperty(name);
+        this.name = name;
         this.amountOfWork = amountOfWork;
         this.complexity = complexity;
         this.associatedSkills = associatedSkills;
@@ -73,15 +81,11 @@ public class Goals {
     }
 
     public String getName() {
-        return name.get();
-    }
-
-    public StringProperty nameProperty() {
         return name;
     }
 
     public void setName(String name) {
-        this.name.set(name);
+        this.name=name;
     }
 
     public int getAmountOfWork() {
@@ -116,6 +120,7 @@ public class Goals {
         overarchingGoal.addSubGoal(this);
     }
 
+    @XmlJavaTypeAdapter(SkillListBindAdapter.class)
     public List<Skill> getAssociatedSkills() {
         return associatedSkills;
     }

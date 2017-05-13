@@ -49,12 +49,10 @@ public class Field implements Runnable{
 
     private void initializeField(List<String> enemyList) {
         Generator generator = new Generator();
-        activeQuest = hero.getActiveQuest();
-        boolean questEnemyInField = false;
 
         int counter=0;
 
-        while(!questEnemyInField || counter<5) {
+        while(counter<5) {
             // We want to circle around the buffer until we get the enemy we need for our quest!
             int pos = counter%ENEMYAMOUNT;
 
@@ -62,15 +60,6 @@ public class Field implements Runnable{
             String enemyName = enemyList.get(generator.generateNumber()%enemyList.size());
             enemiesInField.add(enemyName);
 
-            // Check if the hero has an active quest
-            if(activeQuest != null) {
-                // Check if we have the quest-enemy
-                if (enemiesInField.contains(activeQuest.getEnemyType().getName())) {
-                    questEnemyInField = true;
-                }
-            } else {
-                questEnemyInField = true;
-            }
             counter++;
         }
     }
@@ -84,48 +73,13 @@ public class Field implements Runnable{
         }
     }
 
-    public void runBattles(Quest activeQuest) {
+    public void runBattles() {
 
         //Running battles in a different thread to not bog down everything between battles
 
         Thread fieldThread = new Thread(this, "Field Battle Thread");
 
-        if(activeQuest== null) {
-            this.activeQuest = null;
-        } else if (!this.activeQuest.equals(activeQuest)) {
-            this.activeQuest = activeQuest;
-        }
         fieldThread.start();
-
-
-        /*Thread fieldThread = new Thread();
-        fieldThread.run();
-
-        Generator generator = new Generator();
-
-        // have hero in field until he dies or completes his quest or was in field long enough
-        // Can
-        int battleCtr =0;
-
-        while (activeQuest.getIsActive() && battleCtr <= loops) {
-            List<Enemy> enemiesInBattle = new ArrayList<>();
-            int rndIdx1 = generator.generateNumber()%enemiesInField.size();
-            int rndIdx2 = generator.generateNumber()%enemiesInField.size();
-            if(rndIdx1<=rndIdx2)
-                enemiesInBattle = enemiesInField.subList(rndIdx1,rndIdx2);
-            else
-                enemiesInBattle = enemiesInField.subList(rndIdx2,rndIdx1);
-            Battle battle = new Battle(hero, enemiesInBattle);
-            if(battle.runBattle()) {
-                battleCtr++;
-            } else {
-                // end the field trip, hero died
-                return;
-            }
-        }
-        // If code gets here:
-        // Hero survived, gained gold, completed quest
-*/
 
     }
 

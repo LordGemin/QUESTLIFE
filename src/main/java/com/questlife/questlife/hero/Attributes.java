@@ -1,17 +1,38 @@
 package main.java.com.questlife.questlife.hero;
 
-import javafx.scene.control.Toggle;
 import main.java.com.questlife.questlife.util.StatCalculator;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
  *
  * Created by Gemin on 10.04.2017.
  */
+@XmlRootElement (name = "Attributes")
 public enum Attributes implements Serializable {
-    STRENGTH("Strength"), DEXTERITY("Dexterity"), MIND ("Mind"), CHARISMA("Charisma"),
-    CONSTITUTION ("Constitution"), PIETY ("Piety"), OBSERVATION("Piety");
+
+    @XmlElement (name = "Strength")
+    STRENGTH("Strength"),
+
+    @XmlElement (name = "Dexterity")
+    DEXTERITY("Dexterity"),
+
+    @XmlElement (name = "Mind")
+    MIND ("Mind"),
+
+    @XmlElement (name = "Charisma")
+    CHARISMA("Charisma"),
+
+    @XmlElement (name = "Constitution")
+    CONSTITUTION ("Constitution"),
+
+    @XmlElement (name = "Piety")
+    PIETY ("Piety"),
+
+    @XmlElement (name = "Observation")
+    OBSERVATION("Observation");
 
     private final String fieldDescription;
     private Integer experience;
@@ -43,6 +64,22 @@ public enum Attributes implements Serializable {
     public Integer getLevel() {return level;}
 
     public void setLevel(int level) {this.level = level;}
+
+    public Integer getExperience() {
+        return experience;
+    }
+
+    public void setExperience(Integer experience) {
+        this.experience = experience;
+    }
+
+    public Integer getExperienceToNextLevel() {
+        return experienceToNextLevel;
+    }
+
+    public void setExperienceToNextLevel(Integer experienceToNextLevel) {
+        this.experienceToNextLevel = experienceToNextLevel;
+    }
 
     public void levelUp() {
         StatCalculator stats = new StatCalculator();

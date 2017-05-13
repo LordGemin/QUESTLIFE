@@ -2,7 +2,10 @@ package main.java.com.questlife.questlife.rewards;
 
 import main.java.com.questlife.questlife.skills.Skill;
 import main.java.com.questlife.questlife.util.RewardType;
+import main.java.com.questlife.questlife.util.RewardTypeAdapter;
+import main.java.com.questlife.questlife.util.SkillBindAdapter;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 
 /**
@@ -35,10 +38,12 @@ public class Reward implements Serializable{
         return name;
     }
 
+    @XmlJavaTypeAdapter(RewardTypeAdapter.class)
     public RewardType getRewardType() {
         return rewardType;
     }
 
+    @XmlJavaTypeAdapter(SkillBindAdapter.class)
     public Skill getAssociatedSkill() {
         return (associatedSkill == null) ? new Skill():associatedSkill;
     }

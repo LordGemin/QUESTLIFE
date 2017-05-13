@@ -35,7 +35,7 @@ public class MarketboardViewController {
     private TableColumn<Quest, Integer> questReward;
 
     public void initialize() {
-        enemyName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEnemyType().getName()));
+        enemyName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getQuestEnemy()));
         enemyAmount.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getMobsToHunt()));
         questReward.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getRewardGold()));
     }

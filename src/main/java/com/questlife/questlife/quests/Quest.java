@@ -12,21 +12,20 @@ public class Quest implements Serializable{
 
     private String name;
     private String description;
-    private Enemy enemyType;
     private String questEnemy;
     private Integer mobsToHunt = 0;
-    private Integer rewardExp;
-    private Integer rewardGold;
+    private Integer rewardExp = 0;
+    private Integer rewardGold = 0;
     private Boolean isActive = false;
 
     public Quest() {
 
     }
 
-    public Quest(String name, String description, Enemy enemyType, int mobsToHunt, int rewardExp, int rewardGold) {
+    public Quest(String name, String description, String questEnemy, int mobsToHunt, int rewardExp, int rewardGold) {
         this.name = name;
         this.description = description;
-        this.enemyType = enemyType;
+        this.questEnemy = questEnemy;
         this.mobsToHunt = mobsToHunt;
         this.rewardExp = rewardExp;
         this.rewardGold = rewardGold;
@@ -52,12 +51,12 @@ public class Quest implements Serializable{
         return rewardGold;
     }
 
-    public Enemy getEnemyType() {
-        return enemyType;
+    public String getQuestEnemy() {
+        return questEnemy;
     }
 
     public int countEnemyKilled(Enemy enemy) {
-        if(enemy.getName().equals(enemyType.getName())) {
+        if(enemy.getName().equals(questEnemy)) {
             mobsToHunt -= 1;
         }
         return mobsToHunt;
@@ -81,8 +80,8 @@ public class Quest implements Serializable{
         this.description = description;
     }
 
-    public void setEnemyType(Enemy enemyType) {
-        this.enemyType = enemyType;
+    public void setQuestEnemy(String questEnemy) {
+        this.questEnemy = questEnemy;
     }
 
     public void setMobsToHunt(Integer mobsToHunt) {

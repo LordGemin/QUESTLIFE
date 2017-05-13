@@ -1,15 +1,14 @@
 package main.java.com.questlife.questlife.hero;
 
-import main.java.com.questlife.questlife.items.AbstractItems;
-import main.java.com.questlife.questlife.items.AbstractPotions;
-import main.java.com.questlife.questlife.items.AbstractWeapons;
+import main.java.com.questlife.questlife.items.*;
 import main.java.com.questlife.questlife.player.Inventory;
 import main.java.com.questlife.questlife.quests.Quest;
-import main.java.com.questlife.questlife.town.Field;
 import main.java.com.questlife.questlife.util.AttackType;
 import main.java.com.questlife.questlife.util.Generator;
 import main.java.com.questlife.questlife.util.StatCalculator;
+import main.java.com.questlife.questlife.util.WeaponBindAdapter;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +23,12 @@ public class Hero implements Serializable {
     private Integer health = 0;
     private Integer mana = 0;
     private Integer level = 1;
+    private Attributes attributes;
     private Long experience = (long) 0;
     private Long experienceToNextLevel;
     private Long experienceToLastLevel = (long) 0;
     private Integer gold = 0;
     private AbstractWeapons weapon;
-    private Quest activeQuest;
     private Long lastDeath;
 
     private StatCalculator statCalculator = new StatCalculator();
@@ -77,33 +76,34 @@ public class Hero implements Serializable {
     }
 
     public int getStrength() {
-        return Attributes.STRENGTH.getLevel();
+        return attributes.STRENGTH.getLevel();
     }
 
     public int getDexterity() {
-        return Attributes.DEXTERITY.getLevel();
+        return attributes.DEXTERITY.getLevel();
     }
 
     public int getMind() {
-        return Attributes.MIND.getLevel();
+        return attributes.MIND.getLevel();
     }
 
     public int getCharisma() {
-        return Attributes.CHARISMA.getLevel();
+        return attributes.CHARISMA.getLevel();
     }
 
     public int getConstitution() {
-        return Attributes.CONSTITUTION.getLevel();
+        return attributes.CONSTITUTION.getLevel();
     }
 
     public int getPiety() {
-        return Attributes.PIETY.getLevel();
+        return attributes.PIETY.getLevel();
     }
 
     public int getObservation() {
-        return Attributes.OBSERVATION.getLevel();
+        return attributes.OBSERVATION.getLevel();
     }
 
+    @XmlJavaTypeAdapter(WeaponBindAdapter.class)
     public AbstractWeapons getWeapon() {
         return weapon;
     }
@@ -121,31 +121,31 @@ public class Hero implements Serializable {
     }
 
     public void setStrength(int strength) {
-        Attributes.STRENGTH.setLevel(strength);
+        attributes.STRENGTH.setLevel(strength);
     }
 
     public void setDexterity(int dexterity) {
-        Attributes.DEXTERITY.setLevel(dexterity);
+        attributes.DEXTERITY.setLevel(dexterity);
     }
 
     public void setMind(int mind) {
-        Attributes.MIND.setLevel(mind);
+        attributes.MIND.setLevel(mind);
     }
 
     public void setCharisma(int charisma) {
-        Attributes.CHARISMA.setLevel(charisma);
+        attributes.CHARISMA.setLevel(charisma);
     }
 
     public void setConstitution(int constitution) {
-        Attributes.CONSTITUTION.setLevel(constitution);
+        attributes.CONSTITUTION.setLevel(constitution);
     }
 
     public void setPiety(int piety) {
-        Attributes.PIETY.setLevel(piety);
+        attributes.PIETY.setLevel(piety);
     }
 
     public void setObservation(int observation) {
-        Attributes.OBSERVATION.setLevel(observation);
+        attributes.OBSERVATION.setLevel(observation);
     }
 
     private void setWeapon (AbstractWeapons weapon) {
@@ -205,6 +205,9 @@ public class Hero implements Serializable {
     }
 
     public long getLastDeath() {
+        if (lastDeath == null) {
+            return 0;
+        }
         return lastDeath;
     }
 
@@ -215,7 +218,7 @@ public class Hero implements Serializable {
     public long getTimeSinceLastDeath() {
         return System.currentTimeMillis()-lastDeath;
     }
-
+/*
     public Quest getActiveQuest() {
         if(activeQuest == null && questList.size() > 0) {
             activeQuest = questList.get(0);
@@ -247,7 +250,7 @@ public class Hero implements Serializable {
             return true;
         }
         return false;
-    }
+    }*/
 
     public List<Quest> getQuestList() {
         return questList;
@@ -259,15 +262,6 @@ public class Hero implements Serializable {
 
     public void addQuest(Quest quest) {
         questList.add(quest);
-    }
-
-    private void completeQuest() {
-        //TODO: Notify player.
-        gainGold(activeQuest.getRewardGold());
-        gainExperience(activeQuest.getRewardExp());
-        questList.remove(activeQuest);
-        activeQuest.setInactive();
-        activeQuest = null;
     }
 
     public void completeQuest(Quest quest) {
@@ -446,30 +440,6 @@ public class Hero implements Serializable {
             return true;
         }
         return false;
-    }
-
-    public boolean sendToField() {
-        if(getHealth() > 0) {
-            Field field = new Field(this);
-            field.runBattles(getActiveQuest());
-        } else {
-            System.out.println(name+" can barely stand. They are not suitable for questing. Heal them first");
-            return false;
-            //TODO: Message to player that hero is barely able to walk.
-        }
-        return true;
-    }
-
-    public boolean sendToField(int loops) {
-        if(getHealth() > 0) {
-            Field field = new Field(this,loops);
-            field.runBattles(getActiveQuest());
-        } else {
-            System.out.println(name+" can barely stand. They are not suitable for questing. Heal first");
-            //TODO: Message to player that hero is barely able to walk.
-            return false;
-        }
-        return true;
     }
 
 }

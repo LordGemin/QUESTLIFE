@@ -31,8 +31,16 @@ public abstract class AbstractItems implements Serializable {
         return price;
     }
 
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public abstract void setHeroLevel(int levelOfHero);

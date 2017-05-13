@@ -13,6 +13,15 @@ public enum AttackType {
         fieldDescription = value;
     }
 
+    public static AttackType getField(String description) {
+        for(AttackType a: AttackType.values()) {
+            if(a.getFieldDescription().equals(description)) {
+                return a;
+            }
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         return fieldDescription;
