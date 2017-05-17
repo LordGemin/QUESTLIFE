@@ -76,7 +76,7 @@ public class Skill implements Serializable{
 
     public int getExperienceToNextLevel() {
         if(skilltype.equals(SkillType.TIMEBASED)) {
-            experienceToNextLevel=600;
+            experienceToNextLevel=600*level;
         }
         if(experienceToNextLevel==null) {
             experienceToNextLevel = StatCalculator.getExpToNextLevel(0,1);
@@ -129,7 +129,9 @@ public class Skill implements Serializable{
         } else if(skilltype.equals(SkillType.TIMEBASED)){
             this.experienceToNextLevel += 600;
         }
-        Attributes.getField(associatedAttribute).levelUp();
+        if(!associatedAttribute.equals("")) {
+            Attributes.getField(associatedAttribute).levelUp();
+        }
     }
 
     public void gainExperience(int experienceGained) {

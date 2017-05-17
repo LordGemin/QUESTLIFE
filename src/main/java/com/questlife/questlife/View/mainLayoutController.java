@@ -526,7 +526,7 @@ public class mainLayoutController {
             alert.showAndWait();
             return;
         }
-        mainApp.getInventory().add(hero.changeWeapon((AbstractWeapons) inventoryTable.getSelectionModel().getSelectedItem()));
+        hero.changeWeapon((AbstractWeapons) inventoryTable.getSelectionModel().getSelectedItem());
         updateLabels();
     }
 
@@ -682,6 +682,8 @@ public class mainLayoutController {
     }
 
     private void updateLabels() {
+        hero = mainApp.getHeroData().get(0);
+
         heroName.setText(hero.getName());
         level.setText(""+hero.getLevel());
         experienceToNextLevel.setProgress(((float)hero.getExperience()-hero.getExperienceToLastLevel())/(hero.getExperienceToNextLevel()-hero.getExperienceToLastLevel()));

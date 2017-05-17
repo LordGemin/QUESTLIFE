@@ -51,6 +51,10 @@ public class Hero implements Serializable {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public int getHealth() {
         if(health == getMaxHealth()) {
             lastDeath = null;
@@ -113,6 +117,10 @@ public class Hero implements Serializable {
         return weapon;
     }
 
+    public void setWeapon (AbstractWeapons weapon) {
+        this.weapon = weapon;
+    }
+
     @XmlTransient
     public List<AbstractItems> getInventory() {
         return inventory;
@@ -152,10 +160,6 @@ public class Hero implements Serializable {
 
     public void setObservation(int observation) {
         Attributes.OBSERVATION.setLevel(observation);
-    }
-
-    private void setWeapon (AbstractWeapons weapon) {
-        this.weapon = weapon;
     }
 
     public void setInventory(List<AbstractItems> inventory) {

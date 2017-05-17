@@ -4,18 +4,25 @@ import main.java.com.questlife.questlife.skills.Skill;
 import main.java.com.questlife.questlife.hero.Attributes;
 import main.java.com.questlife.questlife.util.*;
 
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
  * Created by Gemin on 10.04.2017.
  */
 public class Goals {
+
+    @XmlID
+    private String id;
 
     private LocalDateTime deadline;
     private long duration;
@@ -34,7 +41,8 @@ public class Goals {
         this.name = "";
         amountOfWork = 10;
         complexity = 5;
-        overarchingGoal = null;
+        this.id = UUID.randomUUID().toString();
+        overarchingGoal = this;
         deadline = LocalDateTime.now();
     }
 
@@ -96,9 +104,13 @@ public class Goals {
     }
 
     public Goals getOverarchingGoal() {
+        if(overarchingGoal==null) {
+            return this;
+        }
         return overarchingGoal;
     }
 
+    @XmlIDREF
     public void setOverarchingGoal(Goals overarchingGoal) {
         if(overarchingGoal == null) {
             return;

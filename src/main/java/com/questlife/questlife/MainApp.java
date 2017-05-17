@@ -816,16 +816,20 @@ public class MainApp extends Application {
 
             // Load quests
             questData.clear();
-            questData.addAll(gameWrapper.getQuests());
+            if(gameWrapper.getQuests() != null)
+                questData.addAll(gameWrapper.getQuests());
 
             // Load inventory
             inventory.clear();
-            inventory.addAll(gameWrapper.getInventoryWeapons());
-            inventory.addAll(gameWrapper.getInventoryPotions());
+            if(gameWrapper.getInventoryWeapons() != null)
+                inventory.addAll(gameWrapper.getInventoryWeapons());
+            if(gameWrapper.getInventoryPotions() != null)
+                inventory.addAll(gameWrapper.getInventoryPotions());
 
             // Load heroes
             heroData.clear();
-            heroData.addAll(gameWrapper.getHeroes());
+            if(gameWrapper.getHeroes() != null)
+                heroData.addAll(gameWrapper.getHeroes());
             // Give the poor hero/ine their inventory & quests
             for (Hero h:heroData) {
                 h.setInventory(inventory);
@@ -834,15 +838,18 @@ public class MainApp extends Application {
 
             // Load skills
             skillData.clear();
-            skillData.addAll(gameWrapper.getSkills());
+            if(gameWrapper.getSkills() != null)
+                skillData.addAll(gameWrapper.getSkills());
 
             // Load rewards
             rewardData.clear();
-            rewardData.addAll(gameWrapper.getRewards());
+            if(gameWrapper.getRewards() != null)
+                rewardData.addAll(gameWrapper.getRewards());
 
             // Load goals
             goalData.clear();
-            goalData.addAll(gameWrapper.getGoals());
+            if(gameWrapper.getGoals() != null)
+                goalData.addAll(gameWrapper.getGoals());
 
             // Save the file path to the registry.
             setFilePath(file);
