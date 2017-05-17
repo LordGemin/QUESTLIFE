@@ -5,6 +5,9 @@ package main.java.com.questlife.questlife.items;
  * Created by Gemin on 22.04.2017.
  */
 public class Wine extends AbstractPotions{
+
+    static String identifier = "WINE";
+
     public Wine() {
         this.name = "Wine";
         this.price = 150;

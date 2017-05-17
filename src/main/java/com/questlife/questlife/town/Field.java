@@ -3,7 +3,6 @@ package main.java.com.questlife.questlife.town;
 import main.java.com.questlife.questlife.battle.Battle;
 import main.java.com.questlife.questlife.enemy.Enemy;
 import main.java.com.questlife.questlife.hero.Hero;
-import main.java.com.questlife.questlife.quests.Quest;
 import main.java.com.questlife.questlife.util.Generator;
 
 import java.util.ArrayList;
@@ -20,13 +19,7 @@ public class Field implements Runnable{
     private List<String> enemiesInField= new ArrayList<>();
     private Hero hero;
     private int loops;
-    private Quest activeQuest;
 
-    public Field(Hero hero) {
-        this.hero = hero;
-        this.loops = LOOPS;
-        initializeField();
-    }
 
     public Field(Hero hero, List<String> enemyList) {
         this.hero = hero;
@@ -34,11 +27,6 @@ public class Field implements Runnable{
         initializeField(enemyList);
     }
 
-    public Field(Hero hero, int loops) {
-        this.hero = hero;
-        this.loops = loops;
-        initializeField();
-    }
 /*
 
     public Field(Hero hero, int loops, List<Enemy> enemyList) {
@@ -53,9 +41,6 @@ public class Field implements Runnable{
         int counter=0;
 
         while(counter<5) {
-            // We want to circle around the buffer until we get the enemy we need for our quest!
-            int pos = counter%ENEMYAMOUNT;
-
             // Add a random enemy from the list, where attackType is magical if it has blue in the title;
             String enemyName = enemyList.get(generator.generateNumber()%enemyList.size());
             enemiesInField.add(enemyName);
@@ -63,7 +48,7 @@ public class Field implements Runnable{
             counter++;
         }
     }
-
+/*
     private void initializeField() {
         // Creates a field for the hero to wander
         // Will also create ENEMYAMOUNT different types of enemies
@@ -71,7 +56,7 @@ public class Field implements Runnable{
         for(int i=0; i < ENEMYAMOUNT; i++) {
             enemiesInField.add(generator.generateEnemyName());
         }
-    }
+    }*/
 
     public void runBattles() {
 

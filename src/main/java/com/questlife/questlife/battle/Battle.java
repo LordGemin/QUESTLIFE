@@ -36,7 +36,7 @@ public class Battle extends AbstractBattle {
             runTurn();
         }
         if (getParticipatingHero().getHealth() > 0 ) {
-            int gained = Math.round(goldGained * (1+(getParticipatingHero().getObservation()/100.0f)));
+            int gained = Math.round(goldGained * (1+(getParticipatingHero().getObservation().getLevel()/100.0f)));
             System.out.println(getParticipatingHero().getName() + " gains "+gained+" Gold!");
             getParticipatingHero().gainGold(gained);
             return true;

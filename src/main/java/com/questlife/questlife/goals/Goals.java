@@ -4,13 +4,11 @@ import main.java.com.questlife.questlife.skills.Skill;
 import main.java.com.questlife.questlife.hero.Attributes;
 import main.java.com.questlife.questlife.util.*;
 
-import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -19,7 +17,6 @@ import java.util.List;
  */
 public class Goals {
 
-    private String id;
     private LocalDateTime deadline;
     private long duration;
     private String name;
@@ -53,6 +50,7 @@ public class Goals {
         this.isRecurring = isRecurring;
     }
 
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
     public LocalDateTime getDeadline() {
         return deadline;
     }
@@ -127,7 +125,7 @@ public class Goals {
         this.associatedSkills = associatedSkills;
     }
 
-    public List<Goals> getSubGoals() {
+    private List<Goals> getSubGoals() {
         List<Goals> subGoals = new ArrayList<>();
         subGoals.addAll(this.subGoals);
         return subGoals;
@@ -146,8 +144,7 @@ public class Goals {
     }
 
     public int getExperienceReward() {
-        StatCalculator statCalculator = new StatCalculator();
-        return statCalculator.getExperienceFromGoal(this);
+        return StatCalculator.getExperienceFromGoal(this);
     }
 
     public void addSubGoal(Goals subGoal) {
@@ -158,11 +155,11 @@ public class Goals {
         }
     }
 
-    public void removeSubGoal(Goals subGoal) {
+    private void removeSubGoal(Goals subGoal) {
         subGoals.remove(subGoal);
     }
 
-    public boolean completeGoal(LocalDateTime newDeadline) {
+    public void completeGoal(LocalDateTime newDeadline) {
         if(getProgress() == 100) {
             if (isRecurring && newDeadline != null) {
                 this.deadline = newDeadline;
@@ -193,8 +190,6 @@ public class Goals {
             expGained = Math.round(expGained/60000.0f);
         }
         Attributes.PIETY.gainExperience(Math.round(expGained));
-
-        return isComplete;
     }
 
     public int getProgress() {

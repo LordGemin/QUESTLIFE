@@ -144,17 +144,15 @@ public class Enemy implements Serializable {
             damageTaken = 1;
         }
 
-        this.setHealth(this.getHealth()-damageTaken);
+        setHealth(health-damageTaken);
     }
 
     public int getExperieceReward() {
-        StatCalculator statCalculator = new StatCalculator();
-        return statCalculator.getExperienceFromEnemy(this);
+        return StatCalculator.getExperienceFromEnemy(this);
     }
 
     public int getGoldReward() {
-        StatCalculator statCalculator = new StatCalculator();
-        return  statCalculator.getGoldFromEnemy(this);
+        return  StatCalculator.getGoldFromEnemy(this);
     }
 
     public void setHerolevel(int herolevel) {

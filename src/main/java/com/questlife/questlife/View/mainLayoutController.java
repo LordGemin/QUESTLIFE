@@ -81,6 +81,8 @@ public class mainLayoutController {
     private TableColumn<Goals, String> goalsDeadline;
     @FXML
     private TableColumn<Goals, String> goalsExperience;
+    @FXML
+    private Button goalCompleteButton;
 
     /**
      * Table that contains all quests
@@ -179,11 +181,26 @@ public class mainLayoutController {
         inventoryPotionUse.setVisible(false);
         inventoryWeaponEquip.setDisable(true);
         inventoryWeaponEquip.setVisible(false);
+        goalCompleteButton.setVisible(false);
 
         // Listen for selection changes and show the person details accordingly
         inventoryTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> handleInvSelection(newValue));
 
+        // Listen for selection changes and show the person details accordingly
+        goalsTable.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> handleGoalSelection(newValue));
+
+    }
+
+    private void handleGoalSelection(Goals newValue) {
+        if (newValue == null) {
+            goalCompleteButton.setVisible(false);
+            return;
+        }
+        if (newValue.getProgress() != 100) {
+            goalCompleteButton.setVisible(true);
+        }
     }
 
     private void handleInvSelection(AbstractItems newValue) {
@@ -229,6 +246,26 @@ public class mainLayoutController {
             mainApp.getGoalData().add(tempGoal);
         }
         updateLabels();
+    }
+
+    @FXML
+    private void handleCompleteGoal() {
+        if (goalsTable.getSelectionModel().getSelectedItems().size() != 1) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Can only delete one element");
+            alert.setHeaderText("Select goal");
+            alert.setContentText("Please select one goal from the table above\n");
+
+            alert.showAndWait();
+            return;
+        }
+
+        Goals goal = goalsTable.getSelectionModel().getSelectedItem();
+
+        if(goal.getRecurring()) {
+            goal.completeGoal(mainApp.showDefineNewDeadlineDialog(goal));
+        }
+        goal.completeGoal(null);
     }
 
     @FXML
@@ -489,7 +526,7 @@ public class mainLayoutController {
             alert.showAndWait();
             return;
         }
-        hero.changeWeapon((AbstractWeapons) inventoryTable.getSelectionModel().getSelectedItem());
+        mainApp.getInventory().add(hero.changeWeapon((AbstractWeapons) inventoryTable.getSelectionModel().getSelectedItem()));
         updateLabels();
     }
 
@@ -648,13 +685,13 @@ public class mainLayoutController {
         heroName.setText(hero.getName());
         level.setText(""+hero.getLevel());
         experienceToNextLevel.setProgress(((float)hero.getExperience()-hero.getExperienceToLastLevel())/(hero.getExperienceToNextLevel()-hero.getExperienceToLastLevel()));
-        strength.setText(""+hero.getStrength());
-        dexterity.setText(""+hero.getDexterity());
-        mind.setText(""+hero.getMind());
-        charisma.setText(""+hero.getCharisma());
-        observation.setText(""+hero.getObservation());
-        constitution.setText(""+hero.getConstitution());
-        piety.setText(""+hero.getPiety());
+        strength.setText(""+hero.getStrength().getLevel());
+        dexterity.setText(""+hero.getDexterity().getLevel());
+        mind.setText(""+hero.getMind().getLevel());
+        charisma.setText(""+hero.getCharisma().getLevel());
+        observation.setText(""+hero.getObservation().getLevel());
+        constitution.setText(""+hero.getConstitution().getLevel());
+        piety.setText(""+hero.getPiety().getLevel());
         gold.setText(""+hero.getGold());
 
         mainApp.getQuestData().removeIf(e -> (e.getMobsToHunt() <= 0));

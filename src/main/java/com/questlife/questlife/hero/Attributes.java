@@ -35,7 +35,7 @@ public enum Attributes implements Serializable {
     OBSERVATION("Observation");
 
     private final String fieldDescription;
-    private Integer experience;
+    private Integer experience = 0;
     private Integer experienceToNextLevel = 1000;
     private Integer level = 1;
 
@@ -82,17 +82,18 @@ public enum Attributes implements Serializable {
     }
 
     public void levelUp() {
-        StatCalculator stats = new StatCalculator();
         level++;
         System.out.println(fieldDescription+" leveld up!");
-        this.experienceToNextLevel = stats.getExpToNextLevel(experienceToNextLevel,level);
+        this.experienceToNextLevel = StatCalculator.getExpToNextLevel(experienceToNextLevel,level);
     }
 
     public void gainExperience(int experienceGained) {
+        if(experience == null) {
+            experience = 0;
+        }
         this.experience += experienceGained;
         while (this.experience >= this.experienceToNextLevel) {
             levelUp();
-            //TODO: Message to Player. Congrats or something
         }
     }
 }

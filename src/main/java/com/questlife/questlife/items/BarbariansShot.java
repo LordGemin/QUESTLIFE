@@ -5,6 +5,9 @@ package main.java.com.questlife.questlife.items;
  * Created by Gemin on 22.04.2017.
  */
 public class BarbariansShot extends AbstractPotions{
+
+    static String identifier = "BARB";
+
     public BarbariansShot() {
         this.name = "Barbarians Shot";
         this.price = 400;

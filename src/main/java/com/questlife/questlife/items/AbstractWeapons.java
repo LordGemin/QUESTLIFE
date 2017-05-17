@@ -12,9 +12,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *
  * Created by Gemin on 22.04.2017.
  */
+@XmlJavaTypeAdapter(WeaponsAdapter.class)
 public abstract class AbstractWeapons extends AbstractItems{
 
-    StatCalculator statCalculator = new StatCalculator();
     Integer physicalAttack, magicalAttack;
     AttackType attackType;
 

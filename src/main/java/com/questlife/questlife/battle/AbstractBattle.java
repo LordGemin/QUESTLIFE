@@ -15,27 +15,26 @@ public abstract class AbstractBattle {
     private Hero participatingHero;
     private List<Enemy> participatingEnemies = new ArrayList<>();
     int goldGained;
-    int turnCounter;
     /* Do we need these variables? We can read all of them from the Hero and Enemy objects... theoretically
     private int damageHero, healthHero, defenseHero, resistanceHero, manaHero;
     private String nameHero, nameEnemy;
     private int damageEnemy, healthEnemy, defenseEnemy, resistanceEnemy, manaEnemy;
     */
 
-    public AbstractBattle(Hero participatingHero) {
+    AbstractBattle(Hero participatingHero) {
         this.participatingHero = participatingHero;
     }
 
-    public AbstractBattle(List<Enemy> participatingEnemies) {
+    AbstractBattle(List<Enemy> participatingEnemies) {
         this.participatingEnemies = participatingEnemies;
     }
 
-    public AbstractBattle(Hero participatingHero, List<Enemy> participatingEnemies) {
+    AbstractBattle(Hero participatingHero, List<Enemy> participatingEnemies) {
         this.participatingHero = participatingHero;
         this.participatingEnemies = participatingEnemies;
     }
 
-    public Hero getParticipatingHero() {
+    Hero getParticipatingHero() {
         return participatingHero;
     }
 
@@ -43,7 +42,7 @@ public abstract class AbstractBattle {
         this.participatingHero = participatingHero;
     }
 
-    public List<Enemy> getParticipatingEnemies() {
+    List<Enemy> getParticipatingEnemies() {
         return participatingEnemies;
     }
 

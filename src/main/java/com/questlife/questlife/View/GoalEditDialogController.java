@@ -71,14 +71,24 @@ public class GoalEditDialogController {
         this.goal = goal;
         this.mainApp = mainApp;
 
-        overarchingGoalTable.setItems(mainApp.getGoalData());
+        ObservableList<Goals> goals = FXCollections.observableArrayList();
+        goals.addAll(mainApp.getGoalData());
+
+        // Get rid of all "empty" goals
+        for(Goals g:mainApp.getGoalData()) {
+            if(g.getName().equals("")) {
+                goals.remove(g);
+            }
+        }
+
+        overarchingGoalTable.setItems(goals);
 
         // Add only skills to the goallist if they are goalbased!
         // Timebased skills get their own way of receiving exp
         ObservableList<Skill> skills = FXCollections.observableArrayList();
         skills.addAll(mainApp.getSkillData());
 
-        for(Skill s:skills) {
+        for(Skill s:mainApp.getSkillData()) {
             if(s.getSkilltype().equals(SkillType.TIMEBASED)) {
                 skills.remove(s);
             }

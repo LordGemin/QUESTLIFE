@@ -100,7 +100,7 @@ public class SkillEditDialogController {
         rb_timeBased.setToggleGroup(skillType);
         rb_timeBased.setUserData(SkillType.TIMEBASED.getFieldDescription());
         rb_goalBased.setToggleGroup(skillType);
-        rb_goalBased.setUserData(SkillType.TIMEBASED.getFieldDescription());
+        rb_goalBased.setUserData(SkillType.GOALBASED.getFieldDescription());
 
         if(skill.getAssociatedAttribute() != null) {
             switch (skill.getAssociatedAttribute()) {

@@ -3,11 +3,9 @@ package main.java.com.questlife.questlife.hero;
 import main.java.com.questlife.questlife.items.*;
 import main.java.com.questlife.questlife.player.Inventory;
 import main.java.com.questlife.questlife.quests.Quest;
-import main.java.com.questlife.questlife.util.AttackType;
-import main.java.com.questlife.questlife.util.Generator;
-import main.java.com.questlife.questlife.util.StatCalculator;
-import main.java.com.questlife.questlife.util.WeaponBindAdapter;
+import main.java.com.questlife.questlife.util.*;
 
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -23,7 +21,6 @@ public class Hero implements Serializable {
     private Integer health = 0;
     private Integer mana = 0;
     private Integer level = 1;
-    private Attributes attributes;
     private Long experience = (long) 0;
     private Long experienceToNextLevel;
     private Long experienceToLastLevel = (long) 0;
@@ -31,8 +28,9 @@ public class Hero implements Serializable {
     private AbstractWeapons weapon;
     private Long lastDeath;
 
-    private StatCalculator statCalculator = new StatCalculator();
+    @XmlTransient
     private List<Quest> questList = new ArrayList<>();
+    @XmlTransient
     private List<AbstractItems> inventory = new ArrayList<>();
 
 
@@ -75,32 +73,39 @@ public class Hero implements Serializable {
         return mana;
     }
 
-    public int getStrength() {
-        return attributes.STRENGTH.getLevel();
+    @XmlJavaTypeAdapter(AttributesAdapter.class)
+    public Attributes getStrength() {
+        return Attributes.STRENGTH;
     }
 
-    public int getDexterity() {
-        return attributes.DEXTERITY.getLevel();
+    @XmlJavaTypeAdapter(AttributesAdapter.class)
+    public Attributes getDexterity() {
+        return Attributes.DEXTERITY;
     }
 
-    public int getMind() {
-        return attributes.MIND.getLevel();
+    @XmlJavaTypeAdapter(AttributesAdapter.class)
+    public Attributes getMind() {
+        return Attributes.MIND;
     }
 
-    public int getCharisma() {
-        return attributes.CHARISMA.getLevel();
+    @XmlJavaTypeAdapter(AttributesAdapter.class)
+    public Attributes getCharisma() {
+        return Attributes.CHARISMA;
     }
 
-    public int getConstitution() {
-        return attributes.CONSTITUTION.getLevel();
+    @XmlJavaTypeAdapter(AttributesAdapter.class)
+    public Attributes getConstitution() {
+        return Attributes.CONSTITUTION;
     }
 
-    public int getPiety() {
-        return attributes.PIETY.getLevel();
+    @XmlJavaTypeAdapter(AttributesAdapter.class)
+    public Attributes getPiety() {
+        return Attributes.PIETY;
     }
 
-    public int getObservation() {
-        return attributes.OBSERVATION.getLevel();
+    @XmlJavaTypeAdapter(AttributesAdapter.class)
+    public Attributes getObservation() {
+        return Attributes.OBSERVATION;
     }
 
     @XmlJavaTypeAdapter(WeaponBindAdapter.class)
@@ -108,6 +113,7 @@ public class Hero implements Serializable {
         return weapon;
     }
 
+    @XmlTransient
     public List<AbstractItems> getInventory() {
         return inventory;
     }
@@ -121,31 +127,31 @@ public class Hero implements Serializable {
     }
 
     public void setStrength(int strength) {
-        attributes.STRENGTH.setLevel(strength);
+        Attributes.STRENGTH.setLevel(strength);
     }
 
     public void setDexterity(int dexterity) {
-        attributes.DEXTERITY.setLevel(dexterity);
+        Attributes.DEXTERITY.setLevel(dexterity);
     }
 
     public void setMind(int mind) {
-        attributes.MIND.setLevel(mind);
+        Attributes.MIND.setLevel(mind);
     }
 
     public void setCharisma(int charisma) {
-        attributes.CHARISMA.setLevel(charisma);
+        Attributes.CHARISMA.setLevel(charisma);
     }
 
     public void setConstitution(int constitution) {
-        attributes.CONSTITUTION.setLevel(constitution);
+        Attributes.CONSTITUTION.setLevel(constitution);
     }
 
     public void setPiety(int piety) {
-        attributes.PIETY.setLevel(piety);
+        Attributes.PIETY.setLevel(piety);
     }
 
     public void setObservation(int observation) {
-        attributes.OBSERVATION.setLevel(observation);
+        Attributes.OBSERVATION.setLevel(observation);
     }
 
     private void setWeapon (AbstractWeapons weapon) {
@@ -174,7 +180,7 @@ public class Hero implements Serializable {
 
     public long getExperienceToNextLevel() {
         if(experienceToNextLevel==null) {
-            experienceToNextLevel = statCalculator.getExpToNextLevel(1);
+            experienceToNextLevel = StatCalculator.getExpToNextLevel(1);
         }
         return experienceToNextLevel;
     }
@@ -188,11 +194,11 @@ public class Hero implements Serializable {
     }
 
     public int getMaxHealth() {
-        return statCalculator.getMaxHealth(this);
+        return StatCalculator.getMaxHealth(this);
     }
 
     public int getMaxMana() {
-        return statCalculator.getMaxMana(this);
+        return StatCalculator.getMaxMana(this);
     }
 
 
@@ -252,6 +258,7 @@ public class Hero implements Serializable {
         return false;
     }*/
 
+    @XmlTransient
     public List<Quest> getQuestList() {
         return questList;
     }
@@ -273,29 +280,34 @@ public class Hero implements Serializable {
     }
 
     public int getDefense(){
-        return statCalculator.calculateHeroesDefense(this);
+        return StatCalculator.calculateHeroesDefense(this);
     }
 
     public int getResistance() {
-        return statCalculator.calculateHeroesResistance(this);
+        return StatCalculator.calculateHeroesResistance(this);
     }
 
     public int getAttack() {
-        return statCalculator.calculateHeroesAttack(this);
+        return StatCalculator.calculateHeroesAttack(this);
     }
 
-    public void changeWeapon(AbstractWeapons toEquip) {
+    public AbstractWeapons changeWeapon(AbstractWeapons toEquip) {
+        AbstractWeapons oldWeapon = null;
         if (inventory.contains(toEquip))
             inventory.remove(toEquip);
-        if (this.weapon != null)
+        if (this.weapon != null) {
+            oldWeapon = this.weapon;
             inventory.add(this.weapon);
+        }
         this.setWeapon(toEquip);
+
+        return oldWeapon;
     }
 
     private void levelUp() {
         this.level++;
         this.experienceToLastLevel = experienceToNextLevel;
-        this.experienceToNextLevel = statCalculator.getExpToNextLevel(level);
+        this.experienceToNextLevel = StatCalculator.getExpToNextLevel(level);
         //TODO: Rethink this formula
     }
 
@@ -380,6 +392,13 @@ public class Hero implements Serializable {
         int damageDealt = getAttack();
         AttackType weaponAttackType = null;
 
+        // Temporary weapon for this attack, gets deleted later
+        boolean deleteWeapon = false;
+        if(weapon == null) {
+            weapon = new Weapon("Bare knuckle", 4, 4,AttackType.BOTH);
+            deleteWeapon = true;
+        }
+
         if(weapon.getAttackType() != null) {
             weaponAttackType = weapon.getAttackType();
         }
@@ -408,19 +427,25 @@ public class Hero implements Serializable {
             }
         }
 
-        int criticalCheck =  new Generator().generateNumber()%(getObservation()*getObservation());
+
+        int observation = getObservation().getLevel();
+        int criticalCheck =  new Generator().generateNumber()%(10+observation);
 
         // Critical Attacks based on observation stat. Deals double damage
-        if(getObservation() >= criticalCheck*5) {
+        if(observation >= criticalCheck*5) {
             damageDealt *= 2;
             System.out.println(name+" strikes a critical blow.\n");
+        }
+
+        if(deleteWeapon) {
+            weapon = null;
         }
 
         return damageDealt;
     }
 
     public boolean spendGold(int cost) {
-        cost -= statCalculator.getRebate(this, cost);
+        cost -= StatCalculator.getRebate(this, cost);
         if(gold >= cost) {
             gold -= cost;
             return true;

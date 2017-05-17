@@ -11,6 +11,8 @@ import java.io.Serializable;
  */
 public abstract class AbstractItems implements Serializable {
 
+    String identifier;
+
     String name;
     Integer price;
     String description;
@@ -25,6 +27,10 @@ public abstract class AbstractItems implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getPrice() {
@@ -46,7 +52,6 @@ public abstract class AbstractItems implements Serializable {
     public abstract void setHeroLevel(int levelOfHero);
 
     public void updatePrice(Hero hero) {
-        StatCalculator statCalculator = new StatCalculator();
-        this.price -= statCalculator.getRebate(hero, price);
+        this.price -= StatCalculator.getRebate(hero, price);
     }
 }

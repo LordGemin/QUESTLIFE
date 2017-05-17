@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import main.java.com.questlife.questlife.View.*;
@@ -24,15 +25,25 @@ import main.java.com.questlife.questlife.rewards.RewardWrapper;
 import main.java.com.questlife.questlife.skills.Skill;
 import main.java.com.questlife.questlife.town.Shop;
 import main.java.com.questlife.questlife.util.AttackType;
+import main.java.com.questlife.questlife.util.GameWrapper;
 import main.java.com.questlife.questlife.util.Generator;
 import main.java.com.questlife.questlife.skills.SkillWrapper;
 import org.reflections.Reflections;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.WritableByteChannel;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,6 +60,9 @@ public class MainApp extends Application {
     private static final int TAVERNCOST = 50;
     private long shopCounter = System.currentTimeMillis();
     private Stage primaryStage;
+    private Stage parentStage;
+
+    private BorderPane rootLayout;
 
     private AnchorPane mainLayout;
 
@@ -222,7 +236,7 @@ public class MainApp extends Application {
         heroData.add(new Hero("Bolderig"));
         heroData.get(0).setCharisma(1);
         heroData.get(0).setConstitution(1);
-        heroData.get(0).setGold(200);
+        heroData.get(0).setGold(5000);
         heroData.get(0).setHealth(heroData.get(0).getMaxHealth());
 
         //TODO: SampleData?
@@ -244,9 +258,34 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("Questlife");
-        
+
+        initRoot();
         initMainLayout();
 
+    }
+
+    private void initRoot() {
+        try {
+            // Load main layout from fxml file.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/rootLayout.fxml"));
+            rootLayout = (BorderPane) loader.load();
+
+            // Show the scene containing the main layout.
+            Scene scene = new Scene(rootLayout);
+            primaryStage.setScene(scene);
+
+            // Give the controller access to the main app.
+            RootLayoutController controller = loader.getController();
+            controller.setMainApp(this);
+
+            // As the design is barebones, don't let the window be resized
+            primaryStage.setResizable(false);
+
+            primaryStage.show();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initMainLayout() {
@@ -256,18 +295,13 @@ public class MainApp extends Application {
             loader.setLocation(MainApp.class.getResource("view/mainLayout.fxml"));
             mainLayout = (AnchorPane) loader.load();
 
-            // Show the scene containing the main layout.
-            Scene scene = new Scene(mainLayout);
-            primaryStage.setScene(scene);
+            rootLayout.setCenter(mainLayout);
 
             // Give the controller access to the main app.
             mainLayoutController controller = loader.getController();
             controller.setMainApp(this);
 
-            // As the design is barebones, don't let the window be resized
-            primaryStage.setResizable(false);
 
-            primaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -325,6 +359,7 @@ public class MainApp extends Application {
             loader.setLocation(MainApp.class.getResource("view/goalEditDialog.fxml"));
             AnchorPane page = (AnchorPane) loader.load();
 
+
             // Create the dialog Stage.
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Edit Goal");
@@ -339,6 +374,8 @@ public class MainApp extends Application {
             GoalEditDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.setGoalAndMainApp(tempGoal, this);
+
+            //rootLayout.setCenter(page);
 
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();
@@ -720,6 +757,12 @@ public class MainApp extends Application {
         }
     }
 
+    /**
+     * Called when user completes a recurring goal
+     *
+     * @param goal Goal that needs a new deadline
+     * @return The deadline that was set
+     */
     public LocalDateTime showDefineNewDeadlineDialog(Goals goal) {
         try {
             // Load the fxml file and create a new stage for the popup dialog.
@@ -765,6 +808,46 @@ public class MainApp extends Application {
      */
     public void loadDataFromFile(File file) {
         try {
+            JAXBContext gameContext = JAXBContext.newInstance(GameWrapper.class);
+            Unmarshaller umGame = gameContext.createUnmarshaller();
+
+            // Reading XML from the file and unmarshalling.
+            GameWrapper gameWrapper = (GameWrapper) umGame.unmarshal(file);
+
+            // Load quests
+            questData.clear();
+            questData.addAll(gameWrapper.getQuests());
+
+            // Load inventory
+            inventory.clear();
+            inventory.addAll(gameWrapper.getInventoryWeapons());
+            inventory.addAll(gameWrapper.getInventoryPotions());
+
+            // Load heroes
+            heroData.clear();
+            heroData.addAll(gameWrapper.getHeroes());
+            // Give the poor hero/ine their inventory & quests
+            for (Hero h:heroData) {
+                h.setInventory(inventory);
+                h.setQuestList(questData);
+            }
+
+            // Load skills
+            skillData.clear();
+            skillData.addAll(gameWrapper.getSkills());
+
+            // Load rewards
+            rewardData.clear();
+            rewardData.addAll(gameWrapper.getRewards());
+
+            // Load goals
+            goalData.clear();
+            goalData.addAll(gameWrapper.getGoals());
+
+            // Save the file path to the registry.
+            setFilePath(file);
+
+/*
 
             //
             // LOADING QUESTS
@@ -867,8 +950,11 @@ public class MainApp extends Application {
 
             // Save the file path to the registry.
             setFilePath(file);
+*/
 
         } catch (Exception e) { // catches ANY exception
+            e.printStackTrace();
+
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("Could not load data");
@@ -878,6 +964,17 @@ public class MainApp extends Application {
         }
     }
 
+    private class MySchemaOutputResolver extends SchemaOutputResolver {
+
+        public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
+            File file = new File(suggestedFileName);
+            StreamResult result = new StreamResult(file);
+            result.setSystemId(file.toURI().toURL().toString());
+            return result;
+        }
+
+    }
+
     /**
      * Saves the current person data to the specified file.
      *
@@ -885,6 +982,42 @@ public class MainApp extends Application {
      */
     public void saveDataToFile(File file) {
         try {
+
+            JAXBContext gameContext = JAXBContext.newInstance(GameWrapper.class);
+            Marshaller mGame = gameContext.createMarshaller();
+            mGame.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+            SchemaOutputResolver sor = new MySchemaOutputResolver();
+            gameContext.generateSchema(sor);
+
+            GameWrapper gameWrapper = new GameWrapper();
+            gameWrapper.setQuests(questData);
+
+            List<AbstractWeapons> weaponsList = new ArrayList<>();
+            List<AbstractPotions> potionsList = new ArrayList<>();
+            for(AbstractItems a:inventory) {
+                if(a instanceof AbstractWeapons)
+                    weaponsList.add((AbstractWeapons) a);
+                if(a instanceof AbstractPotions)
+                    potionsList.add((AbstractPotions) a);
+            }
+            gameWrapper.setInventoryWeapons(weaponsList);
+            gameWrapper.setInventoryPotions(potionsList);
+            gameWrapper.setHeroes(heroData);
+            gameWrapper.setSkills(skillData);
+            gameWrapper.setRewards(rewardData);
+            gameWrapper.setGoals(goalData);
+            mGame.marshal(gameWrapper,file);
+
+
+            /*
+            FileChannel fc = FileChannel.open(file.toPath());
+            XMLOutputFactory xof = XMLOutputFactory.newFactory();
+            XMLStreamWriter xsw = xof.createXMLStreamWriter(Channels.newOutputStream(fc), "UTF-8");
+
+            xsw.writeStartDocument("UTF-8", "1");
+
+
             //
             // SAVING QUESTS
             //
@@ -898,7 +1031,7 @@ public class MainApp extends Application {
             questWrapper.setQuests(questData);
 
             // Marshalling and saving XML to the file.
-            mQuest.marshal(questWrapper, file);
+            mQuest.marshal(questWrapper, xsw);
 
             //
             // SAVING INVENTORY
@@ -919,21 +1052,21 @@ public class MainApp extends Application {
                 if(a instanceof AbstractPotions)
                     potionsWrapper.getPotions().add((AbstractPotions) a);
             }
-            mWeapon.marshal(weaponsWrapper, file);
-            mPotion.marshal(potionsWrapper, file);
+            mWeapon.marshal(weaponsWrapper, xsw);
+            mPotion.marshal(potionsWrapper, xsw);
 
             //
             // SAVING ATTRIBUTES
             //
             JAXBContext attrContext = JAXBContext.newInstance(Attributes.class);
             Marshaller mAttr = attrContext.createMarshaller();
-            mAttr.marshal(Attributes.STRENGTH, file);
-            mAttr.marshal(Attributes.DEXTERITY, file);
-            mAttr.marshal(Attributes.MIND, file);
-            mAttr.marshal(Attributes.CHARISMA, file);
-            mAttr.marshal(Attributes.CONSTITUTION, file);
-            mAttr.marshal(Attributes.OBSERVATION, file);
-            mAttr.marshal(Attributes.PIETY, file);
+            mAttr.marshal(Attributes.STRENGTH, xsw);
+            mAttr.marshal(Attributes.DEXTERITY, xsw);
+            mAttr.marshal(Attributes.MIND, xsw);
+            mAttr.marshal(Attributes.CHARISMA, xsw);
+            mAttr.marshal(Attributes.CONSTITUTION, xsw);
+            mAttr.marshal(Attributes.OBSERVATION, xsw);
+            mAttr.marshal(Attributes.PIETY, xsw);
 
             //
             // SAVING HEROES
@@ -946,7 +1079,7 @@ public class MainApp extends Application {
             HeroWrapper heroWrapper = new HeroWrapper();
             heroWrapper.setHeroes(heroData);
 
-            mHero.marshal(heroWrapper, file);
+            mHero.marshal(heroWrapper, xsw);
 
             //
             // SAVING SKILLS
@@ -958,7 +1091,7 @@ public class MainApp extends Application {
             SkillWrapper skillWrapper = new SkillWrapper();
             skillWrapper.setSkills(skillData);
 
-            mSkill.marshal(skillWrapper, file);
+            mSkill.marshal(skillWrapper, xsw);
 
 
             //
@@ -971,7 +1104,7 @@ public class MainApp extends Application {
             RewardWrapper rewardWrapper = new RewardWrapper();
             rewardWrapper.setRewards(rewardData);
 
-            mReward.marshal(rewardWrapper, file);
+            mReward.marshal(rewardWrapper, xsw);
 
             //
             // SAVING GOALS
@@ -983,8 +1116,11 @@ public class MainApp extends Application {
             GoalWrapper goalWrapper = new GoalWrapper();
             goalWrapper.setGoals(goalData);
 
-            mGoal.marshal(goalWrapper, file);
+            mGoal.marshal(goalWrapper, xsw);
 
+            xsw.close();
+            fc.close();
+*/
             // Save the file path to the registry.
             setFilePath(file);
         } catch (Exception e) { // catches ANY exception

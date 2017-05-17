@@ -12,16 +12,16 @@ import java.text.DecimalFormat;
  * 
  * Created by Gemin on 11.04.2017.
  */
-public class StatCalculator {
+public final class StatCalculator {
 
-    private Generator generator = new Generator();
+    private static Generator generator = new Generator();
 
     public StatCalculator() {
 
     }
 
-    public int calculateHeroesDefense(Hero hero) {
-        int baseValue = hero.getStrength();
+    public static int calculateHeroesDefense(Hero hero) {
+        int baseValue = hero.getStrength().getLevel();
         //If hero has no weapon equipped, give him nonsense weapon;
         AbstractWeapons heroWeapon = (hero.getWeapon() != null) ? hero.getWeapon() : new Weapon("Bare knuckle", 0,0,AttackType.PHYSICAL);
 
@@ -30,8 +30,8 @@ public class StatCalculator {
         return baseValue*2;
     }
 
-    public int calculateHeroesResistance(Hero hero) {
-        int baseValue = hero.getMind();
+    public static int calculateHeroesResistance(Hero hero) {
+        int baseValue = hero.getMind().getLevel();
         //If hero has no weapon equipped, give him nonsense weapon;
         AbstractWeapons heroWeapon = (hero.getWeapon() != null) ? hero.getWeapon() : new Weapon("Bare knuckle", 0,0,AttackType.PHYSICAL);
 
@@ -41,27 +41,27 @@ public class StatCalculator {
         return  (int)Math.round(baseValue*2.5);
     }
 
-    public int calculateHeroesAttack(Hero hero) {
+    public static int calculateHeroesAttack(Hero hero) {
         int attackValue;
         //If hero has no weapon equipped, give him some weapon;
         AbstractWeapons heroWeapon = (hero.getWeapon() != null) ? hero.getWeapon() : new Weapon("Bare knuckle", 4,4,AttackType.PHYSICAL);
 
         switch (heroWeapon.getAttackType()) {
             case PHYSICAL:
-                attackValue = hero.getStrength();
+                attackValue = hero.getStrength().getLevel();
                 attackValue += heroWeapon.getPhysicalAttack();
                 break;
             case MAGICAL:
                 // It is suspected that usually, the Mind attribute will be higher, resulting in higher magical damage
-                attackValue = hero.getMind();
+                attackValue = hero.getMind().getLevel();
                 attackValue += heroWeapon.getMagicalAttack();
                 break;
             case BOTH:
                 if(hero.getMana()<=0) {
-                    attackValue = hero.getStrength();
+                    attackValue = hero.getStrength().getLevel();
                     attackValue += heroWeapon.getPhysicalAttack();
                 } else {
-                    attackValue = hero.getMind();
+                    attackValue = hero.getMind().getLevel();
                     attackValue += heroWeapon.getMagicalAttack();
                 }
                 break;
@@ -80,24 +80,26 @@ public class StatCalculator {
      * @param levelOfHero
      * @return weaponprice
      */
-    public int calculateWeaponPrice(int baseprice, int levelOfHero) {
+    public static int calculateWeaponPrice(int baseprice, int levelOfHero) {
         return (baseprice + generator.generateNumber()%(baseprice+levelOfHero*2));
         //TODO: Rethink this formula
     }
 
-    public int calculateWeaponDamage(int basedamage, int maxdamage, int levelOfHero) {
+    public static int calculateWeaponDamage(int basedamage, int maxdamage, int levelOfHero) {
         return (basedamage + generator.generateNumber()%(maxdamage+levelOfHero*3));
     }
 
-    public int getMaxHealth(Hero hero) {
-        return (hero.getConstitution() < 10) ?  100:hero.getConstitution()*30;
+    public static int getMaxHealth(Hero hero) {
+        int consti = hero.getConstitution().getLevel();
+        return (consti < 10) ?  100:consti*30;
     }
 
-    public int getMaxMana(Hero hero) {
-        return (hero.getPiety() < 10) ?  100:hero.getPiety()*20;
+    public static int getMaxMana(Hero hero) {
+        int piety = hero.getPiety().getLevel();
+        return (piety < 10) ?  100:piety*20;
     }
 
-    public int getExperienceFromGoal(Goals goal) {
+    public static int getExperienceFromGoal(Goals goal) {
         // We want the gained experience to be split between all associated skills.
 
         float div = goal.getAssociatedSkills().size();
@@ -109,22 +111,22 @@ public class StatCalculator {
         return (int)(Math.round(goal.getComplexity()*0.75*goal.getAmountOfWork())/div);
     }
 
-    public int getExperienceFromEnemy(Enemy enemy) {
+    public static int getExperienceFromEnemy(Enemy enemy) {
         return Math.round(enemy.getAttackPower()*enemy.getMaxHealth()/20.0f);
     }
 
-    public int getGoldFromEnemy(Enemy enemy) {
+    public static int getGoldFromEnemy(Enemy enemy) {
         return Math.round(enemy.getAttackPower()*enemy.getMaxHealth()/35.0f);
     }
 
-    public int getExpToNextLevel (int experienceToThisLevel, int level) {
+    public static int getExpToNextLevel (int experienceToThisLevel, int level) {
         if(level == 1) {
             return 1000;
         }
         return experienceToThisLevel + 1000+100*Math.round(level/10);
     }
 
-    public long getExpToNextLevel (int level) {
+    public static long getExpToNextLevel (int level) {
         if(level == 1) {
             return 500;
         }
@@ -141,14 +143,15 @@ public class StatCalculator {
         return exp;
     }
 
-    public int getRebate(Hero hero, int cost) {
+    public static int getRebate(Hero hero, int cost) {
+        int charisma = hero.getCharisma().getLevel();
 
-        if(hero.getCharisma() < 50) {
-            return Math.round(0.0025f*hero.getCharisma()*cost);
+        if(charisma < 50) {
+            return Math.round(0.0025f*charisma*cost);
         }
         else {
             // We want to slowly increase the correction value from -5.5 to 0
-            int fiftyToHundred = hero.getCharisma()-50;
+            int fiftyToHundred = charisma-50;
             // For this we need to step by step increase the value, by whatever step/9.09090909090909
             float div = 50/5.5f;
             // Now we have a correction value
@@ -157,7 +160,7 @@ public class StatCalculator {
             if(correction > 0) {
                 correction = 0;
             }
-            return (int)(Math.round((-1/(0.4f)*Math.sqrt(hero.getCharisma()+correction))+0.5f)*cost);
+            return (int)(Math.round((-1/(0.4f)*Math.sqrt(charisma+correction))+0.5f)*cost);
         }
     }
 }

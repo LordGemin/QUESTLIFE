@@ -47,6 +47,10 @@ public class SkillBindAdapter extends XmlAdapter<String, Skill> {
         wrappedSkill += ";";
         wrappedSkill += v.getSkilltype().getFieldDescription();  // attr 5
         wrappedSkill += ";";
+        if(v.getAssociatedAttribute() == null) {
+            wrappedSkill+= "";
+            return wrappedSkill;
+        }
         wrappedSkill += v.getAssociatedAttribute().getFieldDescription();  // attr 6
 
         return wrappedSkill;

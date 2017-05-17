@@ -39,15 +39,15 @@ public class Quest implements Serializable{
         return description;
     }
 
-    public int getMobsToHunt() {
+    public Integer getMobsToHunt() {
         return mobsToHunt;
     }
 
-    public int getRewardExp() {
+    public Integer getRewardExp() {
         return rewardExp;
     }
 
-    public int getRewardGold() {
+    public Integer getRewardGold() {
         return rewardGold;
     }
 

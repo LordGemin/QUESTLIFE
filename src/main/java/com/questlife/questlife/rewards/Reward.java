@@ -16,7 +16,7 @@ public class Reward implements Serializable{
 
     private String name;
     private String description;
-    private RewardType rewardType;
+    private RewardType rewardType = RewardType.GOLD_BASED;
     private Skill associatedSkill;
     private int cost;
     private int canReceive;

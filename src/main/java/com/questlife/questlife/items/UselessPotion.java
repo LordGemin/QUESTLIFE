@@ -5,6 +5,9 @@ package main.java.com.questlife.questlife.items;
  * Created by Gemin on 22.04.2017.
  */
 public class UselessPotion extends AbstractPotions {
+
+    static String identifier = "USPO";
+
     public UselessPotion() {
         this.name = "Useless Potion";
         this.price = 10;

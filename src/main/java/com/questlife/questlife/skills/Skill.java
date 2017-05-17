@@ -1,12 +1,14 @@
 package main.java.com.questlife.questlife.skills;
 
 import main.java.com.questlife.questlife.hero.Attributes;
+import main.java.com.questlife.questlife.util.AttributesAdapter;
 import main.java.com.questlife.questlife.util.SkillType;
 import main.java.com.questlife.questlife.util.SkillTypeAdapter;
 import main.java.com.questlife.questlife.util.StatCalculator;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
+
 
 /**
  *
@@ -17,13 +19,11 @@ public class Skill implements Serializable{
     private String name;
     private String associatedAttribute;
     private String description;
-    private SkillType skilltype;
+    private SkillType skilltype = SkillType.GOALBASED;
     private Integer level =1;
     private Integer experience = 0;
-    private Integer experienceToNextLevel;
+    private Integer experienceToNextLevel = getExperienceToNextLevel();
 
-
-    StatCalculator statCalculator = new StatCalculator();
 
     public Skill(String name, Attributes associatedAttribute, String description, SkillType skilltype) {
         this.name = name;
@@ -35,7 +35,6 @@ public class Skill implements Serializable{
     public Skill() {
         name = "";
         associatedAttribute = null;
-        skilltype = null;
     }
 
     public Skill(String name, String associatedAttribute, String description, SkillType skilltype, Integer level, Integer experience, Integer experienceToNextLevel) {
@@ -52,6 +51,8 @@ public class Skill implements Serializable{
         return name;
     }
 
+
+    @XmlJavaTypeAdapter(AttributesAdapter.class)
     public Attributes getAssociatedAttribute() {
         return Attributes.getField(associatedAttribute);
     }
@@ -78,7 +79,7 @@ public class Skill implements Serializable{
             experienceToNextLevel=600;
         }
         if(experienceToNextLevel==null) {
-            experienceToNextLevel = statCalculator.getExpToNextLevel(0,1);
+            experienceToNextLevel = StatCalculator.getExpToNextLevel(0,1);
         }
         return experienceToNextLevel;
     }
@@ -99,10 +100,10 @@ public class Skill implements Serializable{
         if(skilltype == SkillType.TIMEBASED) {
             experienceToNextLevel = 600*level;
         } else if(skilltype == SkillType.GOALBASED) {
-            experienceToNextLevel=statCalculator.getExpToNextLevel(0,1);
+            experienceToNextLevel=StatCalculator.getExpToNextLevel(0,1);
             // If the level is greater than 1, we shall iteratively find the appropriate experience to next level
             for(int i = 2; i<level;i++) {
-                this.experienceToNextLevel = statCalculator.getExpToNextLevel(experienceToNextLevel, i);
+                this.experienceToNextLevel = StatCalculator.getExpToNextLevel(experienceToNextLevel, i);
             }
         }
         this.skilltype = skilltype;
@@ -124,7 +125,7 @@ public class Skill implements Serializable{
         this.level++;
         System.out.println(name+" leveled up!");
         if(skilltype.equals(SkillType.GOALBASED)) {
-            this.experienceToNextLevel = statCalculator.getExpToNextLevel(experienceToNextLevel, level);
+            this.experienceToNextLevel = StatCalculator.getExpToNextLevel(experienceToNextLevel, level);
         } else if(skilltype.equals(SkillType.TIMEBASED)){
             this.experienceToNextLevel += 600;
         }

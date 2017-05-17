@@ -5,6 +5,9 @@ package main.java.com.questlife.questlife.items;
  * Created by Gemin on 22.04.2017.
  */
 public class MinorElixir extends AbstractPotions{
+
+    static String identifier = "MIEX";
+
     public MinorElixir() {
         this.name = "Minor Elixir";
         this.price = 100;

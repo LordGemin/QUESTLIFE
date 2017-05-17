@@ -23,20 +23,24 @@ public class WeaponBindAdapter extends XmlAdapter<String, AbstractWeapons> {
             return null;
         }
 
-        AbstractWeapons weapon = new WoodenStick();
+        AbstractWeapons weapon = null;
         String[] attr = v.split(";");
 
         // Set up the reflection API at root directory
         Reflections reflections = new Reflections("main.java");
         // Find all classes that extend on abstract items in any way
-        Set<Class<? extends AbstractItems>> classes = reflections.getSubTypesOf(AbstractItems.class);
+        Set<Class<? extends AbstractWeapons>> classes = reflections.getSubTypesOf(AbstractWeapons.class);
         // Iterate through all extending classes
         for (Object a : classes) {
             try {
                 // We can only take the mostly fully quantified name of a class to create it internally
                 Class rawItem = Class.forName(a.toString().replace("class ", ""));
-                if(rawItem.toString().contains(attr[0])) {
-                    weapon = (AbstractWeapons) rawItem.newInstance();
+                if(rawItem.toString().contains("Weapon")) {
+                    continue;
+                }
+                AbstractWeapons weap = (AbstractWeapons) rawItem.newInstance();
+                if(weap.getName().contains(attr[0])) {
+                    weapon = weap;
                 }
             } catch (Exception e) {
                 e.printStackTrace();

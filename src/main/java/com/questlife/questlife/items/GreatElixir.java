@@ -5,6 +5,9 @@ package main.java.com.questlife.questlife.items;
  * Created by Gemin on 22.04.2017.
  */
 public class GreatElixir extends AbstractPotions{
+
+    static String identifier = "GREX";
+
     public GreatElixir() {
         this.name = "Great Elixir";
         this.price = 200;

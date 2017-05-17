@@ -5,6 +5,9 @@ package main.java.com.questlife.questlife.items;
  * Created by Gemin on 22.04.2017.
  */
 public class MinorPotion extends AbstractPotions{
+
+    static String identifier = "MIPO";
+
     public MinorPotion() {
         this.name = "Minor Potion";
         this.price = 100;

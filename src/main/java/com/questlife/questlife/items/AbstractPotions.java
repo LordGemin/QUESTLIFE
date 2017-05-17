@@ -3,13 +3,15 @@ package main.java.com.questlife.questlife.items;
 import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.util.StatCalculator;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 /**
  *
  * Created by Busch on 22.04.2017.
  */
+@XmlJavaTypeAdapter(PotionsAdapter.class)
 public abstract class AbstractPotions extends AbstractItems {
 
-    StatCalculator statCalculator = new StatCalculator();
     Integer strengthHP;
     Integer strengthMP;
 
@@ -42,4 +44,11 @@ public abstract class AbstractPotions extends AbstractItems {
         return strengthMP;
     }
 
+    public void setStrengthHP(Integer strengthHP) {
+        this.strengthHP = strengthHP;
+    }
+
+    public void setStrengthMP(Integer strengthMP) {
+        this.strengthMP = strengthMP;
+    }
 }
