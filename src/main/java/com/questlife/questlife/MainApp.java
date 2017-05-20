@@ -12,41 +12,27 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import main.java.com.questlife.questlife.View.*;
-import main.java.com.questlife.questlife.goals.GoalWrapper;
 import main.java.com.questlife.questlife.goals.Goals;
-import main.java.com.questlife.questlife.hero.Attributes;
 import main.java.com.questlife.questlife.hero.Hero;
-import main.java.com.questlife.questlife.hero.HeroWrapper;
 import main.java.com.questlife.questlife.items.*;
 import main.java.com.questlife.questlife.quests.Quest;
-import main.java.com.questlife.questlife.quests.QuestListWrapper;
 import main.java.com.questlife.questlife.rewards.Reward;
-import main.java.com.questlife.questlife.rewards.RewardWrapper;
 import main.java.com.questlife.questlife.skills.Skill;
 import main.java.com.questlife.questlife.town.Shop;
-import main.java.com.questlife.questlife.util.AttackType;
 import main.java.com.questlife.questlife.util.GameWrapper;
 import main.java.com.questlife.questlife.util.Generator;
-import main.java.com.questlife.questlife.skills.SkillWrapper;
 import org.reflections.Reflections;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
-import java.nio.channels.WritableByteChannel;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.prefs.Preferences;
@@ -60,11 +46,10 @@ public class MainApp extends Application {
     private static final int TAVERNCOST = 50;
     private long shopCounter = System.currentTimeMillis();
     private Stage primaryStage;
-    private Stage parentStage;
 
     private BorderPane rootLayout;
 
-    private AnchorPane mainLayout;
+    private mainLayoutController mainController;
 
     /**
      * Getter & Setters for various variables
@@ -132,9 +117,10 @@ public class MainApp extends Application {
      */
     private ObservableList<AbstractItems> itemsData = FXCollections.observableArrayList();
 
+    /*
     public ObservableList<AbstractItems> getItemsData() {
         return itemsData;
-    }
+    }*/
 
     private ObservableList<Class> itemsRaw = FXCollections.observableArrayList();
 
@@ -146,10 +132,8 @@ public class MainApp extends Application {
      * Initializes all items using reflections.
      * This is will continue to add all future items.
      *
-     * @return true if initializing via reflection worked.
      */
-    private boolean initializeItems() {
-        boolean flag = false;
+    private void initializeItems() {
         // Set up the reflection API at root directory
         Reflections reflections = new Reflections("main.java");
         // Find all classes that extend on abstract items in any way
@@ -168,18 +152,15 @@ public class MainApp extends Application {
                 item = null;
             }
             if (item instanceof AbstractPotions) {
-                itemsData.add((AbstractPotions) item);
-                flag = true;
+                itemsData.add(item);
                 continue;
             }
             if (item instanceof AbstractWeapons) {
-                itemsData.add((AbstractWeapons) item);
-                flag = true;
+                itemsData.add(item);
                 continue;
             }
             System.out.println("Object was: " + a.toString());
         }
-        return flag;
 
     }
 
@@ -201,7 +182,6 @@ public class MainApp extends Application {
         Generator generator = new Generator();
 
         for(int i=0; i < 20; i++) {
-            AttackType attackType = AttackType.PHYSICAL;
             String enemyName = generator.generateEnemyName();
             enemyData.add(enemyName);
         }
@@ -269,7 +249,7 @@ public class MainApp extends Application {
             // Load main layout from fxml file.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/rootLayout.fxml"));
-            rootLayout = (BorderPane) loader.load();
+            rootLayout = loader.load();
 
             // Show the scene containing the main layout.
             Scene scene = new Scene(rootLayout);
@@ -286,25 +266,6 @@ public class MainApp extends Application {
         } catch(IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private void initMainLayout() {
-        try {
-            // Load main layout from fxml file.
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("view/mainLayout.fxml"));
-            mainLayout = (AnchorPane) loader.load();
-
-            rootLayout.setCenter(mainLayout);
-
-            // Give the controller access to the main app.
-            mainLayoutController controller = loader.getController();
-            controller.setMainApp(this);
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         // Try to load last opened person file.
         File file = getFilePath();
@@ -313,6 +274,29 @@ public class MainApp extends Application {
         }
     }
 
+    private void initMainLayout() {
+        try {
+            // Load main layout from fxml file.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/mainLayout.fxml"));
+            AnchorPane mainLayout = loader.load();
+
+            rootLayout.setCenter(mainLayout);
+
+            // Give the controller access to the main app.
+            mainController = loader.getController();
+            mainController.setMainApp(this);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void updateMainLayout() {
+        mainController.updateLayout();
+    }
 
     /**
      * Returns the person file preference, i.e. the file that was last opened.
@@ -337,7 +321,7 @@ public class MainApp extends Application {
      *
      * @param file the file or null to remove the path
      */
-    public void setFilePath(File file) {
+    private void setFilePath(File file) {
         Preferences prefs = Preferences.userNodeForPackage(MainApp.class);
         if (file != null) {
             prefs.put("filePath", file.getPath());
@@ -357,7 +341,7 @@ public class MainApp extends Application {
             // Load the fxml file and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/goalEditDialog.fxml"));
-            AnchorPane page = (AnchorPane) loader.load();
+            AnchorPane page = loader.load();
 
 
             // Create the dialog Stage.
@@ -393,7 +377,7 @@ public class MainApp extends Application {
             // Load the fxml file and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/skillEditDialog.fxml"));
-            AnchorPane page = (AnchorPane) loader.load();
+            AnchorPane page = loader.load();
 
             // Create the dialog Stage.
             Stage dialogStage = new Stage();
@@ -426,7 +410,7 @@ public class MainApp extends Application {
             // Load the fxml file and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/rewardEditDialog.fxml"));
-            AnchorPane page = (AnchorPane) loader.load();
+            AnchorPane page = loader.load();
 
             // Create the dialog Stage.
             Stage dialogStage = new Stage();
@@ -453,12 +437,12 @@ public class MainApp extends Application {
         }
     }
 
-    public boolean showQuestDetailDialog(Quest tempQuest) {
+    public void showQuestDetailDialog(Quest tempQuest) {
         try {
             // Load the fxml file and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/questDetailDialog.fxml"));
-            AnchorPane page = (AnchorPane) loader.load();
+            AnchorPane page = loader.load();
 
             // Create the dialog Stage.
             Stage dialogStage = new Stage();
@@ -478,19 +462,17 @@ public class MainApp extends Application {
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();
 
-            return true;
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
     }
 
-    public boolean showPotionDetailDialog(AbstractItems item) {
+    public void showPotionDetailDialog(AbstractItems item) {
         try {
             // Load the fxml file and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/potionDetailDialog.fxml"));
-            AnchorPane page = (AnchorPane) loader.load();
+            AnchorPane page = loader.load();
 
             // Create the dialog Stage.
             Stage dialogStage = new Stage();
@@ -510,19 +492,17 @@ public class MainApp extends Application {
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();
 
-            return true;
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
     }
 
-    public boolean showWeaponDetailDialog(AbstractItems item) {
+    public void showWeaponDetailDialog(AbstractItems item) {
         try {
             // Load the fxml file and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/weaponDetailDialog.fxml"));
-            AnchorPane page = (AnchorPane) loader.load();
+            AnchorPane page = loader.load();
 
             // Create the dialog Stage.
             Stage dialogStage = new Stage();
@@ -542,19 +522,17 @@ public class MainApp extends Application {
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();
 
-            return true;
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
     }
 
-    public boolean showTownView() {
+    public void showTownView() {
         try {
             // Load the fxml file and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/townView.fxml"));
-            AnchorPane page = (AnchorPane) loader.load();
+            AnchorPane page = loader.load();
 
             // Create the dialog Stage.
             Stage dialogStage = new Stage();
@@ -574,19 +552,18 @@ public class MainApp extends Application {
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();
 
-            return true;
+            updateMainLayout();
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
     }
 
-    public boolean showShopDialog() {
+    public void showShopDialog() {
         try {
             // Load the fxml file and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/shopDialog.fxml"));
-            AnchorPane page = (AnchorPane) loader.load();
+            AnchorPane page = loader.load();
 
             // Create the dialog Stage.
             Stage dialogStage = new Stage();
@@ -606,19 +583,18 @@ public class MainApp extends Application {
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();
 
-            return true;
+            updateMainLayout();
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
     }
 
-    public boolean showTavernDialog() {
+    public void showTavernDialog() {
         try {
             // Load the fxml file and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/tavernDialog.fxml"));
-            AnchorPane page = (AnchorPane) loader.load();
+            AnchorPane page = loader.load();
 
             // Create the dialog Stage.
             Stage dialogStage = new Stage();
@@ -641,19 +617,18 @@ public class MainApp extends Application {
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();
 
-            return true;
+            updateMainLayout();
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
     }
 
-    public boolean showTempleDialog() {
+    public void showTempleDialog() {
         try {
             // Load the fxml file and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/templeDialog.fxml"));
-            AnchorPane page = (AnchorPane) loader.load();
+            AnchorPane page = loader.load();
 
             // Create the dialog Stage.
             Stage dialogStage = new Stage();
@@ -676,20 +651,19 @@ public class MainApp extends Application {
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();
 
-            return true;
+            updateMainLayout();
         }
         catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
     }
 
-    public boolean showMarketBoardView() {
+    public void showMarketBoardView() {
         try {
             // Load the fxml file and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/marketboardView.fxml"));
-            AnchorPane page = (AnchorPane) loader.load();
+            AnchorPane page = loader.load();
 
             // Create the dialog Stage.
             Stage dialogStage = new Stage();
@@ -712,11 +686,10 @@ public class MainApp extends Application {
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();
 
-            return true;
+            updateMainLayout();
         }
         catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
     }
 
@@ -725,7 +698,7 @@ public class MainApp extends Application {
             // Load the fxml file and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/addTimeDialog.fxml"));
-            AnchorPane page = (AnchorPane) loader.load();
+            AnchorPane page = loader.load();
 
             // Create the dialog Stage.
             Stage dialogStage = new Stage();
@@ -768,7 +741,7 @@ public class MainApp extends Application {
             // Load the fxml file and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/defineNewGoalDeadlineDialog.fxml"));
-            AnchorPane page = (AnchorPane) loader.load();
+            AnchorPane page = loader.load();
 
             // Create the dialog Stage.
             Stage dialogStage = new Stage();
@@ -804,7 +777,7 @@ public class MainApp extends Application {
      * Loads person data from the specified file. The current person data will
      * be replaced.
      *
-     * @param file
+     * @param file file to be loaded from
      */
     public void loadDataFromFile(File file) {
         try {
@@ -832,6 +805,7 @@ public class MainApp extends Application {
                 heroData.addAll(gameWrapper.getHeroes());
             // Give the poor hero/ine their inventory & quests
             for (Hero h:heroData) {
+                h.setWeapon(h.getWeapon());
                 h.setInventory(inventory);
                 h.setQuestList(questData);
             }
@@ -985,7 +959,7 @@ public class MainApp extends Application {
     /**
      * Saves the current person data to the specified file.
      *
-     * @param file
+     * @param file file to be safed to
      */
     public void saveDataToFile(File file) {
         try {

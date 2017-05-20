@@ -42,31 +42,30 @@ public final class StatCalculator {
     }
 
     public static int calculateHeroesAttack(Hero hero) {
-        int attackValue;
+        int attackValue = 10;
         //If hero has no weapon equipped, give him some weapon;
         AbstractWeapons heroWeapon = (hero.getWeapon() != null) ? hero.getWeapon() : new Weapon("Bare knuckle", 4,4,AttackType.PHYSICAL);
 
         switch (heroWeapon.getAttackType()) {
             case PHYSICAL:
-                attackValue = hero.getStrength().getLevel();
+                attackValue += hero.getStrength().getLevel();
                 attackValue += heroWeapon.getPhysicalAttack();
                 break;
             case MAGICAL:
                 // It is suspected that usually, the Mind attribute will be higher, resulting in higher magical damage
-                attackValue = hero.getMind().getLevel();
+                attackValue += hero.getMind().getLevel();
                 attackValue += heroWeapon.getMagicalAttack();
                 break;
             case BOTH:
                 if(hero.getMana()<=0) {
-                    attackValue = hero.getStrength().getLevel();
+                    attackValue += hero.getStrength().getLevel();
                     attackValue += heroWeapon.getPhysicalAttack();
                 } else {
-                    attackValue = hero.getMind().getLevel();
+                    attackValue += hero.getMind().getLevel();
                     attackValue += heroWeapon.getMagicalAttack();
                 }
                 break;
             default:
-                attackValue = 10;
                 break;
         }
 

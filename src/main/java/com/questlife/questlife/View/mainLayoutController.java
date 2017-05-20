@@ -2,9 +2,9 @@ package main.java.com.questlife.questlife.View;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.FileChooser;
 import main.java.com.questlife.questlife.MainApp;
 import main.java.com.questlife.questlife.goals.Goals;
 import main.java.com.questlife.questlife.hero.Attributes;
@@ -19,7 +19,6 @@ import main.java.com.questlife.questlife.town.Field;
 import main.java.com.questlife.questlife.util.RewardType;
 import main.java.com.questlife.questlife.util.SkillType;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -30,6 +29,7 @@ public class mainLayoutController {
 
     private Hero hero;
 
+    private Task task = new Field();
 
     /**
      * All the labels to be seen. Attributes, Level, Name
@@ -37,6 +37,8 @@ public class mainLayoutController {
      */
     @FXML
     private Label heroName;
+    @FXML
+    private Label health;
     @FXML
     private Label level;
     @FXML
@@ -234,6 +236,8 @@ public class mainLayoutController {
         rewardTable.setItems(mainApp.getRewardData());
         inventoryTable.setItems(mainApp.getInventory());
         skillsTable.setItems(mainApp.getSkillData());
+
+        health.setText(hero.getHealth()+"");
 
         updateLabels();
     }
@@ -583,106 +587,22 @@ public class mainLayoutController {
         System.out.println("Hero health: "+hero.getHealth());
         if(hero.getHealth() > 0) {
             System.out.println("Sending "+hero.getName()+" to the field.");
-            Field field = new Field(hero, mainApp.getEnemyData());
-            field.runBattles();
+            task = new Field(hero, mainApp.getEnemyData());
+            health.textProperty().bind(task.messageProperty());
+            new Thread(task).start();
         } else {
             System.out.println(hero.getName()+" should rest some more.");
         }
-        updateLabels();
-    }
-
-    /**
-     * Called when the user selects town from menu "views"
-     */
-    @FXML
-    private void handleShowTown() {
-        mainApp.showTownView();
-        updateLabels();
-    }
-
-
-    /**
-     * Opens a FileChooser to let the user select an address book to load.
-     */
-    @FXML
-    private void handleOpen() {
-        FileChooser fileChooser = new FileChooser();
-
-        // Set extension filter
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
-                "XML files (*.xml)", "*.xml");
-        fileChooser.getExtensionFilters().add(extFilter);
-
-        // Show open file dialog
-        File file = fileChooser.showOpenDialog(mainApp.getPrimaryStage());
-
-        if (file != null) {
-            mainApp.loadDataFromFile(file);
-        }
-    }
-
-    /**
-     * Saves the file to the person file that is currently open. If there is no
-     * open file, the "save as" dialog is shown.
-     */
-    @FXML
-    private void handleSave() {
-        File personFile = mainApp.getFilePath();
-        if (personFile != null) {
-            mainApp.saveDataToFile(personFile);
-        } else {
-            handleSaveAs();
-        }
-    }
-
-    /**
-     * Opens a FileChooser to let the user select a file to save to.
-     */
-    @FXML
-    private void handleSaveAs() {
-        FileChooser fileChooser = new FileChooser();
-
-        // Set extension filter
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
-                "XML files (*.xml)", "*.xml");
-        fileChooser.getExtensionFilters().add(extFilter);
-
-        // Show save file dialog
-        File file = fileChooser.showSaveDialog(mainApp.getPrimaryStage());
-
-        if (file != null) {
-            // Make sure it has the correct extension
-            if (!file.getPath().endsWith(".xml")) {
-                file = new File(file.getPath() + ".xml");
-            }
-            mainApp.saveDataToFile(file);
-        }
-    }
-
-
-    /**
-     * Called when the user clicks Exit.
-     */
-    @FXML
-    private void handleExit() {
-        System.exit(0);
-    }
-
-    /**
-     * Opens an about dialog.
-     */
-    @FXML
-    private void handleAbout() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Questlife");
-        alert.setHeaderText("About");
-        alert.setContentText("Author: Robert Buschmann\n");
-
-        alert.showAndWait();
     }
 
     private void updateLabels() {
         hero = mainApp.getHeroData().get(0);
+
+
+        if(health.textProperty().isBound())
+            health.textProperty().unbind();
+
+        health.setText(hero.getHealth()+"/"+hero.getMaxHealth());
 
         heroName.setText(hero.getName());
         level.setText(""+hero.getLevel());
@@ -699,4 +619,7 @@ public class mainLayoutController {
         mainApp.getQuestData().removeIf(e -> (e.getMobsToHunt() <= 0));
     }
 
+    public void updateLayout() {
+        updateLabels();
+    }
 }

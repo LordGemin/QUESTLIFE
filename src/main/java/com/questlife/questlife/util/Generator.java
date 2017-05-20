@@ -13,10 +13,15 @@ public class Generator {
     private Random randomGenerator = new Random();
 
     public Generator() {
+        randomGenerator.setSeed(System.currentTimeMillis());
     }
 
     public int generateNumber() {
-        return randomGenerator.nextInt(6999);
+        return randomGenerator.nextInt(7000);
+    }
+
+    public int nextInt(int bound) {
+        return randomGenerator.nextInt(bound);
     }
 
     public String generateWeaponName() {

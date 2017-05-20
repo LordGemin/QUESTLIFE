@@ -14,23 +14,43 @@ import java.util.List;
  *
  * Created by Gemin on 11.04.2017.
  */
-public class Battle extends AbstractBattle {
+public class Battle {
 
 
-    public Battle(Hero participatingHero) {
-        super(participatingHero);
-    }
-
-    public Battle(List<Enemy> participatingEnemies) {
-        super(participatingEnemies);
-    }
+    private Hero participatingHero;
+    private List<Enemy> participatingEnemies = new ArrayList<>();
+    private int goldGained;
 
     public Battle(Hero participatingHero, List<Enemy> participatingEnemies) {
-        super(participatingHero, participatingEnemies);
+        this.participatingHero = participatingHero;
+        this.participatingEnemies = participatingEnemies;
     }
 
 
-    @Override
+    Hero getParticipatingHero() {
+        return participatingHero;
+    }
+
+    public void setParticipatingHero(Hero participatingHero) {
+        this.participatingHero = participatingHero;
+    }
+
+    List<Enemy> getParticipatingEnemies() {
+        return participatingEnemies;
+    }
+
+    public Enemy getParticipatingEnemyAt (int position) {
+        return participatingEnemies.get(position);
+    }
+
+    public void setParticipatingEnemies(List<Enemy> participatingEnemies) {
+        this.participatingEnemies = participatingEnemies;
+    }
+
+    public void addEnemy(Enemy enemy) {
+        participatingEnemies.add(enemy);
+    }
+
     public boolean runBattle() {
         while(getParticipatingHero().getHealth() > 0 && getParticipatingEnemies().size() > 0) {
             runTurn();
@@ -48,8 +68,7 @@ public class Battle extends AbstractBattle {
         // return value is answer to the question: is the hero still alive?
     }
 
-    @Override
-    public void runTurn() {
+    public int runTurn() {
         Hero hero = getParticipatingHero();
         AttackType heroWeaponAttackType = AttackType.PHYSICAL;
         List<Quest> quests = new ArrayList<>();
@@ -70,7 +89,7 @@ public class Battle extends AbstractBattle {
 
         if(enemies.size() == 0) {
             System.out.println("No enemies left!");
-            return;
+            return hero.getHealth();
         }
 
         // Always try to survive at least the first dealDamage, approximate total damage to decide if potions should be taken
@@ -99,9 +118,11 @@ public class Battle extends AbstractBattle {
         // Hero will drink at least something appropriate when they feel like they need to prepare.
         if(hero.getHealth() < criticalHealth && hasHealthPotions) {
             System.out.println(hero.getName()+" taking some potions to prepare.");
+            pause(200);
             hero.takePotion();
         } else if (hero.getMana() < criticalMana && hasManaPotions) {
             System.out.println(hero.getName()+" taking some potions to prepare.");
+            pause(200);
             hero.takePotion();
         } else {
             System.out.println(hero.getName()+" attacks the " + getParticipatingEnemyAt(target).getName()+".");
@@ -109,6 +130,7 @@ public class Battle extends AbstractBattle {
             // Damage calculation is here.
             int damage = hero.dealDamage();
             getParticipatingEnemyAt(target).takeDamage(damage, heroWeaponAttackType);
+            pause(200);
 
             System.out.println(getParticipatingEnemyAt(target).getName()+" now has "+getParticipatingEnemyAt(target).getHealth()+" health left.");
         }
@@ -133,17 +155,30 @@ public class Battle extends AbstractBattle {
             System.out.println(hero.getName() + " gains "+ getParticipatingEnemyAt(target).getExperieceReward()+ " Experience!");
             goldGained += getParticipatingEnemyAt(target).getGoldReward();
             getParticipatingEnemies().remove(getParticipatingEnemyAt(target));
+            pause(200);
         }
 
         for (Enemy enemy:enemies) {
             int damage = enemy.getAttackPower();
             hero.takeDamage(damage, enemy.getAttackType());
             System.out.println(enemy.getName() + " strikes "+ hero.getName()+".");
+            pause(100);
             if(hero.getHealth() <= 0) {
+                hero.setHealth(0);
                 System.out.println(hero.getName()+" succumbed to the pain.\nHe was brought back to the town to recover from his wounds.");
                 break;
             }
             System.out.println(hero.getName()+ " now has "+hero.getHealth()+" health left.");
+            pause(100);
+        }
+        return hero.getHealth();
+    }
+
+    private void pause(int pause) {
+        try {
+            Thread.sleep(pause);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

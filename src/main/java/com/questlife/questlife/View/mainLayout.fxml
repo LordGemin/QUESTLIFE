@@ -61,7 +61,7 @@
             <Font size="25.0" />
          </font>
       </Label>
-      <ProgressBar fx:id="experienceToNextLevel" layoutX="192.0" layoutY="48.0" prefWidth="200.0" progress="0.73" AnchorPane.topAnchor="15.0" />
+      <ProgressBar fx:id="experienceToNextLevel" layoutX="186.0" layoutY="26.0" prefWidth="200.0" progress="0.73" AnchorPane.topAnchor="26.0" />
       <TabPane layoutY="209.0" prefHeight="392.0" prefWidth="400.0" styleClass="column-header" stylesheets="@DarkTheme.css" tabClosingPolicy="UNAVAILABLE" AnchorPane.topAnchor="195.0">
         <tabs>
           <Tab text="Goals">
@@ -199,5 +199,6 @@
       </TabPane>
       <ImageView fitHeight="100.0" fitWidth="99.0" layoutX="6.0" layoutY="106.0" pickOnBounds="true" preserveRatio="true" />
       <Button layoutX="8.0" layoutY="140.0" mnemonicParsing="false" onAction="#sendHeroToField" text="Send out" />
+      <Label fx:id="health" layoutX="20.0" layoutY="54.0" styleClass="label-bright" text="health" />
    </children>
 </AnchorPane>

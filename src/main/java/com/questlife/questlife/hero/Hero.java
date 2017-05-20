@@ -299,11 +299,13 @@ public class Hero implements Serializable {
         AbstractWeapons oldWeapon = null;
         if (inventory.contains(toEquip))
             inventory.remove(toEquip);
+        else
+            return null;
         if (this.weapon != null) {
             oldWeapon = this.weapon;
-            inventory.add(this.weapon);
+            inventory.add(oldWeapon);
         }
-        this.setWeapon(toEquip);
+        this.weapon = toEquip;
 
         return oldWeapon;
     }
@@ -429,16 +431,6 @@ public class Hero implements Serializable {
                 this.mana -= 10;
                 damageDealt = getAttack();
             }
-        }
-
-
-        int observation = getObservation().getLevel();
-        int criticalCheck =  new Generator().generateNumber()%(10+observation);
-
-        // Critical Attacks based on observation stat. Deals double damage
-        if(observation >= criticalCheck*5) {
-            damageDealt *= 2;
-            System.out.println(name+" strikes a critical blow.\n");
         }
 
         if(deleteWeapon) {

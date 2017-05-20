@@ -1,8 +1,5 @@
 package main.java.com.questlife.questlife.enemy;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import main.java.com.questlife.questlife.hero.Hero;
 import main.java.com.questlife.questlife.util.AttackType;
 import main.java.com.questlife.questlife.util.Generator;
 import main.java.com.questlife.questlife.util.StatCalculator;
@@ -15,7 +12,7 @@ import java.io.Serializable;
  */
 public class Enemy implements Serializable {
 
-    private StringProperty name = new SimpleStringProperty();
+    private String name;
     private Integer health;
     private Integer maxHealth;
     private Integer attackPower;
@@ -29,13 +26,13 @@ public class Enemy implements Serializable {
     }
 
     public Enemy(String name, int levelOfHero) {
-        this.name.set(name);
+        this.name = name;
         this.level = levelOfHero;
         createEnemy(levelOfHero);
     }
 
     public Enemy(String name,int health, int attackPower, int defense, int resistance, AttackType attackType) {
-        this.name.set(name);
+        this.name = name;
         this.health = health;
         this.maxHealth = health;
         this.attackPower = attackPower;
@@ -45,76 +42,53 @@ public class Enemy implements Serializable {
     }
 
     private void createEnemy(int level) {
+
         Generator generator = new Generator();
+
         this.level = level;
 
-        this.health = 10+generator.generateNumber()%level*20;
+        // Fluctuate enemy health by 10 percent
+        this.health = Math.round(level*10*(1 + (generator.generateNumber()%10)/100f));
         this.maxHealth = health;
-        if(name.toString().contains("Shiny")) {
-            this.attackPower = 4 + generator.generateNumber() % level * 15;
-        } else {
-            this.attackPower = 2 + generator.generateNumber() % level * 10;
+
+        // Having some fun with the tropes. There can be wounded enemies that have less than their max health!
+        if(generator.nextInt(100)<5) {
+            name = "Wounded "+name;
+            health = Math.round(health*0.8f);
         }
-        this.defense = 1+generator.generateNumber() % level * 8;
-        this.resistance = 1+generator.generateNumber() % level * 6;
+
+        if(name.contains("Shiny")) {
+            this.attackPower = level*3 + generator.generateNumber() % level * 5;
+        } else {
+            this.attackPower = 2 + generator.generateNumber() % level * 5;
+        }
+        this.defense = 4 + generator.generateNumber() % level * 3;
+        this.resistance = 2 + generator.generateNumber() % level * 2;
 
         attackType = AttackType.PHYSICAL;
-        if(name.toString().contains("Blue")) {
+        if(name.contains("Blue")) {
             attackType = AttackType.MAGICAL;
+            // Magical enemies have inverted calculations for defense and resistance
+            this.resistance = 4 + generator.generateNumber() % level * 3;
+            this.defense = 2 + generator.generateNumber() % level * 2;
         }
 
-        if(attackType == AttackType.PHYSICAL) {
-            this.defense = 1+generator.generateNumber() % level * 10;
-        } else {
-            // If attackType isn't physical, it is magical
-            // Magic enemies are rare, so they should be more challenging
-            this.attackPower = 2+generator.generateNumber()%level*12;
-            this.resistance = 1+generator.generateNumber() % level * 12;
-        }
     }
 
     public String getName() {
-        return name.get();
-    }
-
-    public StringProperty nameProperty() {
         return name;
     }
 
     public void setName(String name) {
-        this.name.set(name);
+        this.name = name;
     }
 
     public int getAttackPower() {
         return attackPower;
     }
 
-    public void setAttackPower(int attackPower) {
-        this.attackPower = attackPower;
-    }
-
-    public int getDefense() {
-        return defense;
-    }
-
-    public void setDefense(int defense) {
-        this.defense = defense;
-    }
-
-    public int getResistance() {
-        return resistance;
-    }
-
-    public void setResistance(int resistance) {
-        this.resistance = resistance;
-    }
-
     public AttackType getAttackType() {
         return attackType;
-    }
-
-    public void setAttackType(AttackType attackType) {
-        this.attackType = attackType;
     }
 
     public int getHealth() {
@@ -136,9 +110,9 @@ public class Enemy implements Serializable {
     public void takeDamage(int damageDealt, AttackType attackType) {
         int damageTaken = 0;
         if (attackType == AttackType.PHYSICAL)
-            damageTaken = damageDealt-getDefense();
+            damageTaken = damageDealt-defense;
         if (attackType == AttackType.MAGICAL)
-            damageTaken = damageDealt-getResistance();
+            damageTaken = damageDealt-resistance;
 
         if(damageTaken <= 0) {
             damageTaken = 1;
