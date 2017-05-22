@@ -1,10 +1,7 @@
 package main.java.com.questlife.questlife.skills;
 
 import main.java.com.questlife.questlife.hero.Attributes;
-import main.java.com.questlife.questlife.util.AttributesAdapter;
-import main.java.com.questlife.questlife.util.SkillType;
-import main.java.com.questlife.questlife.util.SkillTypeAdapter;
-import main.java.com.questlife.questlife.util.StatCalculator;
+import main.java.com.questlife.questlife.util.*;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
@@ -123,7 +120,7 @@ public class Skill implements Serializable{
 
     private void levelUp() {
         this.level++;
-        System.out.println(name+" leveled up!");
+        Logger.log(name+" leveled up!");
         if(skilltype.equals(SkillType.GOALBASED)) {
             this.experienceToNextLevel = StatCalculator.getExpToNextLevel(experienceToNextLevel, level);
         } else if(skilltype.equals(SkillType.TIMEBASED)){

@@ -119,5 +119,6 @@ public class TempleDialogController {
     @FXML
     private void handleCancel() {
         dialogStage.close();
+        mainApp.showTownView();
     }
 }

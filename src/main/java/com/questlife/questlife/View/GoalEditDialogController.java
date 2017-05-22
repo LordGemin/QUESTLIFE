@@ -11,6 +11,8 @@ import main.java.com.questlife.questlife.goals.Goals;
 import main.java.com.questlife.questlife.skills.Skill;
 import main.java.com.questlife.questlife.util.SkillType;
 
+import java.time.LocalDateTime;
+
 /**
  *
  * Created by Gemin on 28.04.2017.
@@ -148,8 +150,9 @@ public class GoalEditDialogController {
         if (isInputValid()) {
             if(goal.getRecurring()) {
                 goal.completeGoal(mainApp.showDefineNewDeadlineDialog(goal));
+            } else {
+                goal.completeGoal(null);
             }
-            goal.completeGoal(null);
 
             okClicked = true;
             dialogStage.close();

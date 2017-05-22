@@ -21,6 +21,7 @@ import java.util.List;
 @XmlRootElement(name = "questlife")
 public class GameWrapper {
 
+    private Statistics statistics;
     private List<Quest> quests;
     private List<Goals> goals;
     private List<Skill> skills;
@@ -28,6 +29,15 @@ public class GameWrapper {
     private List<Reward> rewards;
     private List<AbstractWeapons> inventoryWeapons;
     private List<AbstractPotions> inventoryPotions;
+
+    @XmlElement(name="Stats")
+    public Statistics getStatistics() {
+        return statistics;
+    }
+
+    public void setStatistics(Statistics statistics) {
+        this.statistics = statistics;
+    }
 
     @XmlElement(name="Quest")
     public List<Quest> getQuests() {

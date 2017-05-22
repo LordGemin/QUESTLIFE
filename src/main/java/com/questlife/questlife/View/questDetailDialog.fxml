@@ -30,7 +30,7 @@
             <Label fx:id="questName" styleClass="label-bright" text="Label" GridPane.columnIndex="1" />
             <Label fx:id="enemyName" styleClass="label-bright" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <Label fx:id="questEnemyCount" styleClass="label-bright" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <Text fx:id="questDescription" fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <Text fx:id="questDescription" fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <font>
                   <Font name="Segoe UI" size="12.0" />
                </font>

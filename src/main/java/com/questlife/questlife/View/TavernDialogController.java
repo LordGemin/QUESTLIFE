@@ -68,6 +68,7 @@ public class TavernDialogController {
     @FXML
     private void handleCancel() {
         dialogStage.close();
+        mainApp.showTownView();
     }
 
 }

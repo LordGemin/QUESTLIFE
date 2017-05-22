@@ -54,7 +54,6 @@ public class DefineNewGoalDeadlineDialogController {
     private void handleOk() {
         if(inputOk()) {
             ldt = deadliner.getValue().atTime(Integer.parseInt(hours.getText()), Integer.parseInt(minutes.getText()));
-            goal.setDeadline(ldt);
         }
     }
 
@@ -107,6 +106,7 @@ public class DefineNewGoalDeadlineDialogController {
      */
     @FXML
     private void handleCancel() {
+        ldt = null;
         dialogStage.close();
     }
 }

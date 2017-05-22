@@ -5,6 +5,7 @@ import main.java.com.questlife.questlife.player.Inventory;
 import main.java.com.questlife.questlife.quests.Quest;
 import main.java.com.questlife.questlife.util.*;
 
+import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
@@ -16,6 +17,17 @@ import java.util.List;
  * Created by Gemin on 10.04.2017.
  */
 public class Hero implements Serializable {
+
+    private Statistics statistics;
+
+    @XmlIDREF
+    public Statistics getStatistics() {
+        return statistics;
+    }
+
+    public void setStatistics(Statistics statistics) {
+        this.statistics = statistics;
+    }
 
     private String name;
     private Integer health = 0;
@@ -32,7 +44,6 @@ public class Hero implements Serializable {
     private List<Quest> questList = new ArrayList<>();
     @XmlTransient
     private List<AbstractItems> inventory = new ArrayList<>();
-
 
     public Hero() {
 
@@ -281,6 +292,7 @@ public class Hero implements Serializable {
         gainExperience(quest.getRewardExp());
         questList.remove(quest);
         quest.setInactive();
+        statistics.countQuest();
     }
 
     public int getDefense(){
@@ -314,23 +326,23 @@ public class Hero implements Serializable {
         this.level++;
         this.experienceToLastLevel = experienceToNextLevel;
         this.experienceToNextLevel = StatCalculator.getExpToNextLevel(level);
-        //TODO: Rethink this formula
     }
 
     public void gainExperience(int experienceGained) {
         experience += experienceGained;
         while (this.experience >= this.experienceToNextLevel) {
             levelUp();
-            //TODO: Message to Player. Congrats or something
         }
+        statistics.countExperience(experienceGained);
     }
 
     public void gainGold(int goldGained) {
         try {
-            this.gold = gold + goldGained;
+            this.gold += goldGained;
         } catch (NullPointerException e) {
             this.gold = goldGained;
         }
+        statistics.countGold(goldGained);
     }
 
     public int takePotion() {

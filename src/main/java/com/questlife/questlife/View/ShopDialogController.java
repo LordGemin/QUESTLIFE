@@ -206,5 +206,6 @@ public class ShopDialogController {
     @FXML
     private void handleLeave() {
         dialogStage.close();
+        mainApp.showTownView();
     }
 }

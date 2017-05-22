@@ -5,7 +5,6 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.BorderPane?>
 
-
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" styleClass="background" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.java.com.questlife.questlife.View.RootLayoutController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
@@ -21,15 +20,16 @@
           <Menu mnemonicParsing="false" text="Views">
             <items>
               <MenuItem mnemonicParsing="false" text="Main Overview" />
-                  <Menu mnemonicParsing="false" onAction="#handleShowTown" text="Town">
+                  <Menu fx:id="townMenu" mnemonicParsing="false" onAction="#handleShowTown" onMenuValidation="#handleTownHover" text="Town">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#handleShowShops" text="Shop" />
-                      <MenuItem mnemonicParsing="false" onAction="#handleShowTavern" text="Tavern" />
-                        <MenuItem mnemonicParsing="false" onAction="#handleShowTemple" text="Temple" />
-                        <MenuItem mnemonicParsing="false" onAction="#handleShowMarket" text="Marketboard" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleShowShops" onMenuValidation="#handleNotTownHover" text="Shop" />
+                      <MenuItem mnemonicParsing="false" onAction="#handleShowTavern" onMenuValidation="#handleNotTownHover" text="Tavern" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleShowTemple" onMenuValidation="#handleNotTownHover" text="Temple" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleShowMarket" onMenuValidation="#handleNotTownHover" text="Marketboard" />
                     </items>
                   </Menu>
-                  <MenuItem mnemonicParsing="false" text="Statistics" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleShowStatistics" text="Statistics" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleShowLog" text="Log" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">

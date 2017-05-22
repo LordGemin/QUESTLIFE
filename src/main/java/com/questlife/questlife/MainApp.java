@@ -3,12 +3,14 @@ package main.java.com.questlife.questlife;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import main.java.com.questlife.questlife.View.*;
@@ -21,6 +23,7 @@ import main.java.com.questlife.questlife.skills.Skill;
 import main.java.com.questlife.questlife.town.Shop;
 import main.java.com.questlife.questlife.util.GameWrapper;
 import main.java.com.questlife.questlife.util.Generator;
+import main.java.com.questlife.questlife.util.Statistics;
 import org.reflections.Reflections;
 
 import javax.xml.bind.JAXBContext;
@@ -43,19 +46,59 @@ import java.util.prefs.Preferences;
  */
 public class MainApp extends Application {
 
-    private static final int TAVERNCOST = 50;
+    private static final String PREFERRED_PATH = "src/main/resources/questlife_save.xml";
+
+    private static final int TAVERN_COST = 50;
     private long shopCounter = System.currentTimeMillis();
     private Stage primaryStage;
+    private MainApp mainApp = this;
 
     private BorderPane rootLayout;
 
     private mainLayoutController mainController;
 
+    public boolean isRunning() {
+        return primaryStage.isShowing();
+    }
+
+    public Statistics getStatistics() {
+        return statistics;
+    }
+
+    /**
+     * Class to regularly save game data.
+     *
+     */
+    class gameLoop extends Task {
+        @Override
+        protected Object call() throws Exception {
+            int ctr = 0;
+            final int SLEEP = 3000;
+            while(mainApp.isRunning()) {
+                try {
+                    Thread.sleep(SLEEP);
+                    ctr += SLEEP;
+                    // mainController.updateLayout();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if(!mainApp.isRunning()) {
+                    return null;
+                }
+                if(ctr >= 300000) {
+                    ctr = 0;
+                    mainApp.saveDataToFile(mainApp.getFilePath());
+                }
+            }
+            return null;
+        }
+    }
+
     /**
      * Getter & Setters for various variables
      */
     public static int getTAVERNCOST() {
-        return TAVERNCOST;
+        return TAVERN_COST;
     }
 
 
@@ -176,7 +219,6 @@ public class MainApp extends Application {
     /**
      * Creates Enemies for the game to use.
      *
-     * TODO: Have abstract enemy main class and specific enemies!
      */
     private void initializeEnemies() {
         Generator generator = new Generator();
@@ -207,6 +249,11 @@ public class MainApp extends Application {
     }
 
     /**
+     * Statistics to check progress
+     */
+    private Statistics statistics = new Statistics();
+
+    /**
      * Constructor
      */
     public MainApp() {
@@ -214,6 +261,7 @@ public class MainApp extends Application {
         initializeEnemies();
 
         heroData.add(new Hero("Bolderig"));
+        heroData.get(0).setStatistics(statistics);
         heroData.get(0).setCharisma(1);
         heroData.get(0).setConstitution(1);
         heroData.get(0).setGold(5000);
@@ -241,6 +289,9 @@ public class MainApp extends Application {
 
         initRoot();
         initMainLayout();
+
+        // Implement some simple gameLoop to keep everything updated
+        new Thread(new gameLoop()).start();
 
     }
 
@@ -271,6 +322,45 @@ public class MainApp extends Application {
         File file = getFilePath();
         if (file != null) {
             loadDataFromFile(file);
+        } else {
+            // If there is no last file, force user to pick new file
+            newSaveFile();
+        }
+    }
+
+    private void newSaveFile() {
+        boolean created = false;
+        File file = new File(PREFERRED_PATH);
+
+        if(!file.exists()) {
+            try {
+                created =  file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        FileChooser fileChooser = new FileChooser();
+
+        // Set extension filter
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
+                "XML files (*.xml)", "*.xml");
+        fileChooser.getExtensionFilters().add(extFilter);
+        if(created) {
+            fileChooser.setInitialDirectory(file.getParentFile().getAbsoluteFile());
+            fileChooser.setInitialFileName(file.getName());
+        } else {
+            fileChooser.setInitialFileName(file.getName());
+        }
+        // Show save file dialog
+        File newFile = fileChooser.showSaveDialog(primaryStage);
+
+        if (newFile != null) {
+            // Make sure it has the correct extension
+            if (!newFile.getPath().endsWith(".xml")) {
+                newFile = new File(newFile.getPath() + ".xml");
+            }
+            saveDataToFile(newFile);
         }
     }
 
@@ -693,6 +783,42 @@ public class MainApp extends Application {
         }
     }
 
+
+    public void showStatisticsDialog() {
+        try {
+            // Load the fxml file and create a new stage for the popup dialog.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/statisticsView.fxml"));
+            AnchorPane page = loader.load();
+
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Statistics");
+            dialogStage.getIcons().add(new Image("file:resources/images/Address_Book.png"));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            // Disable resizing of the window
+            // TODO: Enable by smart design
+            dialogStage.setResizable(false);
+
+            // Set the goal into the controller.
+            StatisticsViewController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setMainApp(this);
+
+            // Show the dialog and wait until the user closes it
+            dialogStage.showAndWait();
+
+            updateMainLayout();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public Skill showAddTimeDialog(Skill skill) {
         try {
             // Load the fxml file and create a new stage for the popup dialog.
@@ -774,6 +900,38 @@ public class MainApp extends Application {
     }
 
     /**
+     * Called when user clicks Log in views in root layout
+     */
+    public void showLogView() {
+        try {
+            // Load the fxml file and create a new stage for the popup dialog.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/logView.fxml"));
+            AnchorPane page = loader.load();
+
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Logs");
+            dialogStage.getIcons().add(new Image("file:resources/images/Address_Book.png"));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            // Disable resizing of the window
+            // TODO: Enable by smart design
+            dialogStage.setResizable(false);
+
+            // Show the dialog and wait until the user closes it
+            dialogStage.showAndWait();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
      * Loads person data from the specified file. The current person data will
      * be replaced.
      *
@@ -781,11 +939,19 @@ public class MainApp extends Application {
      */
     public void loadDataFromFile(File file) {
         try {
+            if (!file.exists()) {
+                newSaveFile();
+                return;
+            }
             JAXBContext gameContext = JAXBContext.newInstance(GameWrapper.class);
             Unmarshaller umGame = gameContext.createUnmarshaller();
 
             // Reading XML from the file and unmarshalling.
             GameWrapper gameWrapper = (GameWrapper) umGame.unmarshal(file);
+
+            // Load stats
+            if(gameWrapper.getStatistics() != null)
+                statistics = gameWrapper.getStatistics();
 
             // Load quests
             questData.clear();
@@ -808,6 +974,7 @@ public class MainApp extends Application {
                 h.setWeapon(h.getWeapon());
                 h.setInventory(inventory);
                 h.setQuestList(questData);
+                h.setStatistics(statistics);
             }
 
             // Load skills
@@ -825,114 +992,9 @@ public class MainApp extends Application {
             if(gameWrapper.getGoals() != null)
                 goalData.addAll(gameWrapper.getGoals());
 
-            // Save the file path to the registry.
-            setFilePath(file);
-
-/*
-
-            //
-            // LOADING QUESTS
-            //
-            JAXBContext questContext = JAXBContext
-                    .newInstance(QuestListWrapper.class);
-            Unmarshaller umQuest = questContext.createUnmarshaller();
-
-            // Reading XML from the file and unmarshalling.
-            QuestListWrapper questWrapper = (QuestListWrapper) umQuest.unmarshal(file);
-
-            // Setting up the List
-            questData.clear();
-            questData.addAll(questWrapper.getQuests());
-
-            //
-            // LOADING INVENTORY (WEAPON & POTION SEPARATE
-            //
-            JAXBContext absWeaponContext = JAXBContext
-                    .newInstance(InvAbstractWeaponsWrapper.class);
-            JAXBContext absPotionContext = JAXBContext
-                    .newInstance(InvAbstractPotionsWrapper.class);
-            Unmarshaller umWeapon = absWeaponContext.createUnmarshaller();
-            Unmarshaller umPotion = absPotionContext.createUnmarshaller();
-
-            // Reading XML from the file and unmarshalling.
-            InvAbstractWeaponsWrapper weaponWrapper = (InvAbstractWeaponsWrapper) umWeapon.unmarshal(file);
-            InvAbstractPotionsWrapper potionsWrapper = (InvAbstractPotionsWrapper) umPotion.unmarshal(file);
-
-            // Setting up the List
-            inventory.clear();
-            inventory.addAll(weaponWrapper.getWeapons());
-            inventory.addAll(potionsWrapper.getPotions());
-
-            //
-            // LOADING ATTRIBUTE
-            //
-            JAXBContext attrContext = JAXBContext.newInstance(Attributes.class);
-            Unmarshaller umAttr = attrContext.createUnmarshaller();
-            umAttr.unmarshal(file);
-
-            //
-            // LOADING HEROES
-            //
-            JAXBContext heroContext = JAXBContext
-                    .newInstance(HeroWrapper.class);
-            Unmarshaller umHero = heroContext.createUnmarshaller();
-
-            // Reading XML from the file and unmarshalling.
-            HeroWrapper heroWrapper = (HeroWrapper) umHero.unmarshal(file);
-
-            // Setting up the List
-            heroData.clear();
-            heroData.addAll(heroWrapper.getHeroes());
-            // Give the poor hero/ine their inventory & quests
-            for (Hero h:heroData) {
-                h.setInventory(inventory);
-                h.setQuestList(questData);
-            }
-
-            //
-            // LOADING SKILLS
-            //
-            JAXBContext skillContext = JAXBContext.newInstance(SkillWrapper.class);
-            Unmarshaller umSkill = skillContext.createUnmarshaller();
-
-            // Reading XML from the file and unmarshalling.
-            SkillWrapper skillWrapper = (SkillWrapper) umSkill.unmarshal(file);
-
-            // Setting up the List
-            skillData.clear();
-            skillData.addAll(skillWrapper.getSkills());
-
-            //
-            // LOADING REWARDS
-            //
-            JAXBContext rewardContext = JAXBContext.newInstance(RewardWrapper.class);
-            Unmarshaller umReward = rewardContext.createUnmarshaller();
-
-            // Reading XML from the file and unmarshalling.
-            RewardWrapper rewardWrapper = (RewardWrapper) umReward.unmarshal(file);
-
-            // Setting up the List
-            rewardData.clear();
-            rewardData.addAll(rewardWrapper.getRewards());
-
-            //
-            // LOADING GOALS
-            //
-            JAXBContext goalContext = JAXBContext.newInstance(Goals.class);
-            Unmarshaller umGoal = goalContext.createUnmarshaller();
-
-            // Reading XML from the file and unmarshalling.
-            GoalWrapper goalWrapper = (GoalWrapper) umGoal.unmarshal(file);
-
-            // Setting up the List
-            goalData.clear();
-            goalData.addAll(goalWrapper.getGoals());
-
 
             // Save the file path to the registry.
             setFilePath(file);
-*/
-
         } catch (Exception e) { // catches ANY exception
             e.printStackTrace();
 
@@ -988,120 +1050,9 @@ public class MainApp extends Application {
             gameWrapper.setSkills(skillData);
             gameWrapper.setRewards(rewardData);
             gameWrapper.setGoals(goalData);
+            gameWrapper.setStatistics(statistics);
             mGame.marshal(gameWrapper,file);
 
-
-            /*
-            FileChannel fc = FileChannel.open(file.toPath());
-            XMLOutputFactory xof = XMLOutputFactory.newFactory();
-            XMLStreamWriter xsw = xof.createXMLStreamWriter(Channels.newOutputStream(fc), "UTF-8");
-
-            xsw.writeStartDocument("UTF-8", "1");
-
-
-            //
-            // SAVING QUESTS
-            //
-            JAXBContext questContext = JAXBContext
-                    .newInstance(QuestListWrapper.class);
-            Marshaller mQuest = questContext.createMarshaller();
-            mQuest.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-            // Wrapping our quest data.
-            QuestListWrapper questWrapper = new QuestListWrapper();
-            questWrapper.setQuests(questData);
-
-            // Marshalling and saving XML to the file.
-            mQuest.marshal(questWrapper, xsw);
-
-            //
-            // SAVING INVENTORY
-            //
-            JAXBContext absWeaponContext = JAXBContext.newInstance(InvAbstractWeaponsWrapper.class);
-            JAXBContext absPotionContext = JAXBContext.newInstance(InvAbstractPotionsWrapper.class);
-            Marshaller mWeapon = absWeaponContext.createMarshaller();
-            mWeapon.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            Marshaller mPotion = absPotionContext.createMarshaller();
-            mPotion.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-            // Wrapping the inventory data.
-            InvAbstractWeaponsWrapper weaponsWrapper = new InvAbstractWeaponsWrapper();
-            InvAbstractPotionsWrapper potionsWrapper = new InvAbstractPotionsWrapper();
-            for(AbstractItems a:inventory) {
-                if(a instanceof AbstractWeapons)
-                    weaponsWrapper.getWeapons().add((AbstractWeapons) a);
-                if(a instanceof AbstractPotions)
-                    potionsWrapper.getPotions().add((AbstractPotions) a);
-            }
-            mWeapon.marshal(weaponsWrapper, xsw);
-            mPotion.marshal(potionsWrapper, xsw);
-
-            //
-            // SAVING ATTRIBUTES
-            //
-            JAXBContext attrContext = JAXBContext.newInstance(Attributes.class);
-            Marshaller mAttr = attrContext.createMarshaller();
-            mAttr.marshal(Attributes.STRENGTH, xsw);
-            mAttr.marshal(Attributes.DEXTERITY, xsw);
-            mAttr.marshal(Attributes.MIND, xsw);
-            mAttr.marshal(Attributes.CHARISMA, xsw);
-            mAttr.marshal(Attributes.CONSTITUTION, xsw);
-            mAttr.marshal(Attributes.OBSERVATION, xsw);
-            mAttr.marshal(Attributes.PIETY, xsw);
-
-            //
-            // SAVING HEROES
-            //
-            JAXBContext heroContext = JAXBContext
-                    .newInstance(HeroWrapper.class);
-            Marshaller mHero = heroContext.createMarshaller();
-
-            // wrapping hero data
-            HeroWrapper heroWrapper = new HeroWrapper();
-            heroWrapper.setHeroes(heroData);
-
-            mHero.marshal(heroWrapper, xsw);
-
-            //
-            // SAVING SKILLS
-            //
-            JAXBContext skillContext = JAXBContext.newInstance(SkillWrapper.class);
-            Marshaller mSkill = skillContext.createMarshaller();
-
-            // wrapping our skills
-            SkillWrapper skillWrapper = new SkillWrapper();
-            skillWrapper.setSkills(skillData);
-
-            mSkill.marshal(skillWrapper, xsw);
-
-
-            //
-            // SAVING REWARDS
-            //
-            JAXBContext rewardContext = JAXBContext.newInstance(RewardWrapper.class);
-            Marshaller mReward = rewardContext.createMarshaller();
-
-            // wrapping reward Data
-            RewardWrapper rewardWrapper = new RewardWrapper();
-            rewardWrapper.setRewards(rewardData);
-
-            mReward.marshal(rewardWrapper, xsw);
-
-            //
-            // SAVING GOALS
-            //
-            JAXBContext goalContext = JAXBContext.newInstance(GoalWrapper.class);
-            Marshaller mGoal = goalContext.createMarshaller();
-
-            // wrapping goal data
-            GoalWrapper goalWrapper = new GoalWrapper();
-            goalWrapper.setGoals(goalData);
-
-            mGoal.marshal(goalWrapper, xsw);
-
-            xsw.close();
-            fc.close();
-*/
             // Save the file path to the registry.
             setFilePath(file);
         } catch (Exception e) { // catches ANY exception

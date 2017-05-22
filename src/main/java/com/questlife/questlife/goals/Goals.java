@@ -6,7 +6,6 @@ import main.java.com.questlife.questlife.util.*;
 
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -137,7 +136,7 @@ public class Goals {
         this.associatedSkills = associatedSkills;
     }
 
-    private List<Goals> getSubGoals() {
+    public List<Goals> getSubGoals() {
         List<Goals> subGoals = new ArrayList<>();
         subGoals.addAll(this.subGoals);
         return subGoals;
@@ -153,6 +152,14 @@ public class Goals {
 
     public void setRecurring(Boolean recurring) {
         isRecurring = recurring;
+    }
+
+    public Boolean getComplete() {
+        return isComplete;
+    }
+
+    public void setComplete(Boolean complete) {
+        isComplete = complete;
     }
 
     public int getExperienceReward() {
@@ -172,17 +179,21 @@ public class Goals {
     }
 
     public void completeGoal(LocalDateTime newDeadline) {
+        if(subGoals.contains(overarchingGoal)) {
+            subGoals.remove(overarchingGoal);
+        }
+
         if(getProgress() == 100) {
             if (isRecurring && newDeadline != null) {
                 this.deadline = newDeadline;
                 for (Goals subGoal : subGoals) {
-                    subGoal.completeGoal(newDeadline);
+                    subGoal.setDeadline(newDeadline);
                 }
                 isComplete = false;
             } else {
                 isRecurring = false;
                 for (Goals subGoal : subGoals) {
-                    subGoal.completeGoal(newDeadline);
+                    subGoal.setDeadline(newDeadline);
                 }
                 isComplete = true;
             }
@@ -217,6 +228,9 @@ public class Goals {
         }
 
         progress = Math.round(ctr/subGoals.size())*100;
+
+        if(progress > 100)
+            progress = 100;
 
         return progress;
     }

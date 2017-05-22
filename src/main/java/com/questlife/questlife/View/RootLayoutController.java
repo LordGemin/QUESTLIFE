@@ -1,7 +1,11 @@
 package main.java.com.questlife.questlife.View;
 
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.stage.FileChooser;
 import main.java.com.questlife.questlife.MainApp;
 
@@ -15,6 +19,9 @@ public class RootLayoutController {
 
 
     private MainApp mainApp;
+
+    @FXML
+    private Menu townMenu;
 
 
     /**
@@ -42,6 +49,23 @@ public class RootLayoutController {
     private void handleShowTown() {
         mainApp.showTownView();
     }
+
+    /**
+     * Called when user hovers over one of the other menus
+     */
+    @FXML
+    private void handleNotTownHover() {
+        townMenu.setOnAction(null);
+    }
+
+    /**
+     * Called when user hovers over town menu
+     */
+    @FXML
+    private void handleTownHover() {
+        townMenu.setOnAction((event) -> handleShowTown());
+    }
+
 
     /**
      * Called when user selects Tavern from submenu town from "views"
@@ -75,6 +99,21 @@ public class RootLayoutController {
         mainApp.showShopDialog();
     }
 
+    /**
+     * Called when user selects Statistics from "views"
+     */
+    @FXML
+    private void handleShowStatistics() {
+        mainApp.showStatisticsDialog();
+    }
+
+    /**
+     * Called when user selects Log from "views"
+     */
+    @FXML
+    private void handleShowLog() {
+        mainApp.showLogView();
+    }
 
     /**
      * Opens a FileChooser to let the user select an address book to load.

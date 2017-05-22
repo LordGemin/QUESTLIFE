@@ -1,5 +1,6 @@
 package main.java.com.questlife.questlife.hero;
 
+import main.java.com.questlife.questlife.util.Logger;
 import main.java.com.questlife.questlife.util.StatCalculator;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -83,7 +84,7 @@ public enum Attributes implements Serializable {
 
     public void levelUp() {
         level++;
-        System.out.println(fieldDescription+" leveld up!");
+        Logger.log(fieldDescription+" leveled up!");
         this.experienceToNextLevel = StatCalculator.getExpToNextLevel(experienceToNextLevel,level);
     }
 

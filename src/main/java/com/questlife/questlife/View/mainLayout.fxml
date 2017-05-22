@@ -86,7 +86,7 @@
                               <Button mnemonicParsing="false" onAction="#handleDeleteGoal" prefHeight="33.0" prefWidth="112.0" text="Delete..." />
                            </buttons>
                         </ButtonBar>
-                        <Button fx:id="goalCompleteButton" layoutX="143.0" layoutY="264.0" mnemonicParsing="false" onAction="#handleCompleteGoal" text="Complete" visible="false" />
+                        <Button fx:id="goalCompleteButton" layoutX="143.0" layoutY="264.0" mnemonicParsing="false" onAction="#handleCompleteGoal" text="Complete" />
                      </children>
                   </AnchorPane>
             </content>

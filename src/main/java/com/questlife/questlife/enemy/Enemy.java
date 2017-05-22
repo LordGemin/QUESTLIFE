@@ -113,6 +113,10 @@ public class Enemy implements Serializable {
             damageTaken = damageDealt-defense;
         if (attackType == AttackType.MAGICAL)
             damageTaken = damageDealt-resistance;
+        if (attackType == AttackType.BOTH) {
+            // Attack Type both is valuable for it's diversity. But enemies will resist a little bit better against it.
+            damageTaken = Math.round(damageDealt - ((defense + resistance) / 1.5f));
+        }
 
         if(damageTaken <= 0) {
             damageTaken = 1;

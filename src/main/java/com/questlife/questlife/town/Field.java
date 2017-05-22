@@ -1,6 +1,8 @@
 package main.java.com.questlife.questlife.town;
 
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.scene.paint.Color;
 import main.java.com.questlife.questlife.MainApp;
 import main.java.com.questlife.questlife.battle.Battle;
 import main.java.com.questlife.questlife.enemy.Enemy;
@@ -10,8 +12,11 @@ import main.java.com.questlife.questlife.items.AbstractPotions;
 import main.java.com.questlife.questlife.quests.Quest;
 import main.java.com.questlife.questlife.util.AttackType;
 import main.java.com.questlife.questlife.util.Generator;
+import main.java.com.questlife.questlife.util.Logger;
+import main.java.com.questlife.questlife.util.Statistics;
 
 import javax.swing.*;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +28,7 @@ public class Field extends Task {
 
     private static final int ENEMYAMOUNT = 5;
     private static final int LOOPS = 5;
+    private final Statistics statistics;
 
 
     private List<String> enemiesInField= new ArrayList<>();
@@ -32,15 +38,19 @@ public class Field extends Task {
     private int loops;
     private int battleCtr;
 
+    @XmlTransient
+    private Logger logger = new Logger();
 
-    public Field() {
-
+    public void setLogger(Logger logger) {
+        this.logger = logger;
     }
 
-    public Field(Hero hero, List<String> enemyList) {
+
+    public Field(Hero hero, ObservableList<String> enemyData, Statistics statistics) {
         this.hero = hero;
         this.loops = LOOPS;
-        initializeField(enemyList);
+        this.statistics = statistics;
+        initializeField(enemyData);
     }
 
 /*
@@ -76,7 +86,7 @@ public class Field extends Task {
 
     public void run() {
 
-        System.out.println("Sending out hero!");
+        Logger.log("Sending out hero!");
 
         Generator generator = new Generator();
 
@@ -112,7 +122,7 @@ public class Field extends Task {
                 enemiesInBattle.add(enemy);
             }
 
-            System.out.println(hero.getName() + " engages "+enemiesInBattle.size()+" enemies!");
+            Logger.log(hero.getName() + " engages "+enemiesInBattle.size()+" enemies!");
 
             StringBuilder enemies= new StringBuilder();
             for(int i = 0; i<enemiesInBattle.size();i++) {
@@ -124,16 +134,18 @@ public class Field extends Task {
                     enemies.append(" and a ");
                 }
             }
-            System.out.println("Hero fighting "+enemies);
+            Logger.log("Hero fighting "+enemies);
 
             if(runBattle()) {
                 battleCtr++;
                 try {
                     // Clear the scene so that old objects can be deleted peacefully
                     enemiesInBattle.clear();
-                    System.out.println("Hero survived "+battleCtr+" Battles.\n");
+                    Logger.log("Hero survived "+battleCtr+" Battles.\n");
                     updateMessage(hero.getHealth()+"/"+hero.getMaxHealth());
-                    System.out.println("Looking for next enemy...\n");
+                    if(battleCtr < loops) {
+                        Logger.log("Looking for next enemy...\n");
+                    }
                     Thread.sleep(6000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -171,7 +183,7 @@ public class Field extends Task {
         }
         if (hero.getHealth() > 0 ) {
             int gained = Math.round(goldGained * (1+(hero.getObservation().getLevel()/100.0f)));
-            System.out.println(hero.getName() + " gains "+gained+" Gold!");
+            Logger.log(hero.getName() + " gains "+gained+" Gold!", Color.GOLD);
             hero.gainGold(gained);
             return true;
         }
@@ -201,7 +213,7 @@ public class Field extends Task {
         }
 
         if(enemies.size() == 0) {
-            System.out.println("No enemies left!");
+            Logger.log("No enemies left!");
             return;
         }
 
@@ -233,15 +245,15 @@ public class Field extends Task {
 
         // Hero will drink at least something appropriate when they feel like they need to prepare.
         if(hero.getHealth() < criticalHealth && hasHealthPotions) {
-            System.out.println(hero.getName()+" taking some potions to prepare.");
+            Logger.log(hero.getName()+" taking some potions to prepare.");
             pause();
             hero.takePotion();
         } else if (hero.getMana() < criticalMana && hasManaPotions) {
-            System.out.println(hero.getName()+" taking some potions to prepare.");
+            Logger.log(hero.getName()+" taking some potions to prepare.");
             pause();
             hero.takePotion();
         } else {
-            System.out.println(hero.getName()+" attacks the " + getParticipatingEnemyAt(target).getName()+".");
+            Logger.log(hero.getName()+" attacks the " + getParticipatingEnemyAt(target).getName()+".", Color.AQUA);
 
             // Damage calculation is here.
             int damage = hero.dealDamage();
@@ -253,13 +265,13 @@ public class Field extends Task {
             // Critical Attacks based on observation stat. Deals double damage
             if(observation >= criticalCheck*5) {
                 damage *= 2;
-                System.out.println(hero.getName()+" strikes a critical blow.\n");
+                Logger.log(hero.getName()+" strikes a critical blow.\n");
             }
 
             getParticipatingEnemyAt(target).takeDamage(damage, heroWeaponAttackType);
             pause(750);
 
-            System.out.println(getParticipatingEnemyAt(target).getName()+" now has "+getParticipatingEnemyAt(target).getHealth()+" health left.");
+            Logger.log(getParticipatingEnemyAt(target).getName()+" now has "+getParticipatingEnemyAt(target).getHealth()+" health left.");
         }
 
         if (enemies.get(target).getHealth() <= 0) {
@@ -272,36 +284,36 @@ public class Field extends Task {
                     }
                 }
             } catch (NullPointerException e) {
-                /*
-                TODO: We don't have any quests accepted
-                Should we then ignore the obvious error? What is justice even.
-                */
+                e.printStackTrace();
             }
-            System.out.println(hero.getName() + " has felled the "+getParticipatingEnemyAt(target).getName()+"!");
+            Logger.log(hero.getName() + " has felled the "+getParticipatingEnemyAt(target).getName()+"!", Color.RED);
             hero.gainExperience(getParticipatingEnemyAt(target).getExperieceReward());
-            System.out.println(hero.getName() + " gains "+ getParticipatingEnemyAt(target).getExperieceReward()+ " Experience!");
+            Logger.log(hero.getName() + " gains "+ getParticipatingEnemyAt(target).getExperieceReward()+ " Experience!",Color.GREEN);
             goldGained += getParticipatingEnemyAt(target).getGoldReward();
             enemiesInBattle.remove(getParticipatingEnemyAt(target));
+            statistics.countEnemy();
             pause();
         }
 
         for (Enemy enemy:enemies) {
             int damage = enemy.getAttackPower();
             hero.takeDamage(damage, enemy.getAttackType());
-            System.out.println(enemy.getName() + " strikes "+ hero.getName()+".");
+            Logger.log(enemy.getName() + " strikes "+ hero.getName()+".",Color.CRIMSON);
             pause();
             if(hero.getHealth() <= 0) {
                 hero.setHealth(0);
-                System.out.println(hero.getName()+" succumbed to the pain.\nHe was brought back to the town to recover from his wounds.");
+                Logger.log(hero.getName()+" succumbed to the pain.\nHe was brought back to the town to recover from his wounds.", Color.CRIMSON);
                 break;
             }
-            System.out.println(hero.getName()+ " now has "+hero.getHealth()+" health left.");
+            Logger.log(hero.getName()+ " now has "+hero.getHealth()+" health left.");
             pause();
         }
         updateMessage(hero.getHealth()+"/"+hero.getMaxHealth());
     }
 
     private void pause(int pause) {
+        if(pause == 0)
+            return;
         try {
             Thread.sleep(pause);
         } catch (InterruptedException e) {
@@ -310,6 +322,6 @@ public class Field extends Task {
     }
 
     private void pause() {
-        pause(500);
+        pause(0);
     }
 }

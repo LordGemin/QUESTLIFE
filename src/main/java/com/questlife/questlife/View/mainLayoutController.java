@@ -2,6 +2,8 @@ package main.java.com.questlife.questlife.View;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -16,9 +18,12 @@ import main.java.com.questlife.questlife.quests.Quest;
 import main.java.com.questlife.questlife.rewards.Reward;
 import main.java.com.questlife.questlife.skills.Skill;
 import main.java.com.questlife.questlife.town.Field;
+import main.java.com.questlife.questlife.util.Logger;
 import main.java.com.questlife.questlife.util.RewardType;
 import main.java.com.questlife.questlife.util.SkillType;
+import main.java.com.questlife.questlife.util.Statistics;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -27,9 +32,38 @@ import java.util.List;
  */
 public class mainLayoutController {
 
+    /**
+     * Class to regularly save game data.
+     *
+     */
+    class gameLoop extends Task {
+        @Override
+        protected Object call() throws Exception {
+            int ctr = 0;
+            final int SLEEP = 3000;
+            while(mainApp.isRunning()) {
+                try {
+                    Thread.sleep(SLEEP);
+                    ctr += SLEEP;
+                    updateLayout();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if(!mainApp.isRunning()) {
+                    return null;
+                }
+                if(ctr >= 300000) {
+                    ctr = 0;
+                    mainApp.saveDataToFile(mainApp.getFilePath());
+                }
+            }
+            return null;
+        }
+    }
+
     private Hero hero;
 
-    private Task task = new Field();
+    private Statistics statistics;
 
     /**
      * All the labels to be seen. Attributes, Level, Name
@@ -185,6 +219,8 @@ public class mainLayoutController {
         inventoryWeaponEquip.setVisible(false);
         goalCompleteButton.setVisible(false);
 
+        new Thread(new gameLoop()).start();
+
         // Listen for selection changes and show the person details accordingly
         inventoryTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> handleInvSelection(newValue));
@@ -200,9 +236,16 @@ public class mainLayoutController {
             goalCompleteButton.setVisible(false);
             return;
         }
-        if (newValue.getProgress() != 100) {
+        if (newValue.getProgress() == 100) {
             goalCompleteButton.setVisible(true);
+            return;
         }
+        if (newValue.getSubGoals().size() == 0) {
+            goalCompleteButton.setVisible(true);
+            return;
+        }
+        goalCompleteButton.setVisible(false);
+
     }
 
     private void handleInvSelection(AbstractItems newValue) {
@@ -230,6 +273,7 @@ public class mainLayoutController {
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
         this.hero = mainApp.getHeroData().get(0);
+        this.statistics = mainApp.getStatistics();
 
         goalsTable.setItems(mainApp.getGoalData());
         questsTable.setItems(mainApp.getQuestData());
@@ -256,7 +300,7 @@ public class mainLayoutController {
     private void handleCompleteGoal() {
         if (goalsTable.getSelectionModel().getSelectedItems().size() != 1) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Can only delete one element");
+            alert.setTitle("Can only complete one goal");
             alert.setHeaderText("Select goal");
             alert.setContentText("Please select one goal from the table above\n");
 
@@ -269,7 +313,9 @@ public class mainLayoutController {
         if(goal.getRecurring()) {
             goal.completeGoal(mainApp.showDefineNewDeadlineDialog(goal));
         }
-        goal.completeGoal(null);
+        goal.completeGoal(mainApp.showDefineNewDeadlineDialog(goal));
+        statistics.countGoal();
+        updateLayout();
     }
 
     @FXML
@@ -398,7 +444,7 @@ public class mainLayoutController {
             return;
         }
         mainApp.showAddTimeDialog(skill);
-        System.out.println("Time to next level: "+skill.getExperienceToNextLevel());
+        Logger.log("Time to next level: "+skill.getExperienceToNextLevel());
 
         updateLabels();
 
@@ -584,14 +630,14 @@ public class mainLayoutController {
 
     @FXML
     private void sendHeroToField() {
-        System.out.println("Hero health: "+hero.getHealth());
+        Logger.log("Hero health: "+hero.getHealth());
         if(hero.getHealth() > 0) {
-            System.out.println("Sending "+hero.getName()+" to the field.");
-            task = new Field(hero, mainApp.getEnemyData());
+            Logger.log("Sending "+hero.getName()+" to the field.");
+            Task task = new Field(hero, mainApp.getEnemyData(), statistics);
             health.textProperty().bind(task.messageProperty());
             new Thread(task).start();
         } else {
-            System.out.println(hero.getName()+" should rest some more.");
+            Logger.log(hero.getName()+" should rest some more.");
         }
     }
 
@@ -617,6 +663,15 @@ public class mainLayoutController {
         gold.setText(""+hero.getGold());
 
         mainApp.getQuestData().removeIf(e -> (e.getMobsToHunt() <= 0));
+
+        ObservableList<Goals> goalList = FXCollections.observableArrayList();
+        goalList.addAll(mainApp.getGoalData());
+        for(Goals g:mainApp.getGoalData()) {
+            if(g.getComplete()) {
+                goalList.remove(g);
+            }
+        }
+        goalsTable.setItems(goalList);
     }
 
     public void updateLayout() {

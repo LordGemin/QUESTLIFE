@@ -22,7 +22,7 @@ public class MarketboardViewController {
     private Stage dialogStage;
     private MainApp mainApp;
     private Marketboard marketboard = new Marketboard();
-    ObservableList<Quest> questObservableList = FXCollections.observableArrayList();
+    private ObservableList<Quest> questObservableList = FXCollections.observableArrayList();
 
     @FXML
     private TableView<Quest> questTable;
@@ -58,10 +58,6 @@ public class MarketboardViewController {
         questTable.setItems(questObservableList);
     }
 
-    @FXML
-    private void handleLeave() {
-        dialogStage.close();
-    }
 
     @FXML
     private void handleAccept() {
@@ -125,6 +121,12 @@ public class MarketboardViewController {
         }
 
         return true;
+    }
+
+    @FXML
+    private void handleLeave() {
+        dialogStage.close();
+        mainApp.showTownView();
     }
 
 }
