@@ -76,7 +76,7 @@ public class Hero implements Serializable {
         else {
             //refill complete health within 4 hours of last death
             //If user wants to go out adventuring before then: pay gold for tavern. It should be cheap enough
-            health = (int) Math.ceil((getMaxHealth()/24)*(Math.floor(getTimeSinceLastDeath()/600000)));
+            health = (int) Math.ceil((getMaxHealth()/24)*(Math.floor(getTimeSinceLastDeath()/600000.0f)));
             if (health > getMaxHealth()) {
                 health = getMaxHealth();
             }
