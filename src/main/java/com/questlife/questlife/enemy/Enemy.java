@@ -5,6 +5,7 @@ import main.java.com.questlife.questlife.util.Generator;
 import main.java.com.questlife.questlife.util.StatCalculator;
 
 import java.io.Serializable;
+import java.util.Random;
 
 /**
  *
@@ -43,12 +44,12 @@ public class Enemy implements Serializable {
 
     private void createEnemy(int level) {
 
-        Generator generator = new Generator();
+        Random generator = new Random(System.currentTimeMillis());
 
         this.level = level;
 
-        // Fluctuate enemy health by 10 percent
-        this.health = Math.round(level*10*(1 + (generator.generateNumber()%10)/100f));
+        // Fluctuate enemy health by 10 percent (10 times level times 0.9-1.1
+        this.health = Math.round(level*10* (generator.nextFloat() * 0.2f + 0.9f));
         this.maxHealth = health;
 
         // Having some fun with the tropes. There can be wounded enemies that have less than their max health!
@@ -58,19 +59,19 @@ public class Enemy implements Serializable {
         }
 
         if(name.contains("Shiny")) {
-            this.attackPower = level*3 + generator.generateNumber() % level * 5;
+            this.attackPower = level*3 + generator.nextInt(level*5);
         } else {
-            this.attackPower = 2 + generator.generateNumber() % level * 5;
+            this.attackPower = level*2 + generator.nextInt(level*5);
         }
-        this.defense = 4 + generator.generateNumber() % level * 3;
-        this.resistance = 2 + generator.generateNumber() % level * 2;
+        this.defense = 4 + generator.nextInt(level*3);
+        this.resistance = 2 + generator.nextInt(level*2);
 
         attackType = AttackType.PHYSICAL;
         if(name.contains("Blue")) {
             attackType = AttackType.MAGICAL;
             // Magical enemies have inverted calculations for defense and resistance
-            this.resistance = 4 + generator.generateNumber() % level * 3;
-            this.defense = 2 + generator.generateNumber() % level * 2;
+            this.resistance = 4 + generator.nextInt(level*3);
+            this.defense = 2 + generator.nextInt(level*2);
         }
 
     }

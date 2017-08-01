@@ -69,7 +69,7 @@ public class MainApp extends Application {
      * Class to regularly save game data.
      *
      */
-    class gameLoop extends Task {
+    class GameLoop extends Task {
         @Override
         protected Object call() throws Exception {
             int ctr = 0;
@@ -260,13 +260,6 @@ public class MainApp extends Application {
         initializeItems();
         initializeEnemies();
 
-        heroData.add(new Hero("Bolderig"));
-        heroData.get(0).setStatistics(statistics);
-        heroData.get(0).setCharisma(1);
-        heroData.get(0).setConstitution(1);
-        heroData.get(0).setGold(5000);
-        heroData.get(0).setHealth(heroData.get(0).getMaxHealth());
-
         //TODO: SampleData?
         goalData.add(new Goals());
         goalData.add(new Goals());
@@ -290,8 +283,8 @@ public class MainApp extends Application {
         initRoot();
         initMainLayout();
 
-        // Implement some simple gameLoop to keep everything updated
-        new Thread(new gameLoop()).start();
+        // Implement some simple GameLoop to keep everything updated
+        new Thread(new GameLoop()).start();
 
     }
 
@@ -318,14 +311,27 @@ public class MainApp extends Application {
             e.printStackTrace();
         }
 
-        // Try to load last opened person file.
+        // Try to load last opened file.
         File file = getFilePath();
         if (file != null) {
             loadDataFromFile(file);
         } else {
-            // If there is no last file, force user to pick new file
+            // If there is no last file, force user to pick new file and decide on a name for his hero
             newSaveFile();
+
         }
+    }
+
+    private void createNewHero() {
+
+        heroData.add(new Hero("Nobody"));
+
+        showHeroCreationDialog(heroData.get(0));
+
+        heroData.get(0).setStatistics(statistics);
+        heroData.get(0).setGold(500);
+        heroData.get(0).setHealth(heroData.get(0).getMaxHealth());
+
     }
 
     private void newSaveFile() {
@@ -492,6 +498,42 @@ public class MainApp extends Application {
         } catch (IOException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    /**
+     * Lets the user create a new hero
+     * @param tempHero passed hero to use later
+     */
+    private void showHeroCreationDialog(Hero tempHero) {
+        try {
+            // Load the fxml file and create a new stage for the popup dialog.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/heroCreationDialog.fxml"));
+            AnchorPane page = loader.load();
+
+
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Create Hero");
+            dialogStage.getIcons().add(new Image("file:resources/images/Address_Book.png"));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+            dialogStage.setResizable(false);
+
+            // Set the goal into the controller.
+            HeroCreationDialogController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setHero(tempHero);
+
+            //rootLayout.setCenter(page);
+
+            // Show the dialog and wait until the user closes it
+            dialogStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -969,6 +1011,8 @@ public class MainApp extends Application {
             heroData.clear();
             if(gameWrapper.getHeroes() != null)
                 heroData.addAll(gameWrapper.getHeroes());
+            else
+                createNewHero();
             // Give the poor hero/ine their inventory & quests
             for (Hero h:heroData) {
                 h.setWeapon(h.getWeapon());

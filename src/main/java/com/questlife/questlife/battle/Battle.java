@@ -145,10 +145,7 @@ public class Battle {
                     }
                 }
             } catch (NullPointerException e) {
-                /*
-                TODO: We don't have any quests accepted
-                Should we then ignore the obvious error? What is justice even.
-                */
+                e.printStackTrace();
             }
             System.out.println(hero.getName() + " has felled the "+getParticipatingEnemyAt(target).getName()+"!");
             getParticipatingHero().gainExperience(getParticipatingEnemyAt(target).getExperieceReward());

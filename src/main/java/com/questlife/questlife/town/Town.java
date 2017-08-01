@@ -1,7 +1,5 @@
 package main.java.com.questlife.questlife.town;
 
-import main.java.com.questlife.questlife.items.AbstractItems;
-import main.java.com.questlife.questlife.items.Potion;
 import main.java.com.questlife.questlife.util.Generator;
 
 import java.io.Serializable;
@@ -15,7 +13,7 @@ import java.util.List;
 public class Town implements Serializable {
 
     private List<AbstractBuilding> buildingList = new ArrayList<>();
-    private int defaultCost = 50;
+    private static final int DEFAULTCOST = 50;
 
     public Town() {
         createTown();
@@ -35,7 +33,7 @@ public class Town implements Serializable {
 
     private void createTown() {
         Generator generator = new Generator();
-        Tavern tavern = new Tavern(generator.generateShopNames(), defaultCost);
+        Tavern tavern = new Tavern(generator.generateShopNames(), DEFAULTCOST);
         addBuilding(tavern);
         Shop shop = new Shop(generator.generateShopNames());
         addBuilding(shop);

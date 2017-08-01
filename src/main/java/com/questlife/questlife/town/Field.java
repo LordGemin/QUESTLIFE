@@ -19,6 +19,7 @@ import javax.swing.*;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  *
@@ -103,19 +104,8 @@ public class Field extends Task {
                 // A new enemy object for every single enemy in every battle. Eats memory, but garbage collection should handle this fine.
                 Enemy enemy = new Enemy(enemiesInField.get(generator.generateNumber()%ENEMYAMOUNT),1);
 
-                /*
-                Set the difficulty of the generated enemy to be a range of 2 around the hero by subtracting and then adding some random number
-                subtract 2-add 4 = herolevel+2
-                subtract 2-add 2 = herolevel
-                subtract 2-add 1 = herolevel-1
-                TODO: We want difficulty to fluctuate 10% around the heroes level
-                */
-                int difficulty = hero.getLevel()-generator.generateNumber()%3;
-                difficulty = difficulty+generator.generateNumber()%5;
-
-                if(difficulty == 0) {
-                    difficulty = hero.getLevel();
-                }
+                // This value will effectively be level*(0.9~1.1)
+                int difficulty = Math.round(hero.getLevel() * (new Random().nextFloat() * 0.2f + 0.9f));
 
                 enemy.setHerolevel(difficulty);
 
